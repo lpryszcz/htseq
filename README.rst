@@ -129,5 +129,5 @@ http://htseq.readthedocs.io
 Authors
 ~~~~~~~~~~~~~
 
-Since 2016: Fabio Zanini @ http://fabilab.org.
-2020-2015: Simon Anders, Wolfgang Huber
+- Since 2016: Fabio Zanini @ http://fabilab.org.
+- 2020-2015: Simon Anders, Wolfgang Huber
