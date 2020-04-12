@@ -22,11 +22,15 @@ for fdn in ['src', 'HTSeq', 'doc', 'scripts', 'test']:
 
 
 # Update version from VERSION file into module
-with open('VERSION') as fversion:
+this_directory = os.path.abspath(os.path.dirname(__file__))
+with open(os.path.join(this_directory, 'VERSION')) as fversion:
     version = fversion.readline().rstrip()
-with open(py_fdn+'HTSeq/_version.py', 'wt') as fversion:
+with open(os.path.join(this_directory, py_fdn, 'HTSeq', '_version.py'), 'wt') as fversion:
     fversion.write('__version__ = "'+version+'"')
 
+# Get README file content
+with open(os.path.join(this_directory, 'README.md')) as f:
+    long_description = f.read()
 
 # Check OS-specific quirks
 try:
@@ -197,19 +201,14 @@ class Build_with_preprocess(build_py):
 setup(name='HTSeq',
       version=version,
       author='Simon Anders, Fabio Zanini',
-      author_email='sanders@fs.tum.de',
+      author_email='fabio.zanini@unsw.edu.au',
       maintainer='Fabio Zanini',
-      maintainer_email='fabio.zanini@stanford.edu',
-      url='https://github.com/simon-anders/htseq',
+      maintainer_email='fabio.zanini@unsw.edu.au',
+      url='https://github.com/htseq',
       description="A framework to process and analyze data from " +
                   "high-throughput sequencing (HTS) assays",
-      long_description="""
-      A framework to process and analyze data from high-throughput sequencing
-      (HTS) assays.
-
-      Development: https://github.com/simon-anders/htseq
-
-      Documentation: http://htseq.readthedocs.io""",
+      long_description=long_description,
+      long_description_content_type='text/markdown',
       license='GPL3',
       classifiers=[
          'Development Status :: 5 - Production/Stable',
