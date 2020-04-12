@@ -2,7 +2,8 @@
 [![Documentation Status](https://readthedocs.org/projects/htseq/badge/?version=master)](https://htseq.readthedocs.io)
 
 # HTSeq
-**DEVS**: https://github.com/htseq/htseq\
+**DEVS**: https://github.com/htseq/htseq
+
 **DOCS**: http://htseq.readthedocs.io
 
 HTSeq is a Python library to facilitate processing and analysis of data
