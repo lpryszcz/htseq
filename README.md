@@ -64,10 +64,6 @@ pip install 'pysam>=0.9'
 pip install HTSeq
 ```
 
-**NOTE**: ``pysam==0.9.0`` has a bug so that ``pip Cython`` is
-**required** at installation. ``pysam>=0.10.0`` should build without
-Cython.
-
 ### setup.py (distutils/setuptools)
 
 Install the dependencies with your favourite tool (``pip``, ``conda``,
