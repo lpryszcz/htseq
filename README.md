@@ -6,7 +6,7 @@
 
 **DOCS**: http://htseq.readthedocs.io
 
-HTSeq is a Python library to facilitate processing and analysis of data
+A Python library to facilitate processing and analysis of data
 from high-throughput sequencing (HTS) experiments. A popular use of ``HTSeq``
 is ``htseq-count``, a tool to quantify gene expression in RNA-Seq and similar
 experiments.
