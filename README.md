@@ -4,7 +4,7 @@
 # HTSeq
 **DEVS**: https://github.com/htseq/htseq
 
-**DOCS**: http://htseq.readthedocs.io
+**DOCS**: https://htseq.readthedocs.io
 
 A Python library to facilitate processing and analysis of data
 from high-throughput sequencing (HTS) experiments. A popular use of ``HTSeq``
