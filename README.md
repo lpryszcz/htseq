@@ -23,15 +23,15 @@ To run the ``htseq-qa`` script, you will also need:
 
 -  ``matplotlib >=1.4``
 
-Both **Linux** and **OSX** are supported and binaries are provided on for many
-Linux and OSX versions. A source package which should not require ``Cython``
-nor ``SWIG`` is provided for all other cases. To **build** the package completely
-from source, you will **also** need:
+Both **Linux** and **OSX** are supported and binaries are provided on Pypi.
+
+A source package which should not require ``Cython`` nor ``SWIG`` is also
+provided on Pypi.
+
+To **develop** `HTSeq` you will **also** need:
 
 -  ``Cython >=0.29.5``
 -  ``SWIG >=3.0.8``
-
-which are required for performance reasons.
 
 **Windows is not officially supported** as we don't have access to a Continuous
 Integration Windows machine that supports ``pysam``. Please do **not** open an
