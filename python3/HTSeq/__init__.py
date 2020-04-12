@@ -47,11 +47,14 @@ class FileOrSequence(object):
                 lines = open(self.fos)
         else:
             lines = self.fos
-        for line in lines:
-            yield line
-            self.line_no += 1
-        if isinstance(self.fos, str):
-            lines.close()
+
+        try:
+            for line in lines:
+                yield line
+                self.line_no += 1
+        finally:
+            if isinstance(self.fos, str):
+                lines.close()
         self.line_no = None
 
     def __repr__(self):
@@ -225,39 +228,225 @@ class GFF_Reader(FileOrSequence):
             yield f
 
 
-def make_feature_dict(feature_sequence):
-    """A feature dict is a convenient way to organize a sequence of Feature
-    object (which you have got, e.g., from parse_GFF).
+def _parse_feature_query(feature_query):
+    if '"' not in feature_query:
+        raise ValueError('Invalid feature query')
+    if '==' not in feature_query:
+        raise ValueError('Invalid feature query')
 
-    The function returns a dict with all the feature types as keys. Each value
-    of this dict is again a dict, now of feature names. The values of this dict
-    is a list of feature.
+    idx_quote1 = feature_query.find('"')
+    idx_quote2 = feature_query.rfind('"')
+    attr_name = feature_query[idx_quote1+1: idx_quote2]
 
-    An example makes this clear. Let's say you load the C. elegans GTF file
-    from Ensemble and make a feature dict:
+    idx_equal = feature_query[:idx_quote1].find('==')
+    attr_cat = feature_query[:idx_equal].strip()
 
-    >>> worm_features_dict = HTSeq.make_feature_dict(HTSeq.parse_GFF(
-    ...     "test_data/Caenorhabditis_elegans.WS200.55.gtf.gz"))
+    return {
+        'attr_cat': attr_cat,
+        'attr_name': attr_name,
+        }
+
+
+def make_feature_dict(
+        feature_sequence,
+        feature_type=None,
+        feature_query=None,
+        ):
+    """Organize a sequence of Feature objects into a nested dictionary.
+
+    Args:
+        feature_sequence (iterable of Feature): A sequence of features, e.g. as
+            obtained from GFF_reader('myfile.gtf')
+        feature_type (string or None): If None, collect all features. If a
+            string, restrict to only one type of features, e.g. 'exon'.
+        feature_query (string or None): If None, all features of the selected
+            types will be collected. If a string, it has to be in the format:
+
+        <feature_attribute> == <attr_value>
+
+        e.g.
+
+        'gene_id == "Fn1"'
+
+        (note the double quotes inside).
+
+        Then only that feature will be collected. Using this argument is more
+        efficient than collecting all features and then pruning it down to a
+        single one.
+
+    Returns:
+        dict with all the feature types as keys. Each value is again a dict,
+        now of feature names. The values of this dict is a list of features.
+
+    Example: Let's say you load the C. elegans GTF file from Ensembl and make a
+    feature dict:
+
+    >>> gff = HTSeq.GFF_Reader("Caenorhabditis_elegans.WS200.55.gtf.gz")
+    >>> worm_features_dict = HTSeq.make_feature_dict(gff)
 
     (This command may take a few minutes to deal with the 430,000 features
     in the GTF file. Note that you may need a lot of RAM if you have millions
     of features.)
 
     Then, you can simply access, say, exon 0 of gene "F08E10.4" as follows:
-    >>> worm_features_dict[ 'exon' ][ 'F08E10.4' ][ 0 ]
+    >>> worm_features_dict['exon']['F08E10.4'][0]
     <GenomicFeature: exon 'F08E10.4' at V: 17479353 -> 17479001 (strand '-')>
     """
 
-    res = {}
+    if feature_query is not None:
+        feature_qdic = _parse_feature_query(feature_query)
+
+    features = {}
     for f in feature_sequence:
-        if f.type not in res:
-            res[f.type] = {}
-        res_ftype = res[f.type]
-        if f.name not in res_ftype:
-            res_ftype[f.name] = [f]
+        if feature_type in (None, f.type):
+            if f.type not in features:
+                features[f.type] = {}
+            res_ftype = features[f.type]
+
+            if feature_query is not None:
+                # Skip the features that don't even have the right attr
+                if feature_qdic['attr_cat'] not in f.attr:
+                    continue
+                # Skip the ones with an attribute with a different name
+                # from the query (e.g. other genes)
+                if f.attr[feature_qdic['attr_cat']] != feature_qdic['attr_name']:
+                    continue
+
+            if f.name not in res_ftype:
+                res_ftype[f.name] = [f]
+            else:
+                res_ftype[f.name].append(f)
+    return features
+
+
+def make_feature_genomicarrayofsets(
+        feature_sequence,
+        id_attribute,
+        feature_type=None,
+        feature_query=None,
+        additional_attributes=None,
+        stranded='no',
+        verbose=False,
+        ):
+    """Organize a sequence of Feature objects into a GenomicArrayOfSets.
+
+    Args:
+        feature_sequence (iterable of Feature): A sequence of features, e.g. as
+            obtained from GFF_reader('myfile.gtf')
+        id_attribute (string): An attribute to use to identify the feature in
+            the output data structures (e.g. 'gene_id')
+        feature_type (string or None): If None, collect all features. If a
+            string, restrict to only one type of features, e.g. 'exon'.
+        feature_query (string or None): If None, all features of the selected
+            types will be collected. If a string, it has to be in the format:
+
+        <feature_attribute> == <attr_value>
+
+        e.g.
+
+        'gene_id == "Fn1"'
+
+        (note the double quotes inside).
+
+        Then only that feature will be collected. Using this argument is more
+        efficient than collecting all features and then pruning it down to a
+        single one.
+
+        additional_attributes (list or None): A list of additional attributes
+            to be collected into a separate dict for the same features, for
+            instance ['gene_name']
+        stranded (bool): Whether to keep strandedness information
+        verbose (bool): Whether to output progress and error messages
+
+    Returns:
+        dict with two keys, 'features' with the GenomicArrayOfSets populated
+        with the features, and 'attributes' which is itself a dict with
+        the id_attribute as keys and the additional attributes as values.
+
+    Example: Let's say you load the C. elegans GTF file from Ensembl and make a
+    feature dict:
+
+    >>> gff = HTSeq.GFF_Reader("Caenorhabditis_elegans.WS200.55.gtf.gz")
+    >>> worm_features = HTSeq.make_feature_genomicarrayofsets(gff)
+
+    (This command may take a few minutes to deal with the 430,000 features
+    in the GTF file. Note that you may need a lot of RAM if you have millions
+    of features.)
+
+    This function is related but distinct from HTSeq.make_feature_dict. This
+    function is used in htseq-count and its barcoded twin to count gene
+    expression because the output GenomicArrayofSets is very efficient. You
+    can use it in performance-critical scans of GFF files.
+    """
+
+    if additional_attributes is None:
+        additional_attributes = []
+
+    if feature_query is not None:
+        feature_qdic = _parse_feature_query(feature_query)
+
+    features = HTSeq.GenomicArrayOfSets("auto", stranded)
+    attributes = {}
+    i = 0
+    try:
+        for f in feature_sequence:
+            if feature_type in (None, f.type):
+                try:
+                    feature_id = f.attr[id_attribute]
+                except KeyError:
+                    raise ValueError(
+                            "Feature %s does not contain a '%s' attribute" %
+                            (f.name, id_attribute))
+                if stranded != "no" and f.iv.strand == ".":
+                    raise ValueError(
+                            "Feature %s at %s does not have strand information but you are "
+                            "using stranded mode. Try with unstrnded mode." %
+                            (f.name, f.iv))
+
+                if feature_query is not None:
+                    # Skip the features that don't even have the right attr
+                    if feature_qdic['attr_cat'] not in f.attr:
+                        continue
+                    # Skip the ones with an attribute with a different name
+                    # from the query (e.g. other genes)
+                    if f.attr[feature_qdic['attr_cat']] != feature_qdic['attr_name']:
+                        continue
+
+                features[f.iv] += feature_id
+                attributes[feature_id] = [
+                        f.attr[attr] if attr in f.attr else ''
+                        for attr in additional_attributes]
+            i += 1
+            if i % 100000 == 0 and verbose:
+                if hasattr(feature_sequence, 'get_line_number_string'):
+                    msg = "{:d} GFF lines processed.".format(i)
+                else:
+                    msg = "{:d} features processed.".format(i)
+                sys.stderr.write(msg+'\n')
+                sys.stderr.flush()
+    except(KeyError, ValueError):
+        if verbose:
+            if hasattr(feature_sequence, 'get_line_number_string'):
+                msg = "Error processing GFF file ({:}):".format(
+                    feature_sequence.get_line_number_string())
+            else:
+                msg = "Error processing feature sequence ({:}):".format(
+                    str(i+1))
+            sys.stderr.write(msg+'\n')
+        raise
+
+    if verbose:
+        if hasattr(feature_sequence, 'get_line_number_string'):
+            msg = "{:d} GFF lines processed.".format(i)
         else:
-            res_ftype[f.name].append(f)
-    return res
+            msg = "{:d} features processed.".format(i)
+        sys.stderr.write(msg+"\n")
+        sys.stderr.flush()
+
+    return {
+        'features': features,
+        'attributes': attributes,
+        }
 
 
 #########################

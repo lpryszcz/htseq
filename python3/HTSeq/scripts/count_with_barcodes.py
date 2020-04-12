@@ -386,45 +386,19 @@ def count_reads_in_features(
         with pysam.AlignmentFile(sam_filename, 'r') as sf:
             pass
 
-    features = HTSeq.GenomicArrayOfSets("auto", stranded != "no")
+    # Prepare features
     gff = HTSeq.GFF_Reader(gff_filename)
-    feature_attr = set()
-    attributes = {}
-    i = 0
-    try:
-        for f in gff:
-            if f.type == feature_type:
-                try:
-                    feature_id = f.attr[id_attribute]
-                except KeyError:
-                    raise ValueError(
-                            "Feature %s does not contain a '%s' attribute" %
-                            (f.name, id_attribute))
-                if stranded != "no" and f.iv.strand == ".":
-                    raise ValueError(
-                            "Feature %s at %s does not have strand information but you are "
-                            "running htseq-count in stranded mode. Use '--stranded=no'." %
-                            (f.name, f.iv))
-                features[f.iv] += feature_id
-                feature_attr.add(f.attr[id_attribute])
-                attributes[f.attr[id_attribute]] = [
-                        f.attr[attr] if attr in f.attr else ''
-                        for attr in additional_attributes]
-            i += 1
-            if i % 100000 == 0 and not quiet:
-                sys.stderr.write("%d GFF lines processed.\n" % i)
-                sys.stderr.flush()
-    except:
-        sys.stderr.write(
-            "Error occured when processing GFF file (%s):\n" %
-            gff.get_line_number_string())
-        raise
-
-    feature_attr = sorted(feature_attr)
-
-    if not quiet:
-        sys.stderr.write("%d GFF lines processed.\n" % i)
-        sys.stderr.flush()
+    feature_scan = HTSeq.make_feature_genomicarrayofsets(
+        gff,
+        id_attribute,
+        feature_type=feature_type,
+        additional_attributes=additional_attributes,
+        stranded=stranded != 'no',
+        verbose=not quiet,
+        )
+    features = feature_scan['features']
+    attributes = feature_scan['attributes']
+    feature_attr = sorted(attributes.keys())
 
     if len(feature_attr) == 0:
         sys.stderr.write(

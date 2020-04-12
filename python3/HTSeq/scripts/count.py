@@ -344,24 +344,6 @@ def count_reads_in_features(
         ):
     '''Count reads in features, parallelizing by file'''
 
-    def parse_feature_query(feature_query):
-        if '"' not in feature_query:
-            raise ValueError('Invalid feature query')
-        if '==' not in feature_query:
-            raise ValueError('Invalid feature query')
-
-        idx_quote1 = feature_query.find('"')
-        idx_quote2 = feature_query.rfind('"')
-        attr_name = feature_query[idx_quote1+1: idx_quote2]
-
-        idx_equal = feature_query[:idx_quote1].find('==')
-        attr_cat = feature_query[:idx_equal].strip()
-
-        return {
-            'attr_cat': attr_cat,
-            'attr_name': attr_name,
-            }
-
     if samouts != []:
         if len(samouts) != len(sam_filenames):
             raise ValueError(
@@ -387,55 +369,20 @@ def count_reads_in_features(
             with pysam.AlignmentFile(sam_filename, 'r') as sf:
                 pass
 
-    if feature_query is not None:
-        feature_qdic = parse_feature_query(feature_query)
-    features = HTSeq.GenomicArrayOfSets("auto", stranded != "no")
+    # Prepare features
     gff = HTSeq.GFF_Reader(gff_filename)
-    attributes = {}
-    i = 0
-    try:
-        for f in gff:
-            if f.type == feature_type:
-                try:
-                    feature_id = f.attr[id_attribute]
-                except KeyError:
-                    raise ValueError(
-                            "Feature %s does not contain a '%s' attribute" %
-                            (f.name, id_attribute))
-                if stranded != "no" and f.iv.strand == ".":
-                    raise ValueError(
-                            "Feature %s at %s does not have strand information but you are "
-                            "running htseq-count in stranded mode. Use '--stranded=no'." %
-                            (f.name, f.iv))
-
-                if feature_query is not None:
-                    # Skip the features that don't even have the right attr
-                    if feature_qdic['attr_cat'] not in f.attr:
-                        continue
-                    # Skip the ones with an attribute with a different name
-                    # from the query (e.g. other genes)
-                    if f.attr[feature_qdic['attr_cat']] != feature_qdic['attr_name']:
-                        continue
-
-                features[f.iv] += feature_id
-                attributes[feature_id] = [
-                        f.attr[attr] if attr in f.attr else ''
-                        for attr in additional_attributes]
-            i += 1
-            if i % 100000 == 0 and not quiet:
-                sys.stderr.write("%d GFF lines processed.\n" % i)
-                sys.stderr.flush()
-    except:
-        sys.stderr.write(
-            "Error occured when processing GFF file (%s):\n" %
-            gff.get_line_number_string())
-        raise
-
+    feature_scan = HTSeq.make_feature_genomicarrayofsets(
+        gff,
+        id_attribute,
+        feature_type=feature_type,
+        feature_query=feature_query,
+        additional_attributes=additional_attributes,
+        stranded=stranded != 'no',
+        verbose=not quiet,
+        )
+    features = feature_scan['features']
+    attributes = feature_scan['attributes']
     feature_attr = sorted(attributes.keys())
-
-    if not quiet:
-        sys.stderr.write("%d GFF lines processed.\n" % i)
-        sys.stderr.flush()
 
     if len(feature_attr) == 0:
         sys.stderr.write(
