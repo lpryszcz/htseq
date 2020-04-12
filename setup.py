@@ -241,6 +241,8 @@ setup(name='HTSeq',
          'HTSeq.scripts.qa',
          'HTSeq.scripts.count',
          'HTSeq.scripts.count_with_barcodes',
+         'HTSeq.utils',
+         'HTSeq.features',
       ],
       scripts=[
          'scripts/htseq-qa',

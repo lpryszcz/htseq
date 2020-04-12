@@ -15,9 +15,7 @@ include python*/src/StepVector.py
 include python*/src/StepVector_wrap.cxx
 
 # Pure
-include python*/HTSeq/__init__.py
-include python*/HTSeq/_version.py
-include python*/HTSeq/_HTSeq_internal.py
+include python*/HTSeq/*.py
 
 # Script
 include python*/HTSeq/scripts/*
