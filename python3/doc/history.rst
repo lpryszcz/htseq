@@ -4,10 +4,10 @@
 Version history
 ***************
 
-Version 0.11.5
-==============
+Next version (current master)
+=============================
 
-Numerous bugfixes, doc improvements, and a few new features:
+New features:
 
 - Negative indices for ``StepVector`` (thanks to shouldsee for the original PR).
 - ``htseq-count-barcodes`` counts features in barcoded SAM/BAM files, e.g. 10X Genomics
@@ -23,6 +23,9 @@ Numerous bugfixes, doc improvements, and a few new features:
   will count an N-multimapper as 1/N for each feature, and ``random``, which will assign
   the alignment to a random one of its N-multimapped features. This feature was added by
   ewallace (thank you!).
+- ``htseq-qa`` got refactored and now accepts an options ``--primary-only`` which ignores
+  non-primary alignments in SAM/BAM files. This means that the final number of alignments
+  scored is equal to the number of reads even when multimapped reads are present.
 
 Testing improvements:
 
@@ -30,6 +33,7 @@ Testing improvements:
 - Testing Python 2.7, 3.6, 3.7, and 3.8 on OSX
 - Testing and deployment now uses conda environments
 
+Numerous bugfixes and doc improvements.
 
 Version 0.11.4
 ==============
