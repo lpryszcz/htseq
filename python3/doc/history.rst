@@ -7,6 +7,10 @@ Version history
 Next version (current master)
 =============================
 
+Version 0.12.0
+==============
+2020-04-15
+
 New features:
 
 - Negative indices for ``StepVector`` (thanks to shouldsee for the original PR).
