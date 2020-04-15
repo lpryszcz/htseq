@@ -18,9 +18,11 @@ elif [ $TRAVIS_OS_NAME == 'osx' ]; then
   fi
 
   echo "Installing deps for OSX"
+  # Prepare to exit upon failure
+  set -e
   CONDA_URL="https://repo.continuum.io/miniconda/Miniconda3-latest-MacOSX-x86_64.sh"
-  curl "${CONDA_URL}" -o "miniconda.sh"
-  bash "miniconda.sh" -b -p $HOME/miniconda
+  wget "${CONDA_URL}"
+  bash Miniconda3-latest-MacOSX-x86_64.sh -b -p $HOME/miniconda
   echo "$PATH"
   export PATH="$HOME/miniconda/bin:$PATH"
   source $HOME/miniconda/bin/activate

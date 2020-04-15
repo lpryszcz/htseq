@@ -49,6 +49,8 @@ if [ $DOCKER_IMAGE ]; then
 elif [ $TRAVIS_OS_NAME == 'osx' ]; then
   # OSX deployment
   echo "Deploying for OSX"
+  # Prepare to exit upon failure
+  set -e  
 
   # Only deploy on 10.14 to ensure 10.9+ compatibility and Mojave header/linker changes
   osx_version=$(sw_vers -productVersion)
