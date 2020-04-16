@@ -21,7 +21,7 @@ elif [ $TRAVIS_OS_NAME == 'osx' ]; then
   # Prepare to exit upon failure
   set -e
   CONDA_URL="https://repo.continuum.io/miniconda/Miniconda3-latest-MacOSX-x86_64.sh"
-  wget "${CONDA_URL}"
+  wget -nv "${CONDA_URL}"
   bash Miniconda3-latest-MacOSX-x86_64.sh -b -p $HOME/miniconda
   echo "$PATH"
   export PATH="$HOME/miniconda/bin:$PATH"
