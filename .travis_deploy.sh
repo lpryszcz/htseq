@@ -75,7 +75,7 @@ elif [ $TRAVIS_OS_NAME == 'osx' ]; then
 
   # Figure out architecture string
   PYVER=$(echo $CONDA_PY | sed 's/\.//')
-  PYARCH=cp${PYVER}-cp${PYVER}m
+  PYARCH=cp${PYVER}-cp${PYVER}
 
   echo "Contents of wheelhouse:"
   ls wheelhouse
