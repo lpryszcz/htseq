@@ -39,6 +39,8 @@ Testing improvements:
 
 Numerous bugfixes and doc improvements.
 
+This is the **last** version of ``HTSEQ`` supporting Python 2.7, as it is unmaintained since Jan 1st, 2020. ``HTSeq`` will support Python 3.5+ from the next version.
+
 Version 0.11.4
 ==============
 2020-03-30
