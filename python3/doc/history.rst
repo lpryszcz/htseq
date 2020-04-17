@@ -7,7 +7,7 @@ Version history
 Next version (current master)
 =============================
 
-Version 0.12.1
+Version 0.12.2
 ==============
 2020-04-15
 
