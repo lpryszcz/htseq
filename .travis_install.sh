@@ -19,7 +19,7 @@ else
 
     # Somehow we need this to execute the setup.py at all...
     pip install numpy
-    pip install $PYSAM_VERSION
+    pip install pysam
   fi
 
   # setuptools < 18.0 has issues with Cython as a dependency
@@ -28,17 +28,17 @@ else
       exit 1
   fi
   
-  if [ $TRAVIS_OS_NAME == 'linux' ]; then
-    sed -i "s|pysam>=0.9.0|$PYSAM_VERSION|" setup.py
-  elif [ $TRAVIS_OS_NAME == 'osx' ]; then
-    sed -i "" "s|pysam>=0.9.0|$PYSAM_VERSION|" setup.py
-  else
-    echo "OS not recognized: $TRAVIS_OS_NAME"
-    exit 1
-  fi
-  if [ $? != 0 ]; then
-      exit 1
-  fi
+  #if [ $TRAVIS_OS_NAME == 'linux' ]; then
+  #  sed -i "s|pysam>=0.9.0|$PYSAM_VERSION|" setup.py
+  #elif [ $TRAVIS_OS_NAME == 'osx' ]; then
+  #  sed -i "" "s|pysam>=0.9.0|$PYSAM_VERSION|" setup.py
+  #else
+  #  echo "OS not recognized: $TRAVIS_OS_NAME"
+  #  exit 1
+  #fi
+  #if [ $? != 0 ]; then
+  #    exit 1
+  #fi
   
   # old setuptools also has a bug for extras, but it still compiles
   pip install -v '.[htseq-qa]'

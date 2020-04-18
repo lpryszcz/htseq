@@ -44,11 +44,11 @@ try:
         setup_requires=[
               'Cython',
               'numpy',
-              'pysam>=0.9.0',
+              'pysam',
         ],
         install_requires=[
             'numpy',
-            'pysam>=0.9.0',
+            'pysam',
         ],
         extras_require={
             'htseq-qa': ['matplotlib>=1.4']
@@ -64,7 +64,7 @@ except ImportError:
         requires=[
               'Cython',
               'numpy',
-              'pysam>=0.9.0',
+              'pysam',
             ]
     )
 

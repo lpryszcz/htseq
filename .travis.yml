@@ -17,56 +17,56 @@ matrix:
      os: linux
      dist: trusty
      sudo: required
-   - env: CC=gcc PYSAM_VERSION='pysam'
+   - env: CC=gcc
      python: 2.7
      os: linux
      dist: trusty
      sudo: required
-   - env: CC=gcc PYSAM_VERSION='pysam'
+   - env: CC=gcc
      python: 3.5
      os: linux
      dist: trusty
      sudo: required
-   - env: CC=gcc PYSAM_VERSION='pysam'
+   - env: CC=gcc
      python: 3.6
      os: linux
      dist: trusty
      sudo: required
-   - env: CC=gcc PYSAM_VERSION='pysam'
+   - env: CC=gcc
      python: 3.7
      os: linux
      dist: bionic
      sudo: required
-   - env: CC=gcc PYSAM_VERSION='pysam'
+   - env: CC=gcc
      python: 3.8
      os: linux
      dist: bionic
      sudo: required
-   - env: CONDA_PY='2.7' CC=gcc PYSAM_VERSION='pysam>=0.13.0'
+   - env: CONDA_PY='2.7' CC=gcc
      language: generic
      os: osx
-   - env: CONDA_PY='3.6' CC=gcc PYSAM_VERSION='pysam>=0.13.0'
+   - env: CONDA_PY='3.6' CC=gcc
      language: generic
      os: osx
-   - env: CONDA_PY='3.7' CC=gcc PYSAM_VERSION='pysam>=0.13.0'
+   - env: CONDA_PY='3.7' CC=gcc
      language: generic
      os: osx
-   - env: CONDA_PY='3.8' CC=gcc PYSAM_VERSION='pysam>=0.13.0'
+   - env: CONDA_PY='3.8' CC=gcc
      language: generic
      os: osx
-   - env: CONDA_PY='2.7' CC=gcc PYSAM_VERSION='pysam>=0.13.0'
-     language: generic
-     os: osx
-     osx_image: xcode11
-   - env: CONDA_PY='3.6' CC=gcc PYSAM_VERSION='pysam>=0.13.0'
+   - env: CONDA_PY='2.7' CC=gcc
      language: generic
      os: osx
      osx_image: xcode11
-   - env: CONDA_PY='3.7' CC=gcc PYSAM_VERSION='pysam>=0.13.0'
+   - env: CONDA_PY='3.6' CC=gcc
      language: generic
      os: osx
      osx_image: xcode11
-   - env: CONDA_PY='3.8' CC=gcc PYSAM_VERSION='pysam>=0.13.0'
+   - env: CONDA_PY='3.7' CC=gcc
+     language: generic
+     os: osx
+     osx_image: xcode11
+   - env: CONDA_PY='3.8' CC=gcc
      language: generic
      os: osx
      osx_image: xcode11
