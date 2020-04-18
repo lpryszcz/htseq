@@ -39,7 +39,7 @@ more info.
 .. _Pysam: https://github.com/pysam-developers/pysam
 .. _samtools: http://www.htslib.org/
 .. _matplotlib: http://matplotlib.org/
-.. _Github: https://github.com/simon-anders/htseq
+.. _Github: https://github.com/htseq/htseq
 
 
 Installation on Linux

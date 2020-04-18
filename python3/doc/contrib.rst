@@ -14,9 +14,9 @@ The source code is on Github_. To check out the repository, use
   
 ::
   
-  git clone https://github.com/simon-anders/htseq.git 
+  git clone https://github.com/htseq/htseq.git 
    
-.. _Github: https://github.com/simon-anders/htseq
+.. _Github: https://github.com/htseq/htseq
 
 Languages
 ---------
