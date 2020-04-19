@@ -254,7 +254,7 @@ def make_feature_genomicarrayofsets(
         feature_type=None,
         feature_query=None,
         additional_attributes=None,
-        stranded='no',
+        stranded=False,
         verbose=False,
         ):
     """Organize a sequence of Feature objects into a GenomicArrayOfSets.
@@ -326,7 +326,7 @@ def make_feature_genomicarrayofsets(
                     raise ValueError(
                             "Feature %s does not contain a '%s' attribute" %
                             (f.name, id_attribute))
-                if stranded != "no" and f.iv.strand == ".":
+                if stranded and f.iv.strand == ".":
                     raise ValueError(
                             "Feature %s at %s does not have strand information but you are "
                             "using stranded mode. Try with unstrnded mode." %
