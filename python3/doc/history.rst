@@ -7,6 +7,15 @@ Version history
 Next version (current master)
 =============================
 
+Version 0.12.4
+==============
+2020-04-20
+
+Bugfix release:
+
+- use correct stranded information (thanks gaffneyk)
+
+
 Version 0.12.3
 ==============
 2020-04-18
