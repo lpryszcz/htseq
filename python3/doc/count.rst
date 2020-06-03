@@ -239,6 +239,14 @@ Options
    needed), annotating each line with its feature assignment (as an optional
    field with tag 'XF')
 
+.. cmdoption:: -n <n>, --nprocesses=<n>
+
+   Number of parallel CPU processes to use (default: 1).
+   This option is useful to process several input files at once.
+   Each file will use only 1 CPU. It is possible, of course, to
+   split a very large input SAM/BAM files into smaller chunks upstream
+   to make use of this option.
+
 .. cmdoption:: -p <samout_format>, --samout-format=<samout_format>
 
    Format to use with the --samout option, can be ``bam`` or ``sam``

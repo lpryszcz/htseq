@@ -593,7 +593,8 @@ def main():
 
     pa.add_argument(
             '--append-output', action='store_true', dest='output_append',
-            help='Append counts output. This option is useful if you have ' +
+            help='Append counts output to an existing file instead of ' +
+            'creating a new one. This option is useful if you have ' +
             'already creates a TSV/CSV/similar file with a header for your ' +
             'samples (with additional columns for the feature name and any ' +
             'additionl attributes) and want to fill in the rest of the file.'
@@ -602,7 +603,11 @@ def main():
     pa.add_argument(
             "-n", '--nprocesses', type=int, dest='nprocesses',
             default=1,
-            help="Number of parallel CPU processes to use (default: 1)."
+            help="Number of parallel CPU processes to use (default: 1). " +
+            "This option is useful to process several input files at once. " +
+            "Each file will use only 1 CPU. It is possible, of course, to " +
+            "split a very large input SAM/BAM files into smaller chunks " +
+            "upstream to make use of this option."
             )
 
     pa.add_argument(
