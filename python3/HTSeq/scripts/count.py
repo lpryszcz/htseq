@@ -344,6 +344,9 @@ def count_reads_in_features(
         ):
     '''Count reads in features, parallelizing by file'''
 
+    # Never use more CPUs than files
+    nprocesses = min(nprocesses, len(sam_filenames))
+
     if samouts != []:
         if len(samouts) != len(sam_filenames):
             raise ValueError(
