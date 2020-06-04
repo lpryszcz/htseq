@@ -4,6 +4,9 @@ import subprocess as sp
 tests = [
     {'call': [
         'htseq-count',
+        '--version']},
+    {'call': [
+        'htseq-count',
         'example_data/bamfile_no_qualities.sam',
         'example_data/bamfile_no_qualities.gtf',
         ],
@@ -120,7 +123,7 @@ tests = [
 
 # Run the tests
 for t in tests:
-    expected_fn = t['expected_fn']
+    expected_fn = t.get('expected_fn', None)
     call = t['call']
     # local testing
     #call = ['python', 'python3/HTSeq/scripts/count.py'] + call[1:]
@@ -134,6 +137,11 @@ for t in tests:
             output = f.read()
     else:
         output_fn = None
+
+    if expected_fn is None:
+        if '--version' in call:
+            print('version:', output)
+        continue
 
     with open(expected_fn, 'r') as f:
         expected = f.read()

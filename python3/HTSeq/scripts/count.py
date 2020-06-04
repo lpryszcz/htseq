@@ -474,6 +474,15 @@ def main():
         "Part of the 'HTSeq' framework, version %s." % HTSeq.__version__)
 
     pa.add_argument(
+            "--version", action="store_true",
+            help='Show software version and exit')
+    args, argv = pa.parse_known_args()
+    # Version is the only case where the BAM and GTF files are optional
+    if args.version:
+        print(HTSeq.__version__)
+        sys.exit()
+
+    pa.add_argument(
             "samfilenames", nargs='+', type=str,
             help="Path to the SAM/BAM files containing the mapped reads. " +
             "If '-' is selected, read from standard input")
@@ -629,15 +638,7 @@ def main():
             "-q", "--quiet", action="store_true", dest="quiet",
             help="Suppress progress report")  # and warnings" )
 
-    pa.add_argument(
-            "--version", action="store_true",
-            help='Show software version and exit')
-
     args = pa.parse_args()
-
-    if args.version:
-        print(HTSeq.__version__)
-        sys.exit()
 
     warnings.showwarning = my_showwarning
     try:

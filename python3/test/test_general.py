@@ -12,6 +12,12 @@ import HTSeq
 py_fdn = 'python'+str(sys.version_info[0])
 
 
+def test_version():
+    print('Test version')
+    print(HTSeq.__version__)
+    print('Test passed')
+
+
 def test_fasta_parser():
     print("Test Fasta parser")
     for seq in HTSeq.FastaReader('example_data/fastaExLong.fa'):
@@ -86,6 +92,7 @@ def test_bamfile_nosq():
 
 
 if len(sys.argv) == 1:
+    test_version()
     test_fasta_parser()
     test_fastq_parser()
     test_bam_inconsistent_mate()
