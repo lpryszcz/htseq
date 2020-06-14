@@ -22,6 +22,9 @@ if ! grep -q docker /proc/1/cgroup; then
   exec docker run --rm -v $(pwd):/io quay.io/pypa/manylinux2010_x86_64 /io/$0
 fi
 
+# Install zlib dev libraries for HTSlib when needed
+apt-get install -y zlib1g-dev
+
 # Python 2.6 is not supported
 rm -rf /opt/python/cp26*
 rm -rf /opt/python/cpython-2.6*
