@@ -126,7 +126,7 @@ for t in tests:
     expected_fn = t.get('expected_fn', None)
     call = t['call']
     # local testing
-    #call = ['python', 'python3/HTSeq/scripts/count.py'] + call[1:]
+    #call = ['python', 'HTSeq/scripts/count.py'] + call[1:]
 
     print(' '.join(call))
     output = sp.check_output(call).decode()

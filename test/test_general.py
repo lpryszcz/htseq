@@ -9,8 +9,6 @@ build_dir = "build/lib.%s-%s" % (distutils.util.get_platform(), sys.version[0:3]
 sys.path.insert(0, os.path.join(os.getcwd(), build_dir))
 import HTSeq
 
-py_fdn = 'python'+str(sys.version_info[0])
-
 
 def test_version():
     print('Test version')
