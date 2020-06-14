@@ -23,7 +23,8 @@ if ! grep -q docker /proc/1/cgroup; then
 fi
 
 # Install zlib dev libraries for HTSlib when needed
-apt-get install -y zlib1g-dev
+# manylinux2010 is CentOS 6
+yum install zlib-devel
 
 # Python 2.6 is not supported
 rm -rf /opt/python/cp26*
