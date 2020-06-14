@@ -1,0 +1,254 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Reference overview &#8212; HTSeq 0.7.2 documentation</title>
+    
+    <link rel="stylesheet" href="_static/classic.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    './',
+        VERSION:     '0.7.2',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true,
+        SOURCELINK_SUFFIX: '.txt'
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Sequences and FASTA/FASTQ files" href="sequences.html" />
+    <link rel="prev" title="Counting reads" href="counting.html" /> 
+  </head>
+  <body role="document">
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="sequences.html" title="Sequences and FASTA/FASTQ files"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="counting.html" title="Counting reads"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">HTSeq 0.7.2 documentation</a> &#187;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="reference-overview">
+<span id="refoverview"></span><h1>Reference overview<a class="headerlink" href="#reference-overview" title="Permalink to this headline">¶</a></h1>
+<p>This page offers a brief overview over all classes and functions offered by HTSeq.</p>
+<div class="section" id="parser-and-record-classes">
+<h2>Parser and record classes<a class="headerlink" href="#parser-and-record-classes" title="Permalink to this headline">¶</a></h2>
+<p>For all supported file formats, parser classes (called <code class="docutils literal"><span class="pre">Reader</span></code>) are provided. These classes all
+instatiated by giving a file name or an open file or stream and the function as iterator generators,
+i.e., the parser objects can be used, e.g., in a <code class="docutils literal"><span class="pre">for</span></code> loop to yield a sequence of objects, each
+desribing one record. The table gives the parse class and the record class yielded. For details,
+see the linked documentation</p>
+<p>For most formats, functionality for writing files of the format is provided. See the detailed documentation
+as these methods and classes have varying semantics.</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="16%" />
+<col width="14%" />
+<col width="16%" />
+<col width="27%" />
+<col width="27%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">File format</th>
+<th class="head">typical content</th>
+<th class="head">Parser class for reading</th>
+<th class="head">Record class yielded by parser</th>
+<th class="head">Method/class method for writing</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td>FASTA</td>
+<td>DNA sequences</td>
+<td><a class="reference internal" href="sequences.html#HTSeq.FastaReader" title="HTSeq.FastaReader"><code class="xref py py-class docutils literal"><span class="pre">FastaReader</span></code></a></td>
+<td><a class="reference internal" href="sequences.html#HTSeq.Sequence" title="HTSeq.Sequence"><code class="xref py py-class docutils literal"><span class="pre">Sequence</span></code></a></td>
+<td><code class="xref py py-meth docutils literal"><span class="pre">Sequence.write_to_fasta_file()</span></code></td>
+</tr>
+<tr class="row-odd"><td>FASTQ</td>
+<td>sequenced reads</td>
+<td><a class="reference internal" href="sequences.html#HTSeq.FastqReader" title="HTSeq.FastqReader"><code class="xref py py-class docutils literal"><span class="pre">FastqReader</span></code></a></td>
+<td><a class="reference internal" href="sequences.html#HTSeq.SequenceWithQualities" title="HTSeq.SequenceWithQualities"><code class="xref py py-class docutils literal"><span class="pre">SequenceWithQualities</span></code></a></td>
+<td><a class="reference internal" href="sequences.html#HTSeq.SequenceWithQuality.write_to_fastq_file" title="HTSeq.SequenceWithQuality.write_to_fastq_file"><code class="xref py py-meth docutils literal"><span class="pre">SequenceWithQuality.write_to_fastq_file()</span></code></a></td>
+</tr>
+<tr class="row-even"><td>GFF (incl. GFF3 and GTF)</td>
+<td>genomic annotation</td>
+<td><a class="reference internal" href="features.html#HTSeq.GFF_Reader" title="HTSeq.GFF_Reader"><code class="xref py py-class docutils literal"><span class="pre">GFF_Reader</span></code></a></td>
+<td><a class="reference internal" href="features.html#HTSeq.GenomicFeature" title="HTSeq.GenomicFeature"><code class="xref py py-class docutils literal"><span class="pre">GenomicFeature</span></code></a></td>
+<td><a class="reference internal" href="features.html#HTSeq.GenomicFeature.get_gff_line" title="HTSeq.GenomicFeature.get_gff_line"><code class="xref py py-meth docutils literal"><span class="pre">GenomicFeature.get_gff_line()</span></code></a></td>
+</tr>
+<tr class="row-odd"><td>BED</td>
+<td>score data or annotation</td>
+<td><a class="reference internal" href="otherparsers.html#HTSeq.BED_Reader" title="HTSeq.BED_Reader"><code class="xref py py-class docutils literal"><span class="pre">BED_Reader</span></code></a></td>
+<td><a class="reference internal" href="features.html#HTSeq.GenomicFeature" title="HTSeq.GenomicFeature"><code class="xref py py-class docutils literal"><span class="pre">GenomicFeature</span></code></a></td>
+<td>&#160;</td>
+</tr>
+<tr class="row-even"><td>Wiggle (incl. BedGraph)</td>
+<td>score data on a genome</td>
+<td><a class="reference internal" href="otherparsers.html#HTSeq.WiggleReader" title="HTSeq.WiggleReader"><code class="xref py py-class docutils literal"><span class="pre">WiggleReader</span></code></a></td>
+<td>pair: <code class="docutils literal"><span class="pre">(</span></code><a class="reference internal" href="genomic.html#HTSeq.GenomicInterval" title="HTSeq.GenomicInterval"><code class="xref py py-class docutils literal"><span class="pre">GenomicInterval</span></code></a>, <code class="docutils literal"><span class="pre">float)</span></code></td>
+<td><a class="reference internal" href="genomic.html#HTSeq.GenomicArray.write_bedgraph_file" title="HTSeq.GenomicArray.write_bedgraph_file"><code class="xref py py-meth docutils literal"><span class="pre">GenomicArray.write_bedgraph_file()</span></code></a></td>
+</tr>
+<tr class="row-odd"><td>SAM</td>
+<td>aligned reads</td>
+<td><a class="reference internal" href="alignments.html#HTSeq.SAM_Reader" title="HTSeq.SAM_Reader"><code class="xref py py-class docutils literal"><span class="pre">SAM_Reader</span></code></a></td>
+<td><a class="reference internal" href="alignments.html#HTSeq.SAM_Alignment" title="HTSeq.SAM_Alignment"><code class="xref py py-class docutils literal"><span class="pre">SAM_Alignment</span></code></a></td>
+<td><a class="reference internal" href="alignments.html#HTSeq.SAM_Alignment.get_sam_line" title="HTSeq.SAM_Alignment.get_sam_line"><code class="xref py py-meth docutils literal"><span class="pre">SAM_Alignment.get_sam_line()</span></code></a></td>
+</tr>
+<tr class="row-even"><td>BAM</td>
+<td>aligned reads</td>
+<td><a class="reference internal" href="alignments.html#HTSeq.BAM_Reader" title="HTSeq.BAM_Reader"><code class="xref py py-class docutils literal"><span class="pre">BAM_Reader</span></code></a></td>
+<td><a class="reference internal" href="alignments.html#HTSeq.SAM_Alignment" title="HTSeq.SAM_Alignment"><code class="xref py py-class docutils literal"><span class="pre">SAM_Alignment</span></code></a></td>
+<td><code class="xref py py-class docutils literal"><span class="pre">BAM_Writer</span></code></td>
+</tr>
+<tr class="row-odd"><td>VCF</td>
+<td>variant calls</td>
+<td><a class="reference internal" href="otherparsers.html#HTSeq.VCF_Reader" title="HTSeq.VCF_Reader"><code class="xref py py-class docutils literal"><span class="pre">VCF_Reader</span></code></a></td>
+<td><a class="reference internal" href="otherparsers.html#HTSeq.VariantCall" title="HTSeq.VariantCall"><code class="xref py py-class docutils literal"><span class="pre">VariantCall</span></code></a></td>
+<td>&#160;</td>
+</tr>
+<tr class="row-even"><td>Bowtie (legacy format)</td>
+<td>aligned reads</td>
+<td><a class="reference internal" href="alignments.html#HTSeq.BowtieReader" title="HTSeq.BowtieReader"><code class="xref py py-class docutils literal"><span class="pre">BowtieReader</span></code></a></td>
+<td><a class="reference internal" href="alignments.html#HTSeq.BowtieAlignment" title="HTSeq.BowtieAlignment"><code class="xref py py-class docutils literal"><span class="pre">BowtieAlignment</span></code></a></td>
+<td>&#160;</td>
+</tr>
+<tr class="row-odd"><td>SolexaExport (legacy format)</td>
+<td>aligned reads</td>
+<td><a class="reference internal" href="alignments.html#HTSeq.SolexaExportReader" title="HTSeq.SolexaExportReader"><code class="xref py py-class docutils literal"><span class="pre">SolexaExportReader</span></code></a></td>
+<td><a class="reference internal" href="alignments.html#HTSeq.SolexaExportAlignment" title="HTSeq.SolexaExportAlignment"><code class="xref py py-class docutils literal"><span class="pre">SolexaExportAlignment</span></code></a></td>
+<td>&#160;</td>
+</tr>
+</tbody>
+</table>
+<p>Most parser classes are sub-classes of class <a class="reference internal" href="misc.html#HTSeq.FileOrSequence" title="HTSeq.FileOrSequence"><code class="xref py py-class docutils literal"><span class="pre">FileOrSequence</span></code></a>, which users will, however, rarely use directly.</p>
+</div>
+<div class="section" id="specifying-genomic-positions-and-intervals">
+<h2>Specifying genomic positions and intervals<a class="headerlink" href="#specifying-genomic-positions-and-intervals" title="Permalink to this headline">¶</a></h2>
+<p>The class <a class="reference internal" href="genomic.html#HTSeq.GenomicInterval" title="HTSeq.GenomicInterval"><code class="xref py py-class docutils literal"><span class="pre">GenomicInterval</span></code></a> specifies an interval on a chromosome (or contig or the like). It is defined by specifying the chromosome (or contig) name,
+the start and the end and the strand. Convenience methods are offered for different ways of accessing this information, and for tetsing
+for overlap between intervals. A <a class="reference internal" href="genomic.html#HTSeq.GenomicPosition" title="HTSeq.GenomicPosition"><code class="xref py py-class docutils literal"><span class="pre">GenomicPosition</span></code></a>, technically a GenomicInterval of length 1, refers to a single nucleotide or base-pair
+position.</p>
+<p>Objects of these classes are used internally wherever intervals or positions are represented, especially in record classes and as
+index keys to genomic array.</p>
+<p>See page <a class="reference internal" href="genomic.html#genomic"><span class="std std-ref">Genomic intervals and genomic arrays</span></a> for details.</p>
+</div>
+<div class="section" id="genomic-arrays">
+<h2>Genomic arrays<a class="headerlink" href="#genomic-arrays" title="Permalink to this headline">¶</a></h2>
+<p>The classes <a class="reference internal" href="genomic.html#HTSeq.GenomicArray" title="HTSeq.GenomicArray"><code class="xref py py-class docutils literal"><span class="pre">GenomicArray</span></code></a> and <a class="reference internal" href="genomic.html#HTSeq.GenomicArrayOfSets" title="HTSeq.GenomicArrayOfSets"><code class="xref py py-class docutils literal"><span class="pre">GenomicArrayOfSets</span></code></a> are container classes to store data associated with genomic positions or intervals.</p>
+<p>See page <a class="reference internal" href="genomic.html#genomic"><span class="std std-ref">Genomic intervals and genomic arrays</span></a> for details.</p>
+</div>
+<div class="section" id="special-features-for-sam-bam-files">
+<h2>Special features for SAM/BAM files<a class="headerlink" href="#special-features-for-sam-bam-files" title="Permalink to this headline">¶</a></h2>
+<p>The class <a class="reference internal" href="alignments.html#HTSeq.CigarOperation" title="HTSeq.CigarOperation"><code class="xref py py-class docutils literal"><span class="pre">CigarOperation</span></code></a> offers a convenient way to handle the information encoded in the CIGAR field of SAM files.</p>
+<p>The functions <a class="reference internal" href="alignments.html#HTSeq.pair_SAM_alignments" title="HTSeq.pair_SAM_alignments"><code class="xref py py-func docutils literal"><span class="pre">pair_SAM_alignments()</span></code></a> and <a class="reference internal" href="alignments.html#HTSeq.pair_SAM_alignments_with_buffer" title="HTSeq.pair_SAM_alignments_with_buffer"><code class="xref py py-func docutils literal"><span class="pre">pair_SAM_alignments_with_buffer()</span></code></a> help to <code class="docutils literal"><span class="pre">pair</span> <span class="pre">up</span></code> the records
+in a SAM file that describe a pair of alignments for mated reads from the same DNA fragment.</p>
+<p>Similarly, the function <a class="reference internal" href="alignments.html#HTSeq.bundle_multiple_alignments" title="HTSeq.bundle_multiple_alignments"><code class="xref py py-func docutils literal"><span class="pre">bundle_multiple_alignments()</span></code></a> bundles multiple alignment record pertaining to the same read or read pair.</p>
+<p>See page <a class="reference internal" href="alignments.html#alignments"><span class="std std-ref">Read alignments</span></a> for details.</p>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Reference overview</a><ul>
+<li><a class="reference internal" href="#parser-and-record-classes">Parser and record classes</a></li>
+<li><a class="reference internal" href="#specifying-genomic-positions-and-intervals">Specifying genomic positions and intervals</a></li>
+<li><a class="reference internal" href="#genomic-arrays">Genomic arrays</a></li>
+<li><a class="reference internal" href="#special-features-for-sam-bam-files">Special features for SAM/BAM files</a></li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="counting.html"
+                        title="previous chapter">Counting reads</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="sequences.html"
+                        title="next chapter">Sequences and FASTA/FASTQ files</a></p>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="_sources/refoverview.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <div><input type="text" name="q" /></div>
+      <div><input type="submit" value="Go" /></div>
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="sequences.html" title="Sequences and FASTA/FASTQ files"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="counting.html" title="Counting reads"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">HTSeq 0.7.2 documentation</a> &#187;</li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2010, Simon Anders.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.5.5.
+    </div>
+  </body>
+
+<!-- Start of StatCounter Code -->
+<script type="text/javascript">
+var sc_project=5680199; 
+var sc_invisible=1; 
+var sc_partition=63; 
+var sc_click_stat=1; 
+var sc_security="6e579550"; 
+</script>
+
+<script type="text/javascript"
+src="http://www.statcounter.com/counter/counter.js"></script><noscript><div
+class="statcounter"><a title="counter for iweb"
+href="http://www.statcounter.com/iweb/" target="_blank"><img
+class="statcounter"
+src="http://c.statcounter.com/5680199/0/6e579550/1/"
+alt="counter for iweb" ></a></div></noscript>
+<!-- End of StatCounter Code -->
+</html>

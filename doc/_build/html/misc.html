@@ -1,0 +1,185 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Miscellaneous &#8212; HTSeq 0.7.2 documentation</title>
+    
+    <link rel="stylesheet" href="_static/classic.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    './',
+        VERSION:     '0.7.2',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true,
+        SOURCELINK_SUFFIX: '.txt'
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Quality Assessment with htseq-qa" href="qa.html" />
+    <link rel="prev" title="Other parsers" href="otherparsers.html" /> 
+  </head>
+  <body role="document">
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="qa.html" title="Quality Assessment with htseq-qa"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="otherparsers.html" title="Other parsers"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">HTSeq 0.7.2 documentation</a> &#187;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="miscellaneous">
+<span id="misc"></span><h1>Miscellaneous<a class="headerlink" href="#miscellaneous" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="fileorsequence">
+<h2><code class="docutils literal"><span class="pre">FileOrSequence</span></code><a class="headerlink" href="#fileorsequence" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="HTSeq.FileOrSequence">
+<em class="property">class </em><code class="descclassname">HTSeq.</code><code class="descname">FileOrSequence</code><span class="sig-paren">(</span><em>filename_or_sequence</em><span class="sig-paren">)</span><a class="headerlink" href="#HTSeq.FileOrSequence" title="Permalink to this definition">¶</a></dt>
+<dd><p>This class is a a canvenience wrapper around a file.</p>
+<p>The construcutor takes one argument, which may either be a string,
+which is interpreted as a file name (possibly with path), or a
+connection, by which we mean a text file opened for reading, or
+any other object that can provide an iterator over strings
+(lines of the file).</p>
+<p>The advantage of passing a file name instead of an already opened file
+is that if an iterator is requested several times, the file will be
+re-opened each time. If the file is already open, its lines can be read
+only once, and then, the iterator stays exhausted.</p>
+<p>Furthermore, if a file name is passed that end in &#8221;.gz&#8221; or &#8221;.gzip&#8221;
+(case insensitive), it is transparently gunzipped.</p>
+<dl class="attribute">
+<dt id="HTSeq.FileOrSequence.fos">
+<code class="descname">fos</code><a class="headerlink" href="#HTSeq.FileOrSequence.fos" title="Permalink to this definition">¶</a></dt>
+<dd><p>The argument passed to the constructor, i.e., a filename or a sequence</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="HTSeq.FileOrSequence.line_no">
+<code class="descname">line_no</code><a class="headerlink" href="#HTSeq.FileOrSequence.line_no" title="Permalink to this definition">¶</a></dt>
+<dd><p>The line number (1-based) of the most recently read line. Initially None.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="HTSeq.FileOrSequence.get_line_number_string">
+<code class="descname">get_line_number_string</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#HTSeq.FileOrSequence.get_line_number_string" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns a string describing the position in the file. Useful for error messages.</p>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="version">
+<h2>Version<a class="headerlink" href="#version" title="Permalink to this headline">¶</a></h2>
+<dl class="attribute">
+<dt id="HTSeq.__version__">
+<code class="descclassname">HTSeq.</code><code class="descname">__version__</code><a class="headerlink" href="#HTSeq.__version__" title="Permalink to this definition">¶</a></dt>
+<dd><p>a string containing the current version</p>
+</dd></dl>
+
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Miscellaneous</a><ul>
+<li><a class="reference internal" href="#fileorsequence"><code class="docutils literal"><span class="pre">FileOrSequence</span></code></a></li>
+<li><a class="reference internal" href="#version">Version</a></li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="otherparsers.html"
+                        title="previous chapter">Other parsers</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="qa.html"
+                        title="next chapter">Quality Assessment with <code class="docutils literal"><span class="pre">htseq-qa</span></code></a></p>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="_sources/misc.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <div><input type="text" name="q" /></div>
+      <div><input type="submit" value="Go" /></div>
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="qa.html" title="Quality Assessment with htseq-qa"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="otherparsers.html" title="Other parsers"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">HTSeq 0.7.2 documentation</a> &#187;</li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2010, Simon Anders.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.5.5.
+    </div>
+  </body>
+
+<!-- Start of StatCounter Code -->
+<script type="text/javascript">
+var sc_project=5680199; 
+var sc_invisible=1; 
+var sc_partition=63; 
+var sc_click_stat=1; 
+var sc_security="6e579550"; 
+</script>
+
+<script type="text/javascript"
+src="http://www.statcounter.com/counter/counter.js"></script><noscript><div
+class="statcounter"><a title="counter for iweb"
+href="http://www.statcounter.com/iweb/" target="_blank"><img
+class="statcounter"
+src="http://c.statcounter.com/5680199/0/6e579550/1/"
+alt="counter for iweb" ></a></div></noscript>
+<!-- End of StatCounter Code -->
+</html>

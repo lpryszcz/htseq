@@ -1,0 +1,711 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>A tour through HTSeq &#8212; HTSeq 0.7.2 documentation</title>
+    
+    <link rel="stylesheet" href="_static/classic.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    './',
+        VERSION:     '0.7.2',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true,
+        SOURCELINK_SUFFIX: '.txt'
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="A detailed use case: TSS plots" href="tss.html" />
+    <link rel="prev" title="Prequisites and installation" href="install.html" /> 
+  </head>
+  <body role="document">
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="tss.html" title="A detailed use case: TSS plots"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="install.html" title="Prequisites and installation"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">HTSeq 0.7.2 documentation</a> &#187;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="a-tour-through-htseq">
+<span id="tour"></span><h1>A tour through HTSeq<a class="headerlink" href="#a-tour-through-htseq" title="Permalink to this headline">¶</a></h1>
+<p>In the analysis of high-throughput sequencing data, it is often necessary to
+write custom scripts to form the &#8220;glue&#8221; between tools or to perform specific
+analysis tasks. HTSeq is a Python package to facilitate this.</p>
+<p>This tour demonstrates the
+functionality of HTSeq by performing a number of common analysis tasks:</p>
+<ul class="simple">
+<li>Getting statistical summaries about the base-call quality scores to
+study the data quality.</li>
+<li>Calculating a coverage vector and exporting it for visualization in
+a genome browser.</li>
+<li>Reading in annotation data from a GFF file.</li>
+<li>Assigning aligned reads from an RNA-Seq experiments to exons and
+genes.</li>
+</ul>
+<p>The following description assumes that the reader is familiar with Python and with HTS
+data. (For a good and not too lengthy introduction to Python, read the <cite>Python Tutorial</cite>
+on the Python web site.)</p>
+<p>If you want to try out the examples on your own system, you can download the
+example files used from here: <a class="reference external" href="http://www-huber.embl.de/users/anders/HTSeq/HTSeq_example_data.tgz">HTSeq_example_data.tgz</a></p>
+<div class="section" id="reading-in-reads">
+<h2>Reading in reads<a class="headerlink" href="#reading-in-reads" title="Permalink to this headline">¶</a></h2>
+<p>In the example data, a FASTQ file is provided with example reads from a yeast RNA-Seq
+experiment. The file <code class="docutils literal"><span class="pre">yeast_RNASeq_excerpt_sequence.txt</span></code> is an excerpt of the
+<code class="docutils literal"><span class="pre">_sequence.txt</span></code> file produced by the SolexaPipeline software. We can access it from
+HTSeq with</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">HTSeq</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">fastq_file</span> <span class="o">=</span> <span class="n">HTSeq</span><span class="o">.</span><span class="n">FastqReader</span><span class="p">(</span> <span class="s2">&quot;yeast_RNASeq_excerpt_sequence.txt&quot;</span><span class="p">,</span> <span class="s2">&quot;solexa&quot;</span> <span class="p">)</span>
+</pre></div>
+</div>
+<p>The first argument is the file name. The optional second argument indicates
+the encoding for the quality string. If you omit, the default (&#8220;phred&#8221;) is used. The
+example data, however, is from an older experiment, and hence encoded in the
+offset-64 format that the Solexa/Illumina software pipeline used before
+version 1.8. (A third option is &#8220;solexa_old&#8221;, for data from the Solexa pipeline
+prior to version 1.3.)</p>
+<p>The variable <code class="docutils literal"><span class="pre">fastq_file</span></code> is now an object of class <a class="reference internal" href="sequences.html#HTSeq.FastqReader" title="HTSeq.FastqReader"><code class="xref py py-class docutils literal"><span class="pre">FastqReader</span></code></a>, which
+refers to the file:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">fastq_file</span>
+<span class="go">&lt;FastqReader object, connected to file name &#39;yeast_RNASeq_excerpt_sequence.txt&#39;&gt;</span>
+</pre></div>
+</div>
+<p>When used in a <code class="docutils literal"><span class="pre">for</span></code> loop, it generates an iterator of objects representing the
+reads. Here, we use the <code class="docutils literal"><span class="pre">islice</span></code> function from <code class="docutils literal"><span class="pre">itertools</span></code> to cut after 10
+reads.</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">itertools</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">for</span> <span class="n">read</span> <span class="ow">in</span> <span class="n">itertools</span><span class="o">.</span><span class="n">islice</span><span class="p">(</span> <span class="n">fastq_file</span><span class="p">,</span> <span class="mi">10</span> <span class="p">):</span>
+<span class="gp">... </span>   <span class="nb">print</span><span class="p">(</span><span class="n">read</span><span class="p">)</span>
+<span class="go">CTTACGTTTTCTGTATCAATACTCGATTTATCATCT</span>
+<span class="go">AATTGGTTTCCCCGCCGAGACCGTACACTACCAGCC</span>
+<span class="go">TTTGGACTTGATTGTTGACGCTATCAAGGCTGCTGG</span>
+<span class="go">ATCTCATATACAATGTCTATCCCAGAAACTCAAAAA</span>
+<span class="go">AAAGTTCGAATTAGGCCGTCAACCAGCCAACACCAA</span>
+<span class="go">GGAGCAAATTGCCAACAAGGAAAGGCAATATAACGA</span>
+<span class="go">AGACAAGCTGCTGCTTCTGTTGTTCCATCTGCTTCC</span>
+<span class="go">AAGAGGTTTGAGATCTTTGACCACCGTCTGGGCTGA</span>
+<span class="go">GTCATCACTATCAGAGAAGGTAGAACATTGGAAGAT</span>
+<span class="go">ACTTTTAAAGATTGGCCAAGAATTGGGGATTGAAGA</span>
+</pre></div>
+</div>
+<p>Of course, there is more to a read than its sequence. The variable <code class="docutils literal"><span class="pre">read</span></code> still
+contains the tenth read, and we can examine it:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">read</span>
+<span class="go">&lt;SequenceWithQualities object &#39;HWI-EAS225:1:10:1284:142#0/1&#39;&gt;</span>
+</pre></div>
+</div>
+<p>A <a class="reference internal" href="sequences.html#HTSeq.Sequence" title="HTSeq.Sequence"><code class="xref py py-class docutils literal"><span class="pre">Sequence</span></code></a> object has two slots, called <a class="reference internal" href="sequences.html#HTSeq.Sequence.seq" title="HTSeq.Sequence.seq"><code class="xref py py-attr docutils literal"><span class="pre">seq</span></code></a> and
+<a class="reference internal" href="sequences.html#HTSeq.Sequence.name" title="HTSeq.Sequence.name"><code class="xref py py-attr docutils literal"><span class="pre">name</span></code></a>. This object is a <a class="reference internal" href="sequences.html#HTSeq.SequenceWithQualities" title="HTSeq.SequenceWithQualities"><code class="xref py py-class docutils literal"><span class="pre">SequenceWithQualities</span></code></a>,
+and it also has a slot <code class="xref py py-attr docutils literal"><span class="pre">qual</span></code>:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">read</span><span class="o">.</span><span class="n">name</span>
+<span class="go">&#39;HWI-EAS225:1:10:1284:142#0/1&#39;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">read</span><span class="o">.</span><span class="n">seq</span>
+<span class="go">b&#39;ACTTTTAAAGATTGGCCAAGAATTGGGGATTGAAGA&#39;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">read</span><span class="o">.</span><span class="n">qual</span>
+<span class="go">array([33, 33, 33, 33, 33, 33, 29, 27, 29, 32, 29, 30, 30, 21, 22, 25, 25,</span>
+<span class="go">       25, 23, 28, 24, 24, 29, 29, 29, 25, 28, 24, 24, 26, 25, 25, 24, 24,</span>
+<span class="go">       24, 24], dtype=uint8)</span>
+</pre></div>
+</div>
+<p>The values in the quality array are, for each base in the sequence, the Phred
+score for the correctness of the base.</p>
+<p>As a first simple example for the use of HTSeq, we now calculate the average
+quality score for each position in the reads by adding up the <code class="docutils literal"><span class="pre">qual</span></code> arrays
+from all reads and the dividing by the number of reads. We sum everything up in
+the variable <code class="docutils literal"><span class="pre">qualsum</span></code>, a <code class="docutils literal"><span class="pre">numpy</span></code> array of integers:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">numpy</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">len</span><span class="p">(</span> <span class="n">read</span> <span class="p">)</span>
+<span class="go">36</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">qualsum</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span> <span class="nb">len</span><span class="p">(</span><span class="n">read</span><span class="p">),</span> <span class="n">numpy</span><span class="o">.</span><span class="n">int</span> <span class="p">)</span>
+</pre></div>
+</div>
+<p>Then we loop through the fastq file, adding up the quality scores and
+counting the reads:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">nreads</span> <span class="o">=</span> <span class="mi">0</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">for</span> <span class="n">read</span> <span class="ow">in</span> <span class="n">fastq_file</span><span class="p">:</span>
+<span class="gp">... </span>   <span class="n">qualsum</span> <span class="o">+=</span> <span class="n">read</span><span class="o">.</span><span class="n">qual</span>
+<span class="gp">... </span>   <span class="n">nreads</span> <span class="o">+=</span> <span class="mi">1</span>
+</pre></div>
+</div>
+<p>The average qualities are hence:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">qualsum</span> <span class="o">/</span> <span class="nb">float</span><span class="p">(</span><span class="n">nreads</span><span class="p">)</span>
+<span class="go">array([ 31.56838274,  30.08288332,  29.4375375 ,  29.00432017,</span>
+<span class="go">        28.55290212,  28.26825073,  28.46681867,  27.59082363,</span>
+<span class="go">        27.34097364,  27.57330293,  27.11784471,  27.19432777,</span>
+<span class="go">        26.84023361,  26.76267051,  26.44885795,  26.79135165,</span>
+<span class="go">        26.42901716,  26.49849994,  26.13604544,  25.95823833,</span>
+<span class="go">        25.54922197,  26.20460818,  25.42333693,  25.72298892,</span>
+<span class="go">        25.04164167,  24.75151006,  24.48561942,  24.27061082,</span>
+<span class="go">        24.10720429,  23.68026721,  23.52034081,  23.49437978,</span>
+<span class="go">        23.11076443,  22.5576223 ,  22.43549742,  22.62354494])</span>
+</pre></div>
+</div>
+<p>If you have <a class="reference external" href="http://matplotlib.sourceforge.net/">matplotlib</a> installed, you can plot these numbers.</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">matplotlib</span> <span class="k">import</span> <span class="n">pyplot</span>      
+<span class="gp">&gt;&gt;&gt; </span><span class="n">pyplot</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span> <span class="n">qualsum</span> <span class="o">/</span> <span class="n">nreads</span> <span class="p">)</span>    
+<span class="gp">&gt;&gt;&gt; </span><span class="n">pyplot</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>                      
+</pre></div>
+</div>
+<img alt="_images/qualplot.png" src="_images/qualplot.png" />
+<p>This is a very simple way of looking at the quality scores. For more sophisticated
+quality-control techniques, see the Chapter <a class="reference internal" href="qa.html#qa"><span class="std std-ref">Quality Assessment with htseq-qa</span></a>.</p>
+<p>Instead of a FASTQ file, you might have a SAM file, with the reads already aligned.
+The SAM_Reader class can read such data.</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">alignment_file</span> <span class="o">=</span> <span class="n">HTSeq</span><span class="o">.</span><span class="n">SAM_Reader</span><span class="p">(</span> <span class="s2">&quot;yeast_RNASeq_excerpt.sam&quot;</span> <span class="p">)</span>
+</pre></div>
+</div>
+<p>If we are only interested in the qualities, we can rewrite the commands from above
+to use the <code class="docutils literal"><span class="pre">alignment_file</span></code>:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">nreads</span> <span class="o">=</span> <span class="mi">0</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">for</span> <span class="n">aln</span> <span class="ow">in</span> <span class="n">alignment_file</span><span class="p">:</span>
+<span class="gp">... </span>   <span class="n">qualsum</span> <span class="o">+=</span> <span class="n">aln</span><span class="o">.</span><span class="n">read</span><span class="o">.</span><span class="n">qual</span>
+<span class="gp">... </span>   <span class="n">nreads</span> <span class="o">+=</span> <span class="mi">1</span>
+</pre></div>
+</div>
+<p>We have simple replaced the <a class="reference internal" href="sequences.html#HTSeq.FastqReader" title="HTSeq.FastqReader"><code class="xref py py-class docutils literal"><span class="pre">FastqReader</span></code></a> with a <a class="reference internal" href="alignments.html#HTSeq.SolexaExportReader" title="HTSeq.SolexaExportReader"><code class="xref py py-class docutils literal"><span class="pre">SolexaExportReader</span></code></a>, which
+iterates, when used in a <code class="docutils literal"><span class="pre">for</span></code> loop, over <a class="reference internal" href="alignments.html#HTSeq.SolexaExportAlignment" title="HTSeq.SolexaExportAlignment"><code class="xref py py-class docutils literal"><span class="pre">SolexaExportAlignment</span></code></a> objects. Each of
+these contain a field <a class="reference internal" href="alignments.html#HTSeq.Alignment.read" title="HTSeq.Alignment.read"><code class="xref py py-attr docutils literal"><span class="pre">read</span></code></a> that contains the <a class="reference internal" href="sequences.html#HTSeq.SequenceWithQualities" title="HTSeq.SequenceWithQualities"><code class="xref py py-class docutils literal"><span class="pre">SequenceWithQualities</span></code></a>
+object, as before. There are more parses, for example the <a class="reference internal" href="alignments.html#HTSeq.SAM_Reader" title="HTSeq.SAM_Reader"><code class="xref py py-class docutils literal"><span class="pre">SAM_Reader</span></code></a> that can read SAM
+files, and generates <a class="reference internal" href="alignments.html#HTSeq.SAM_Alignment" title="HTSeq.SAM_Alignment"><code class="xref py py-class docutils literal"><span class="pre">SAM_Alignment</span></code></a> objects. As all <a class="reference internal" href="alignments.html#HTSeq.Alignment" title="HTSeq.Alignment"><code class="xref py py-class docutils literal"><span class="pre">Alignment</span></code></a> objects
+contain a <a class="reference internal" href="alignments.html#HTSeq.Alignment.read" title="HTSeq.Alignment.read"><code class="xref py py-attr docutils literal"><span class="pre">read</span></code></a> slot with the <a class="reference internal" href="sequences.html#HTSeq.SequenceWithQualities" title="HTSeq.SequenceWithQualities"><code class="xref py py-class docutils literal"><span class="pre">SequenceWithQualities</span></code></a>, we can use the same
+code with any alignment file for which a parser has been provided, and all we have
+to change is the name of the reader class in the first line.</p>
+<p>The other fields that all <a class="reference internal" href="alignments.html#HTSeq.Alignment" title="HTSeq.Alignment"><code class="xref py py-class docutils literal"><span class="pre">Alignment</span></code></a> objects contain, is a Boolean called
+<a class="reference internal" href="alignments.html#HTSeq.Alignment.aligned" title="HTSeq.Alignment.aligned"><code class="xref py py-attr docutils literal"><span class="pre">aligned</span></code></a> that tells us whether the read has been aligned
+at all, and a field called <a class="reference internal" href="alignments.html#HTSeq.Alignment.iv" title="HTSeq.Alignment.iv"><code class="xref py py-attr docutils literal"><span class="pre">iv</span></code></a>
+(for &#8220;interval&#8221;) that shows where the read was aligned to. We use this information in
+the next section.</p>
+</div>
+<div class="section" id="reading-and-writing-bam-files">
+<h2>Reading and writing BAM files<a class="headerlink" href="#reading-and-writing-bam-files" title="Permalink to this headline">¶</a></h2>
+<p>HTSeq exposes the samtools API trough pysam, enabling you to read and write BAM files.
+A simple example of the usage is given here:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">bam_reader</span> <span class="o">=</span> <span class="n">HTSeq</span><span class="o">.</span><span class="n">BAM_Reader</span><span class="p">(</span> <span class="s2">&quot;SRR001432_head_sorted.bam&quot;</span> <span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">for</span> <span class="n">a</span> <span class="ow">in</span> <span class="n">itertools</span><span class="o">.</span><span class="n">islice</span><span class="p">(</span> <span class="n">bam_reader</span><span class="p">,</span> <span class="mi">5</span> <span class="p">):</span>  <span class="c1"># printing first 5 reads</span>
+<span class="gp">... </span>   <span class="nb">print</span><span class="p">(</span><span class="n">a</span><span class="p">)</span>
+<span class="go">&lt;SAM_Alignment object: Read &#39;SRR001432.165255 USI-EAS21_0008_3445:8:4:718:439 length=25&#39; aligned to 1:[29267,29292)/-&gt;</span>
+<span class="go">&lt;SAM_Alignment object: Read &#39;SRR001432.238475 USI-EAS21_0008_3445:8:6:888:446 length=25&#39; aligned to 1:[62943,62968)/-&gt;</span>
+<span class="go">&lt;SAM_Alignment object: Read &#39;SRR001432.116075 USI-EAS21_0008_3445:8:3:657:64 length=25&#39; aligned to 1:[86980,87005)/-&gt;</span>
+<span class="go">&lt;SAM_Alignment object: Read &#39;SRR001432.159692 USI-EAS21_0008_3445:8:4:618:821 length=25&#39; aligned to 1:[91360,91385)/-&gt;</span>
+<span class="go">&lt;SAM_Alignment object: Read &#39;SRR001432.249247 USI-EAS21_0008_3445:8:6:144:741 length=25&#39; aligned to 1:[97059,97084)/-&gt;</span>
+</pre></div>
+</div>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">bam_writer</span> <span class="o">=</span> <span class="n">HTSeq</span><span class="o">.</span><span class="n">BAM_Writer</span><span class="o">.</span><span class="n">from_BAM_Reader</span><span class="p">(</span> <span class="s2">&quot;region.bam&quot;</span><span class="p">,</span> <span class="n">bam_reader</span> <span class="p">)</span> <span class="c1">#set-up BAM_Writer with same header as reader</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">for</span> <span class="n">a</span> <span class="ow">in</span> <span class="n">bam_reader</span><span class="o">.</span><span class="n">fetch</span><span class="p">(</span> <span class="n">region</span> <span class="o">=</span> <span class="s2">&quot;1:249000000-249200000&quot;</span> <span class="p">):</span> <span class="c1">#fetching reads in a region</span>
+<span class="gp">... </span>   <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Writing Alignment&quot;</span><span class="p">,</span> <span class="n">a</span><span class="p">,</span> <span class="s2">&quot;to file&quot;</span><span class="p">,</span> <span class="n">bam_writer</span><span class="o">.</span><span class="n">filename</span><span class="p">)</span>
+<span class="gp">... </span>   <span class="n">bam_writer</span><span class="o">.</span><span class="n">write</span><span class="p">(</span> <span class="n">a</span> <span class="p">)</span>    
+<span class="go">Writing Alignment &lt;SAM_Alignment object: Read &#39;SRR001432.104735 USI-EAS21_0008_3445:8:3:934:653 length=25&#39; aligned to 1:[249085369,249085394)/-&gt; to file region.bam</span>
+<span class="go">Writing Alignment &lt;SAM_Alignment object: Read &#39;SRR001432.280764 USI-EAS21_0008_3445:8:7:479:581 length=25&#39; aligned to 1:[249105864,249105889)/-&gt; to file region.bam</span>
+<span class="gp">...</span>
+<span class="go">Writing Alignment &lt;SAM_Alignment object: Read &#39;SRR001432.248967 USI-EAS21_0008_3445:8:6:862:756 length=25&#39; aligned to 1:[249167916,249167941)/-&gt; to file region.bam</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">bam_writer</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="genomic-intervals-and-genomic-arrays">
+<h2>Genomic intervals and genomic arrays<a class="headerlink" href="#genomic-intervals-and-genomic-arrays" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="genomic-intervals">
+<h3>Genomic intervals<a class="headerlink" href="#genomic-intervals" title="Permalink to this headline">¶</a></h3>
+<p>At the end of the previous section, we looped through a SAM file. In the for loop,
+the <a class="reference internal" href="alignments.html#HTSeq.SAM_Reader" title="HTSeq.SAM_Reader"><code class="xref py py-class docutils literal"><span class="pre">SAM_Reader</span></code></a> object yields for each alignment line in the SAM file an
+object of class <a class="reference internal" href="alignments.html#HTSeq.SAM_Alignment" title="HTSeq.SAM_Alignment"><code class="xref py py-class docutils literal"><span class="pre">SAM_Alignment</span></code></a>. Let&#8217;s have closer look at such an object,
+still found in the variable <code class="docutils literal"><span class="pre">aln</span></code>:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">aln</span>
+<span class="go">&lt;SAM_Alignment object: Read &#39;HWI-EAS225:1:11:76:63#0/1&#39; aligned to IV:[246048,246084)/+&gt;</span>
+</pre></div>
+</div>
+<p>Every alignment object has a slot <code class="docutils literal"><span class="pre">read</span></code>, that contains a <a class="reference internal" href="sequences.html#HTSeq.SequenceWithQualities" title="HTSeq.SequenceWithQualities"><code class="xref py py-class docutils literal"><span class="pre">SequenceWithQualities</span></code></a> object as
+described above</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">aln</span><span class="o">.</span><span class="n">read</span>
+<span class="go">&lt;SequenceWithQualities object &#39;HWI-EAS225:1:11:76:63#0/1&#39;&gt;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">aln</span><span class="o">.</span><span class="n">read</span><span class="o">.</span><span class="n">name</span>
+<span class="go">&#39;HWI-EAS225:1:11:76:63#0/1&#39;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">aln</span><span class="o">.</span><span class="n">read</span><span class="o">.</span><span class="n">seq</span>
+<span class="go">b&#39;ACTGTAAATACTTTTCAGAAGAGATTTGTAGAATCC&#39;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">aln</span><span class="o">.</span><span class="n">read</span><span class="o">.</span><span class="n">qualstr</span>
+<span class="go">b&#39;BBBB@B?AB?&gt;BAAA@A@&gt;=?=?9=?=;9&gt;988&lt;::&#39;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">aln</span><span class="o">.</span><span class="n">read</span><span class="o">.</span><span class="n">qual</span>
+<span class="go">array([33, 33, 33, 33, 31, 33, 30, 32, 33, 30, 29, 33, 32, 32, 32, 31, 32,</span>
+<span class="go">       31, 29, 28, 30, 28, 30, 24, 28, 30, 28, 26, 24, 29, 24, 23, 23, 27,</span>
+<span class="go">       25, 25], dtype=uint8)</span>
+</pre></div>
+</div>
+<p>Furthermore, every alignment object has a slot <code class="docutils literal"><span class="pre">iv</span></code> (for &#8220;interval&#8221;) that describes where
+the read was aligned to (if it was aligned). To hold this
+information, an object of class <a class="reference internal" href="genomic.html#HTSeq.GenomicInterval" title="HTSeq.GenomicInterval"><code class="xref py py-class docutils literal"><span class="pre">GenomicInterval</span></code></a>
+is used that has slots as follows:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">aln</span><span class="o">.</span><span class="n">iv</span>
+<span class="go">&lt;GenomicInterval object &#39;IV&#39;, [246048,246084), strand &#39;+&#39;&gt;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">aln</span><span class="o">.</span><span class="n">iv</span><span class="o">.</span><span class="n">chrom</span>
+<span class="go">&#39;IV&#39;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">aln</span><span class="o">.</span><span class="n">iv</span><span class="o">.</span><span class="n">start</span>
+<span class="go">246048</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">aln</span><span class="o">.</span><span class="n">iv</span><span class="o">.</span><span class="n">end</span>
+<span class="go">246084</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">aln</span><span class="o">.</span><span class="n">iv</span><span class="o">.</span><span class="n">strand</span>
+<span class="go">&#39;+&#39;</span>
+</pre></div>
+</div>
+<p>Note that all coordinates in HTSeq are zero-based (following Python convention), i.e.
+the first base of a chromosome has index 0. Also, all intervals are half-open, i.e.,
+the <code class="docutils literal"><span class="pre">end</span></code> position is not included. The strand can be one of <code class="docutils literal"><span class="pre">'+'</span></code>, <code class="docutils literal"><span class="pre">'-'</span></code>,
+and <code class="docutils literal"><span class="pre">'.'</span></code>, where the latter indicates that the strand is not defined or not of interest.</p>
+<p>Apart from these slots,
+a <a class="reference internal" href="genomic.html#HTSeq.GenomicInterval" title="HTSeq.GenomicInterval"><code class="xref py py-class docutils literal"><span class="pre">GenomicInterval</span></code></a> object has a number of convenience functions, see the reference.</p>
+<p>Note that a SAM file may contain reads that could not be aligned. For these, the
+<cite>iv</cite> slot contains <cite>None</cite>. To test whether an alignment is present, you can also
+query the slot <cite>aligned</cite>, which is a Boolean.</p>
+</div>
+<div class="section" id="genomic-arrays">
+<h3>Genomic Arrays<a class="headerlink" href="#genomic-arrays" title="Permalink to this headline">¶</a></h3>
+<p>The <a class="reference internal" href="genomic.html#HTSeq.GenomicArray" title="HTSeq.GenomicArray"><code class="xref py py-class docutils literal"><span class="pre">GenomicArray</span></code></a> data structure is a convenient way to store and
+retrieve information associated with a genomic position or genomic interval. In
+a GenomicArray, data (either simple scalar data like a number) or can be stored
+at a place identified by a GenomicInterval. We demonstrate with a toy example.</p>
+<p>Assume you have a genome with three chromosomes with the following lengths (in bp):</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">chromlens</span> <span class="o">=</span> <span class="p">{</span> <span class="s1">&#39;chr1&#39;</span><span class="p">:</span> <span class="mi">3000</span><span class="p">,</span> <span class="s1">&#39;chr2&#39;</span><span class="p">:</span> <span class="mi">2000</span><span class="p">,</span> <span class="s1">&#39;chr1&#39;</span><span class="p">:</span> <span class="mi">1000</span> <span class="p">}</span>
+</pre></div>
+</div>
+<p>We wish to store integer data (typecode &#8220;i&#8221;)</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">ga</span> <span class="o">=</span> <span class="n">HTSeq</span><span class="o">.</span><span class="n">GenomicArray</span><span class="p">(</span> <span class="n">chromlens</span><span class="p">,</span> <span class="n">stranded</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">typecode</span><span class="o">=</span><span class="s2">&quot;i&quot;</span> <span class="p">)</span>
+</pre></div>
+</div>
+<p>Now, we can assign the value 5 to an interval:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">iv</span> <span class="o">=</span> <span class="n">HTSeq</span><span class="o">.</span><span class="n">GenomicInterval</span><span class="p">(</span> <span class="s2">&quot;chr1&quot;</span><span class="p">,</span> <span class="mi">100</span><span class="p">,</span> <span class="mi">120</span><span class="p">,</span> <span class="s2">&quot;.&quot;</span> <span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">ga</span><span class="p">[</span><span class="n">iv</span><span class="p">]</span> <span class="o">=</span> <span class="mi">5</span>
+</pre></div>
+</div>
+<p>We may want to add the value 3 to an interval overlapping with the previous one:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">iv</span> <span class="o">=</span> <span class="n">HTSeq</span><span class="o">.</span><span class="n">GenomicInterval</span><span class="p">(</span> <span class="s2">&quot;chr1&quot;</span><span class="p">,</span> <span class="mi">110</span><span class="p">,</span> <span class="mi">135</span><span class="p">,</span> <span class="s2">&quot;.&quot;</span> <span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">ga</span><span class="p">[</span><span class="n">iv</span><span class="p">]</span> <span class="o">+=</span> <span class="mi">3</span>
+</pre></div>
+</div>
+<p>To see the effect of this, we read out an interval encompassing the region that
+we changed. To display the data, we convert to a list:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">iv</span> <span class="o">=</span> <span class="n">HTSeq</span><span class="o">.</span><span class="n">GenomicInterval</span><span class="p">(</span> <span class="s2">&quot;chr1&quot;</span><span class="p">,</span> <span class="mi">90</span><span class="p">,</span> <span class="mi">140</span><span class="p">,</span> <span class="s2">&quot;.&quot;</span> <span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">list</span><span class="p">(</span> <span class="n">ga</span><span class="p">[</span><span class="n">iv</span><span class="p">]</span> <span class="p">)</span>  
+<span class="go">[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 8, 8, 8,</span>
+<span class="go"> 8, 8, 8, 8, 8, 8, 8, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 0,</span>
+<span class="go"> 0, 0, 0, 0]</span>
+</pre></div>
+</div>
+<p>It would be wasteful to store all these repeats of the same value as it
+is displayed here. Hence, GenomicArray objects use by default so-called
+StepVectors that store the data internally in &#8220;steps&#8221; of constant value.
+Often, reading out the data that way is useful, too:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="k">for</span> <span class="n">iv2</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">ga</span><span class="p">[</span><span class="n">iv</span><span class="p">]</span><span class="o">.</span><span class="n">steps</span><span class="p">():</span>
+<span class="gp">... </span>   <span class="nb">print</span><span class="p">(</span><span class="n">iv2</span><span class="p">,</span> <span class="n">value</span><span class="p">)</span>
+<span class="gp">...</span>
+<span class="go">chr1:[90,100)/. 0</span>
+<span class="go">chr1:[100,110)/. 5</span>
+<span class="go">chr1:[110,120)/. 8</span>
+<span class="go">chr1:[120,135)/. 3</span>
+<span class="go">chr1:[135,140)/. 0</span>
+</pre></div>
+</div>
+<p>If the steps become very small, storing them instead of just the unrolled data may
+become inefficient. In this case, GenomicArrays should be instantiated with
+storage mode <code class="docutils literal"><span class="pre">ndarray</span></code> to get a normal numpy array as backend, or with storage
+mode <code class="docutils literal"><span class="pre">memmap</span></code> to use a file/memory-mapped numpy array (see reference for details).</p>
+<p>In the following section, we demonstrate how a GenomicArray can be used to
+calculate a coverage vector. In the section after that, we see how a GenomicArray
+with type code &#8216;O&#8217; (which stands for &#8216;object&#8217;, i.e., any kind of data, not just
+numbers) is useful to organize metadata.</p>
+</div>
+<div class="section" id="calculating-coverage-vectors">
+<h3>Calculating coverage vectors<a class="headerlink" href="#calculating-coverage-vectors" title="Permalink to this headline">¶</a></h3>
+<p>By a &#8220;coverage vector&#8221;, we mean a vector (one-dimensional array) of the length of
+a chromosome, where each element counts how many reads cover the corresponding
+base pair in their alignment. A GenomicArray can conveniently bundle the
+coverage vectors for all the chromosomes in a genome.</p>
+<p>Hence, we start by defining a <a class="reference internal" href="genomic.html#HTSeq.GenomicArray" title="HTSeq.GenomicArray"><code class="xref py py-class docutils literal"><span class="pre">GenomicArray</span></code></a>:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">cvg</span> <span class="o">=</span> <span class="n">HTSeq</span><span class="o">.</span><span class="n">GenomicArray</span><span class="p">(</span> <span class="s2">&quot;auto&quot;</span><span class="p">,</span> <span class="n">stranded</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">typecode</span><span class="o">=</span><span class="s2">&quot;i&quot;</span> <span class="p">)</span>
+</pre></div>
+</div>
+<p>Instead of listing all chromosomes, we instruct the GenomicArray to add chromosome
+vectors as needed, by specifiyng <code class="docutils literal"><span class="pre">&quot;auto&quot;</span></code>. As we set <code class="docutils literal"><span class="pre">stranded=True</span></code>, there are now two
+chromosome vectors for each
+chromosome, all holding integer values (<code class="docutils literal"><span class="pre">typecode=&quot;i&quot;</span></code>). They all have an
+&#8220;infinte&#8221; length as we did not specify the actual lengths of the chromosomes.</p>
+<p>To build the coverage vectors, we now simply iterate
+through all the reads and add the value 1 at the interval to which each read was aligned
+to:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">alignment_file</span> <span class="o">=</span> <span class="n">HTSeq</span><span class="o">.</span><span class="n">SAM_Reader</span><span class="p">(</span> <span class="s2">&quot;yeast_RNASeq_excerpt.sam&quot;</span> <span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">cvg</span> <span class="o">=</span> <span class="n">HTSeq</span><span class="o">.</span><span class="n">GenomicArray</span><span class="p">(</span> <span class="s2">&quot;auto&quot;</span><span class="p">,</span> <span class="n">stranded</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">typecode</span><span class="o">=</span><span class="s1">&#39;i&#39;</span> <span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">for</span> <span class="n">alngt</span> <span class="ow">in</span> <span class="n">alignment_file</span><span class="p">:</span>
+<span class="gp">... </span>   <span class="k">if</span> <span class="n">alngt</span><span class="o">.</span><span class="n">aligned</span><span class="p">:</span>
+<span class="gp">... </span>      <span class="n">cvg</span><span class="p">[</span> <span class="n">alngt</span><span class="o">.</span><span class="n">iv</span> <span class="p">]</span> <span class="o">+=</span> <span class="mi">1</span>
+</pre></div>
+</div>
+<p>We can plot an excerpt of this with:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">pyplot</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span> <span class="nb">list</span><span class="p">(</span> <span class="n">cvg</span><span class="p">[</span> <span class="n">HTSeq</span><span class="o">.</span><span class="n">GenomicInterval</span><span class="p">(</span> <span class="s2">&quot;III&quot;</span><span class="p">,</span> <span class="mi">200000</span><span class="p">,</span> <span class="mi">500000</span><span class="p">,</span> <span class="s2">&quot;+&quot;</span> <span class="p">)</span> <span class="p">]</span> <span class="p">)</span> <span class="p">)</span>     
+</pre></div>
+</div>
+<p>However, a proper genome browser gives a better impression of the data. The following commands
+write two BedGraph (Wiggle) files, one for the plus and one for the minus strands:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">cvg</span><span class="o">.</span><span class="n">write_bedgraph_file</span><span class="p">(</span> <span class="s2">&quot;plus.wig&quot;</span><span class="p">,</span> <span class="s2">&quot;+&quot;</span> <span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">cvg</span><span class="o">.</span><span class="n">write_bedgraph_file</span><span class="p">(</span> <span class="s2">&quot;minus.wig&quot;</span><span class="p">,</span> <span class="s2">&quot;-&quot;</span> <span class="p">)</span>
+</pre></div>
+</div>
+<p>These two files can then be viewed in a genome browser (e.g. <a class="reference external" href="http://igb.bioviz.org/">IGB</a> or <a class="reference external" href="http://www.broadinstitute.org/igv/">IGV</a>), alongside the
+annotation from a GFF file (see below).</p>
+</div>
+<div class="section" id="genomicarrayofsets">
+<h3>GenomicArrayOfSets<a class="headerlink" href="#genomicarrayofsets" title="Permalink to this headline">¶</a></h3>
+<p>Another use of genomic arrays is to store annotation data. In the next section, we will use this
+to store the position of all exons of the yeast genome in a genomic array and then go through
+all our reads, querying the array for each read to report the exons overlapped by this read.</p>
+<p>In principle, we could use a genomic array with type code &#8216;O&#8217; (for object), which can store arbitrary
+Python objects. However, there might be positions in the genome that are covered by more than one
+gene, and hence, we better use a data structure that can accommodate overlapping features.</p>
+<p>The class:<cite>GenomicArrayOfSets</cite> is meant for this purpose. For each step, it stores a <code class="docutils literal"><span class="pre">set</span></code> of objects. To
+illustrate this, we initialize a GenomicArrayOfSets and then store three features in it:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">gas</span> <span class="o">=</span> <span class="n">HTSeq</span><span class="o">.</span><span class="n">GenomicArrayOfSets</span><span class="p">(</span> <span class="s2">&quot;auto&quot;</span><span class="p">,</span> <span class="n">stranded</span><span class="o">=</span><span class="kc">False</span> <span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">gas</span><span class="p">[</span> <span class="n">HTSeq</span><span class="o">.</span><span class="n">GenomicInterval</span><span class="p">(</span> <span class="s2">&quot;chr1&quot;</span><span class="p">,</span> <span class="mi">100</span><span class="p">,</span> <span class="mi">250</span> <span class="p">)</span> <span class="p">]</span> <span class="o">+=</span> <span class="s2">&quot;A&quot;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">gas</span><span class="p">[</span> <span class="n">HTSeq</span><span class="o">.</span><span class="n">GenomicInterval</span><span class="p">(</span> <span class="s2">&quot;chr1&quot;</span><span class="p">,</span> <span class="mi">360</span><span class="p">,</span> <span class="mi">640</span> <span class="p">)</span> <span class="p">]</span> <span class="o">+=</span> <span class="s2">&quot;A&quot;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">gas</span><span class="p">[</span> <span class="n">HTSeq</span><span class="o">.</span><span class="n">GenomicInterval</span><span class="p">(</span> <span class="s2">&quot;chr1&quot;</span><span class="p">,</span> <span class="mi">510</span><span class="p">,</span> <span class="mi">950</span> <span class="p">)</span> <span class="p">]</span> <span class="o">+=</span> <span class="s2">&quot;B&quot;</span>
+</pre></div>
+</div>
+<p>These three features represent three exons of two genes, arranged as shown in this figure:</p>
+<img alt="_images/GenomicArrayOfSets.svg" src="_images/GenomicArrayOfSets.svg" /><p>Note that we used <cite>+=</cite>, not just <cite>=</cite>, above when adding the features. With a GenomicArrayOfSets,
+you need to always use the <cite>+=</cite> operator (rather than <cite>=</cite>), so that the values gets
+<em>added</em> to the step&#8217;s set.</p>
+<p>Now consider a read that aligns to the following interval (represented in the figure above by the light blue line ):</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">read_iv</span> <span class="o">=</span> <span class="n">HTSeq</span><span class="o">.</span><span class="n">GenomicInterval</span><span class="p">(</span> <span class="s2">&quot;chr1&quot;</span><span class="p">,</span> <span class="mi">450</span><span class="p">,</span> <span class="mi">800</span> <span class="p">)</span>
+</pre></div>
+</div>
+<p>We can query the GenomicArrayOfSets, as before:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="k">for</span> <span class="n">iv</span><span class="p">,</span> <span class="n">val</span> <span class="ow">in</span> <span class="n">gas</span><span class="p">[</span> <span class="n">read_iv</span> <span class="p">]</span><span class="o">.</span><span class="n">steps</span><span class="p">():</span>
+<span class="gp">... </span>   <span class="nb">print</span><span class="p">(</span><span class="n">iv</span><span class="p">,</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">val</span><span class="p">))</span>
+<span class="go">chr1:[450,510)/. [&#39;A&#39;]</span>
+<span class="go">chr1:[510,640)/. [&#39;A&#39;, &#39;B&#39;]</span>
+<span class="go">chr1:[640,800)/. [&#39;B&#39;]</span>
+</pre></div>
+</div>
+<p>The interval has been subdivided into three pieces, corresponding to the three different sets that it overlaps,
+namely first only A, then A and B, and finally only B.</p>
+<p>You might be only interested in the set of all features that the read interval overlaps. To this end, just
+form the set union of the three reported sets, using Python&#8217;s set union operator (<code class="docutils literal"><span class="pre">|</span></code>):</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">fset</span> <span class="o">=</span> <span class="nb">set</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">for</span> <span class="n">iv</span><span class="p">,</span> <span class="n">val</span> <span class="ow">in</span> <span class="n">gas</span><span class="p">[</span> <span class="n">read_iv</span> <span class="p">]</span><span class="o">.</span><span class="n">steps</span><span class="p">():</span>
+<span class="gp">... </span>   <span class="n">fset</span> <span class="o">|=</span> <span class="n">val</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="nb">sorted</span><span class="p">(</span><span class="n">fset</span><span class="p">))</span>
+<span class="go">[&#39;A&#39;, &#39;B&#39;]</span>
+</pre></div>
+</div>
+<p>Experienced Python developers will recognize that the <code class="docutils literal"><span class="pre">for</span></code> loop can be replaced with a single line
+using a generator comprehension and the <code class="docutils literal"><span class="pre">reduce</span></code> function:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="nb">sorted</span><span class="p">(</span><span class="nb">set</span><span class="o">.</span><span class="n">union</span><span class="p">(</span><span class="o">*</span><span class="p">[</span><span class="n">val</span> <span class="k">for</span> <span class="n">iv</span><span class="p">,</span> <span class="n">val</span> <span class="ow">in</span> <span class="n">gas</span><span class="p">[</span> <span class="n">read_iv</span> <span class="p">]</span><span class="o">.</span><span class="n">steps</span><span class="p">()]))</span>
+<span class="go">[&#39;A&#39;, &#39;B&#39;]</span>
+</pre></div>
+</div>
+<p>We will come back to the constructs in the next section, after a brief detour on how to read GTF files.</p>
+</div>
+</div>
+<div class="section" id="counting-reads-by-genes">
+<h2>Counting reads by genes<a class="headerlink" href="#counting-reads-by-genes" title="Permalink to this headline">¶</a></h2>
+<p>As the example data is from an RNA-Seq experiment, we want to know how many reads fall into
+the exonic regions of each gene. For this purpose we first need to read in information about the
+positions of the exons. A convenient source of such information are the GTF files from
+<a class="reference external" href="http://www.ensembl.org/index.html">Ensembl</a> (to be found <a class="reference external" href="ftp://ftp.ensembl.org/pub/current_gtf/">here</a>).</p>
+<p>These file are in the <a class="reference external" href="http://mblab.wustl.edu/GTF22.html">GTF format</a>, a tightening of the <a class="reference external" href="http://www.sanger.ac.uk/resources/software/gff/spec.html">GFF format</a>. HTSeq offers the
+<a class="reference internal" href="features.html#HTSeq.GFF_Reader" title="HTSeq.GFF_Reader"><code class="xref py py-class docutils literal"><span class="pre">GFF_Reader</span></code></a> class to read in a GFF file:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">gtf_file</span> <span class="o">=</span> <span class="n">HTSeq</span><span class="o">.</span><span class="n">GFF_Reader</span><span class="p">(</span> <span class="s2">&quot;Saccharomyces_cerevisiae.SGD1.01.56.gtf.gz&quot;</span><span class="p">,</span>
+<span class="gp">... </span>   <span class="n">end_included</span><span class="o">=</span><span class="kc">True</span> <span class="p">)</span>
+</pre></div>
+</div>
+<p>The GFF format is, unfortunately, a not very well specified file format. Several
+standard documents exist, from different groups, which contradict each
+other in some points. Most importantly, it is unclear whether a range specified
+in a GFF line is supposed to include the base under the &#8220;end&#8221; position or not. Here,
+we specied the this file does include the end. Actually, this is the default
+for GFF_Reader, so it would not have been necessary to specify it.
+(Hint, if you are unsure about your GFF file: The length of most coding exons
+is divisible by 3. If start-end is divisible by 3, too, end is
+not included, if the division leaves a remainder of two, end is included.)</p>
+<p>We iterate through this file as follows:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="k">for</span> <span class="n">feature</span> <span class="ow">in</span> <span class="n">itertools</span><span class="o">.</span><span class="n">islice</span><span class="p">(</span> <span class="n">gtf_file</span><span class="p">,</span> <span class="mi">10</span> <span class="p">):</span>
+<span class="gp">... </span>   <span class="nb">print</span><span class="p">(</span><span class="n">feature</span><span class="p">)</span>
+<span class="gp">...</span>
+<span class="go">&lt;GenomicFeature: exon &#39;R0010W&#39; at 2-micron: 251 -&gt; 1523 (strand &#39;+&#39;)&gt;</span>
+<span class="go">&lt;GenomicFeature: CDS &#39;R0010W&#39; at 2-micron: 251 -&gt; 1520 (strand &#39;+&#39;)&gt;</span>
+<span class="go">&lt;GenomicFeature: start_codon &#39;R0010W&#39; at 2-micron: 251 -&gt; 254 (strand &#39;+&#39;)&gt;</span>
+<span class="go">&lt;GenomicFeature: stop_codon &#39;R0010W&#39; at 2-micron: 1520 -&gt; 1523 (strand &#39;+&#39;)&gt;</span>
+<span class="go">&lt;GenomicFeature: exon &#39;R0020C&#39; at 2-micron: 3007 -&gt; 1885 (strand &#39;-&#39;)&gt;</span>
+<span class="go">&lt;GenomicFeature: CDS &#39;R0020C&#39; at 2-micron: 3007 -&gt; 1888 (strand &#39;-&#39;)&gt;</span>
+<span class="go">&lt;GenomicFeature: start_codon &#39;R0020C&#39; at 2-micron: 3007 -&gt; 3004 (strand &#39;-&#39;)&gt;</span>
+<span class="go">&lt;GenomicFeature: stop_codon &#39;R0020C&#39; at 2-micron: 1888 -&gt; 1885 (strand &#39;-&#39;)&gt;</span>
+<span class="go">&lt;GenomicFeature: exon &#39;R0030W&#39; at 2-micron: 3270 -&gt; 3816 (strand &#39;+&#39;)&gt;</span>
+<span class="go">&lt;GenomicFeature: CDS &#39;R0030W&#39; at 2-micron: 3270 -&gt; 3813 (strand &#39;+&#39;)&gt;</span>
+</pre></div>
+</div>
+<p>The <code class="docutils literal"><span class="pre">feature</span></code> variable is filled with objects of class <a class="reference internal" href="features.html#HTSeq.GenomicFeature" title="HTSeq.GenomicFeature"><code class="xref py py-class docutils literal"><span class="pre">GenomicFeature</span></code></a>.
+If you compare the coordinated with the original file, you will notice that the
+GFF_Reader has subtracted one from all starts. This is because all file parsers in
+HTSeq adjust coordinates as necessary to fit the Python convention, which is that
+indexing starts with zero and the end is not included. Hence, you can immediately
+compare coordinates from different data formats without having to worry about
+subtleties like the fact that GFF is one-based and SAM is zero-based.</p>
+<p>As with all Python objects, the <code class="docutils literal"><span class="pre">dir</span></code> function shows us the slots and
+functions of our loop variable <code class="docutils literal"><span class="pre">feature</span></code> and so allow us to inspect what data
+it provides:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="nb">dir</span><span class="p">(</span> <span class="n">feature</span> <span class="p">)</span>   
+<span class="go">[&#39;__class__&#39;, ..., &#39;__weakref__&#39;, &#39;attr&#39;, &#39;frame&#39;, &#39;get_gff_line&#39;,</span>
+<span class="go">&#39;iv&#39;, &#39;name&#39;, &#39;score&#39;, &#39;source&#39;, &#39;type&#39;]</span>
+</pre></div>
+</div>
+<p>Ignoring the attributes starting with an underscore, we can see now how to access
+the information stored in the GFF file. The information from the columns of the GFF
+table is accessible as follows:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">feature</span><span class="o">.</span><span class="n">iv</span>
+<span class="go">&lt;GenomicInterval object &#39;2-micron&#39;, [3270,3813), strand &#39;+&#39;&gt;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">feature</span><span class="o">.</span><span class="n">source</span>
+<span class="go">&#39;protein_coding&#39;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">feature</span><span class="o">.</span><span class="n">type</span>
+<span class="go">&#39;CDS&#39;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">feature</span><span class="o">.</span><span class="n">score</span>
+<span class="go">&#39;.&#39;</span>
+</pre></div>
+</div>
+<p>The last column (the attributes) is parsed and presented as a dict:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="nb">sorted</span><span class="p">(</span><span class="n">feature</span><span class="o">.</span><span class="n">attr</span><span class="o">.</span><span class="n">items</span><span class="p">())</span>    
+<span class="go">[(&#39;exon_number&#39;, &#39;1&#39;),</span>
+<span class="go"> (&#39;gene_id&#39;, &#39;R0030W&#39;),</span>
+<span class="go"> (&#39;gene_name&#39;, &#39;RAF1&#39;),</span>
+<span class="go"> (&#39;protein_id&#39;, &#39;R0030W&#39;),</span>
+<span class="go"> (&#39;transcript_id&#39;, &#39;R0030W&#39;),</span>
+<span class="go"> (&#39;transcript_name&#39;, &#39;RAF1&#39;)]</span>
+</pre></div>
+</div>
+<p>The very first attribute in this column is usually some kind of ID, hence it is
+stored in the slot <a class="reference internal" href="features.html#HTSeq.GenomicFeature.name" title="HTSeq.GenomicFeature.name"><code class="xref py py-attr docutils literal"><span class="pre">name</span></code></a>:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">feature</span><span class="o">.</span><span class="n">name</span>
+<span class="go">&#39;R0030W&#39;</span>
+</pre></div>
+</div>
+<p>To deal with this data, we will use the <a class="reference internal" href="genomic.html#HTSeq.GenomicArrayOfSets" title="HTSeq.GenomicArrayOfSets"><code class="xref py py-class docutils literal"><span class="pre">GenomicArrayOfSets</span></code></a> introuced in the
+previous section.</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">exons</span> <span class="o">=</span> <span class="n">HTSeq</span><span class="o">.</span><span class="n">GenomicArrayOfSets</span><span class="p">(</span> <span class="s2">&quot;auto&quot;</span><span class="p">,</span> <span class="n">stranded</span><span class="o">=</span><span class="kc">False</span> <span class="p">)</span>
+</pre></div>
+</div>
+<p>However, our RNA-Seq experiment was not strand-specific, i.e., we do not know whether
+the reads came from the plus or the minus strand. This is why we defined the GenomicArrayOfSet
+as non-stranded (<code class="docutils literal"><span class="pre">stranded=False</span></code> in the instantiation of <code class="docutils literal"><span class="pre">exons</span></code> above), instructing
+it to ignore all strand information. Teherfore, we now have many overlapping
+genes, but the GenomicArrayOfSets will handle this.</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="k">for</span> <span class="n">feature</span> <span class="ow">in</span> <span class="n">gtf_file</span><span class="p">:</span>
+<span class="gp">... </span>   <span class="k">if</span> <span class="n">feature</span><span class="o">.</span><span class="n">type</span> <span class="o">==</span> <span class="s2">&quot;exon&quot;</span><span class="p">:</span>
+<span class="gp">... </span>      <span class="n">exons</span><span class="p">[</span> <span class="n">feature</span><span class="o">.</span><span class="n">iv</span> <span class="p">]</span> <span class="o">+=</span> <span class="n">feature</span><span class="o">.</span><span class="n">name</span>
+</pre></div>
+</div>
+<p>Nate that, we only store the gene name this time, as this will be more convenient later.</p>
+<p>Assume we have a read covering this interval:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">iv</span> <span class="o">=</span> <span class="n">HTSeq</span><span class="o">.</span><span class="n">GenomicInterval</span><span class="p">(</span> <span class="s2">&quot;III&quot;</span><span class="p">,</span> <span class="mi">23850</span><span class="p">,</span> <span class="mi">23950</span><span class="p">,</span> <span class="s2">&quot;.&quot;</span> <span class="p">)</span>
+</pre></div>
+</div>
+<p>Its left half covers two genes (YCL058C, YCL058W-A), but its right half only
+YCL058C because YCL058W-A end in the middle of the read:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="p">[(</span><span class="n">st</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">st</span><span class="p">[</span><span class="mi">1</span><span class="p">]))</span> <span class="k">for</span> <span class="n">st</span> <span class="ow">in</span> <span class="n">exons</span><span class="p">[</span><span class="n">iv</span><span class="p">]</span><span class="o">.</span><span class="n">steps</span><span class="p">()]</span>   
+<span class="go">[(&lt;GenomicInterval object &#39;III&#39;, [23850,23925), strand &#39;.&#39;&gt;,</span>
+<span class="go">     [&#39;YCL058C&#39;, &#39;YCL058W-A&#39;]),</span>
+<span class="go"> (&lt;GenomicInterval object &#39;III&#39;, [23925,23950), strand &#39;.&#39;&gt;,</span>
+<span class="go">     [&#39;YCL058C&#39;])]</span>
+</pre></div>
+</div>
+<p>Assuming the transcription boundaries in our GTF file to be correct, we may conclude
+that this read is from the gene that appears in both steps and not from the one that
+appears in only one of the steps. More generally, whenever a read overlaps multiple
+steps (a new step starts wherever a feature starts or ends), we get a set of feature
+names for each step, and we have to find the intersection of all these. This can be
+coded as follows:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">iset</span> <span class="o">=</span> <span class="kc">None</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">for</span> <span class="n">iv2</span><span class="p">,</span> <span class="n">step_set</span> <span class="ow">in</span> <span class="n">exons</span><span class="p">[</span><span class="n">iv</span><span class="p">]</span><span class="o">.</span><span class="n">steps</span><span class="p">():</span>
+<span class="gp">... </span>   <span class="k">if</span> <span class="n">iset</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+<span class="gp">... </span>      <span class="n">iset</span> <span class="o">=</span> <span class="n">step_set</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+<span class="gp">... </span>   <span class="k">else</span><span class="p">:</span>
+<span class="gp">... </span>      <span class="n">iset</span><span class="o">.</span><span class="n">intersection_update</span><span class="p">(</span> <span class="n">step_set</span> <span class="p">)</span>
+<span class="gp">...</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">iset</span><span class="p">)</span>
+<span class="go">{&#39;YCL058C&#39;}</span>
+</pre></div>
+</div>
+<p>When we look at the first step, we make a
+copy of the steps (in order to not disturb the values stored in <code class="docutils literal"><span class="pre">exons</span></code>.) For the following
+steps, we use the <code class="docutils literal"><span class="pre">intersection_update</span></code>
+method Python&#8217;s standard <code class="docutils literal"><span class="pre">set</span></code> class, which performs a set intersection in
+place. Afterwards, we have a set with precisely one element. Getting this one
+element is a tiny bit cumbersome; to access it, one needs to write:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="nb">list</span><span class="p">(</span><span class="n">iset</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+<span class="go">&#39;YCL058C&#39;</span>
+</pre></div>
+</div>
+<p>In this way, we can go through all our aligned reads, calculate the intersection
+set, and, if it contains a single gene name, add a count for this gene. For the
+counters, we use a dict, which we initialize with a zero for each gene name:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">counts</span> <span class="o">=</span> <span class="p">{}</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">for</span> <span class="n">feature</span> <span class="ow">in</span> <span class="n">gtf_file</span><span class="p">:</span>
+<span class="gp">... </span>   <span class="k">if</span> <span class="n">feature</span><span class="o">.</span><span class="n">type</span> <span class="o">==</span> <span class="s2">&quot;exon&quot;</span><span class="p">:</span>
+<span class="gp">... </span>      <span class="n">counts</span><span class="p">[</span> <span class="n">feature</span><span class="o">.</span><span class="n">name</span> <span class="p">]</span> <span class="o">=</span> <span class="mi">0</span>
+</pre></div>
+</div>
+<p>Now, we can finally count:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">sam_file</span> <span class="o">=</span> <span class="n">HTSeq</span><span class="o">.</span><span class="n">SAM_Reader</span><span class="p">(</span> <span class="s2">&quot;yeast_RNASeq_excerpt.sam&quot;</span> <span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">for</span> <span class="n">alnmt</span> <span class="ow">in</span> <span class="n">sam_file</span><span class="p">:</span>
+<span class="gp">... </span>   <span class="k">if</span> <span class="n">alnmt</span><span class="o">.</span><span class="n">aligned</span><span class="p">:</span>
+<span class="gp">... </span>      <span class="n">iset</span> <span class="o">=</span> <span class="kc">None</span>
+<span class="gp">... </span>      <span class="k">for</span> <span class="n">iv2</span><span class="p">,</span> <span class="n">step_set</span> <span class="ow">in</span> <span class="n">exons</span><span class="p">[</span> <span class="n">alnmt</span><span class="o">.</span><span class="n">iv</span> <span class="p">]</span><span class="o">.</span><span class="n">steps</span><span class="p">():</span>
+<span class="gp">... </span>          <span class="k">if</span> <span class="n">iset</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+<span class="gp">... </span>             <span class="n">iset</span> <span class="o">=</span> <span class="n">step_set</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+<span class="gp">... </span>          <span class="k">else</span><span class="p">:</span>
+<span class="gp">... </span>             <span class="n">iset</span><span class="o">.</span><span class="n">intersection_update</span><span class="p">(</span> <span class="n">step_set</span> <span class="p">)</span>
+<span class="gp">... </span>      <span class="k">if</span> <span class="nb">len</span><span class="p">(</span> <span class="n">iset</span> <span class="p">)</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+<span class="gp">... </span>         <span class="n">counts</span><span class="p">[</span> <span class="nb">list</span><span class="p">(</span><span class="n">iset</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span> <span class="p">]</span> <span class="o">+=</span> <span class="mi">1</span>
+</pre></div>
+</div>
+<p>We can now conveniently print the result with:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="k">for</span> <span class="n">name</span> <span class="ow">in</span> <span class="nb">sorted</span><span class="p">(</span> <span class="n">counts</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span> <span class="p">):</span>
+<span class="gp">... </span>   <span class="nb">print</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">counts</span><span class="p">[</span><span class="n">name</span><span class="p">])</span>   
+<span class="go">15S_rRNA 0</span>
+<span class="go">21S_rRNA 0</span>
+<span class="go">HRA1 0</span>
+<span class="gp">...</span>
+<span class="go">YPR048W 2</span>
+<span class="go">YPR049C 3</span>
+<span class="go">YPR050C 0</span>
+<span class="go">YPR051W 1</span>
+<span class="go">YPR052C 1</span>
+<span class="go">YPR053C 5</span>
+<span class="go">YPR054W 0</span>
+<span class="gp">...</span>
+<span class="go">tY(GUA)M2 0</span>
+<span class="go">tY(GUA)O 0</span>
+<span class="go">tY(GUA)Q 0</span>
+</pre></div>
+</div>
+<p>Some aligners can output gapped or spliced alignments. In a SAM file, this in encoded
+in the CIGAR string. HTSeq has facilities to handle this conveniently, too, with the
+class <a class="reference internal" href="alignments.html#HTSeq.CigarOperation" title="HTSeq.CigarOperation"><code class="xref py py-class docutils literal"><span class="pre">CigarOperation</span></code></a>. Chapter <a class="reference internal" href="count.html#count"><span class="std std-ref">Counting reads in features with htseq-count</span></a> describes a script which offers
+some further counting schemes.</p>
+</div>
+<div class="section" id="and-much-more">
+<h2>And much more<a class="headerlink" href="#and-much-more" title="Permalink to this headline">¶</a></h2>
+<p>This tour is only meant to give an overview. There are many more tasks that can
+be solved with HTSeq. Have a look at the reference documentation in the following pages
+to see what else is there.</p>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">A tour through HTSeq</a><ul>
+<li><a class="reference internal" href="#reading-in-reads">Reading in reads</a></li>
+<li><a class="reference internal" href="#reading-and-writing-bam-files">Reading and writing BAM files</a></li>
+<li><a class="reference internal" href="#genomic-intervals-and-genomic-arrays">Genomic intervals and genomic arrays</a><ul>
+<li><a class="reference internal" href="#genomic-intervals">Genomic intervals</a></li>
+<li><a class="reference internal" href="#genomic-arrays">Genomic Arrays</a></li>
+<li><a class="reference internal" href="#calculating-coverage-vectors">Calculating coverage vectors</a></li>
+<li><a class="reference internal" href="#genomicarrayofsets">GenomicArrayOfSets</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#counting-reads-by-genes">Counting reads by genes</a></li>
+<li><a class="reference internal" href="#and-much-more">And much more</a></li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="install.html"
+                        title="previous chapter">Prequisites and installation</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="tss.html"
+                        title="next chapter">A detailed use case: TSS plots</a></p>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="_sources/tour.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <div><input type="text" name="q" /></div>
+      <div><input type="submit" value="Go" /></div>
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="tss.html" title="A detailed use case: TSS plots"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="install.html" title="Prequisites and installation"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">HTSeq 0.7.2 documentation</a> &#187;</li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2010, Simon Anders.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.5.5.
+    </div>
+  </body>
+
+<!-- Start of StatCounter Code -->
+<script type="text/javascript">
+var sc_project=5680199; 
+var sc_invisible=1; 
+var sc_partition=63; 
+var sc_click_stat=1; 
+var sc_security="6e579550"; 
+</script>
+
+<script type="text/javascript"
+src="http://www.statcounter.com/counter/counter.js"></script><noscript><div
+class="statcounter"><a title="counter for iweb"
+href="http://www.statcounter.com/iweb/" target="_blank"><img
+class="statcounter"
+src="http://c.statcounter.com/5680199/0/6e579550/1/"
+alt="counter for iweb" ></a></div></noscript>
+<!-- End of StatCounter Code -->
+</html>

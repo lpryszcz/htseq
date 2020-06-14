@@ -1,0 +1,219 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Prequisites and installation &#8212; HTSeq 0.7.2 documentation</title>
+    
+    <link rel="stylesheet" href="_static/classic.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    './',
+        VERSION:     '0.7.2',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true,
+        SOURCELINK_SUFFIX: '.txt'
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="A tour through HTSeq" href="tour.html" />
+    <link rel="prev" title="HTSeq: Analysing high-throughput sequencing data with Python" href="overview.html" /> 
+  </head>
+  <body role="document">
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="tour.html" title="A tour through HTSeq"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="overview.html" title="HTSeq: Analysing high-throughput sequencing data with Python"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">HTSeq 0.7.2 documentation</a> &#187;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="prequisites-and-installation">
+<span id="install"></span><h1>Prequisites and installation<a class="headerlink" href="#prequisites-and-installation" title="Permalink to this headline">¶</a></h1>
+<p>HTSeq is available from the <a class="reference external" href="http://pypi.python.org/">Python Package Index (PyPI)</a>. Download HTSeq from the</p>
+<blockquote>
+<div><a class="reference external" href="http://pypi.python.org/pypi/HTSeq">HTSeq package download page on PyPI</a>,</div></blockquote>
+<p>where you will find various version of the package.</p>
+<p>To use HTSeq, you need at least version 2.5 of <a class="reference external" href="http://www.python.org/">Python</a> (Python 3 does not work yet),
+together with <a class="reference external" href="http://numpy.scipy.org/">NumPy</a>,
+a commonly used Python package for numerical calculations,
+and <a class="reference external" href="http://matplotlib.org/">matplotlib</a>, a plotting library.</p>
+<p>HTSeq can be installed like any other Python package. For users unfamiliar with this,
+more detailled instructions are given below.</p>
+<div class="section" id="installation-on-linux">
+<h2>Installation on Linux<a class="headerlink" href="#installation-on-linux" title="Permalink to this headline">¶</a></h2>
+<p>Make sure that you the standard GNU build environment installed, as well as Python together with its development headers and numpy and matplotlib. Users of Ubuntu Linux simply type:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">sudo</span> <span class="n">apt</span><span class="o">-</span><span class="n">get</span> <span class="n">install</span> <span class="n">build</span><span class="o">-</span><span class="n">essential</span> <span class="n">python2</span><span class="o">.</span><span class="mi">7</span><span class="o">-</span><span class="n">dev</span> <span class="n">python</span><span class="o">-</span><span class="n">numpy</span> <span class="n">python</span><span class="o">-</span><span class="n">matplotlib</span>
+</pre></div>
+</div>
+<p>This command installs the required packages as listed (or simply does nothing if they are already installed.</p>
+<p>For users of RedHat or RedHat-derived distros (Fedora, CentOS), the equivalent command
+seems to be (untested):</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">sudo</span> <span class="n">yum</span> <span class="n">groupinstall</span> <span class="s2">&quot;Development Tools&quot;</span>
+<span class="n">sudo</span> <span class="n">yum</span> <span class="n">install</span> <span class="n">python</span><span class="o">-</span><span class="n">devel</span> <span class="n">numpy</span> <span class="n">python</span><span class="o">-</span><span class="n">matplotlib</span>
+</pre></div>
+</div>
+<p>To install HTSeq itself, download the <em>source</em> package from the <a class="reference external" href="http://pypi.python.org/pypi/HTSeq">HTSeq PyPI page</a>, unpack the tarball,
+go into the directory with the unpacked files and type there</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">python</span> <span class="n">setup</span><span class="o">.</span><span class="n">py</span> <span class="n">install</span> <span class="o">--</span><span class="n">user</span>
+</pre></div>
+</div>
+<p>to install HTSeq for the user currently logged in. To make HTSeq available to all users, use instead:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">python</span> <span class="n">setup</span><span class="o">.</span><span class="n">py</span> <span class="n">build</span>
+<span class="n">sudo</span> <span class="n">python</span> <span class="n">setup</span><span class="o">.</span><span class="n">py</span> <span class="n">install</span>
+</pre></div>
+</div>
+<p>To test the installation, change to another director than the build directory, start Python
+(by typing <code class="docutils literal"><span class="pre">python</span></code>) and then try whether typing <code class="docutils literal"><span class="pre">import</span> <span class="pre">HTSeq</span></code> causes an error meesage.</p>
+</div>
+<div class="section" id="installation-on-macos-x">
+<h2>Installation on MacOS X<a class="headerlink" href="#installation-on-macos-x" title="Permalink to this headline">¶</a></h2>
+<p>Mac users should install NumPy as explained <a class="reference external" href="http://www.scipy.org/Installing_SciPy/Mac_OS_X">here</a> in the NumPy/SciPy documentation. Note that you need
+to install Xcode to be able to compile NumPy. Due to the
+mess that Apple recently made out of Xcode, the whole process may be a slight bit more cumbersome than necessary, especially if you work with OSX Lion, so read the instructions carefully.</p>
+<p>If you want to produce plots or use htseq-qa, you will also need matplotlib. (For htseq-count, it
+is not required.) There seems to be a binary package (a &#8220;Python egg&#8221;) available on the matplotlib
+SourceForge page.</p>
+<p>To install HTSeq itself, download the <em>source</em> package from the <a class="reference external" href="http://pypi.python.org/pypi/HTSeq">HTSeq PyPI page</a>, unpack the tarball,
+go into the directory with the unpacked files and type there:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">python</span> <span class="n">setup</span><span class="o">.</span><span class="n">py</span> <span class="n">build</span>
+</pre></div>
+</div>
+<p>to compile HTSeq. If you get an error regarding the availability of a C compiler, you may need to
+set environment variables to point Python to the . The NumPy/SciPy installation instructions above cover this topic well and
+apply here, too, so simply do the same as you did to install NumPy.</p>
+<p>Once building has been successful, use:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">python</span> <span class="n">setup</span><span class="o">.</span><span class="n">py</span> <span class="o">--</span><span class="n">user</span>
+</pre></div>
+</div>
+<p>to install HTSeq for the current users. To make HTSeq available to all users, use instead:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">python</span> <span class="n">setup</span><span class="o">.</span><span class="n">py</span> <span class="n">build</span>
+<span class="n">sudo</span> <span class="n">python</span> <span class="n">setup</span><span class="o">.</span><span class="n">py</span> <span class="n">install</span>
+</pre></div>
+</div>
+<p>To test the installation, change to another director than the build directory, start Python
+(by typing <code class="docutils literal"><span class="pre">python</span></code>) and then try whether typing <code class="docutils literal"><span class="pre">import</span> <span class="pre">HTSeq</span></code> causes an error meesage.</p>
+</div>
+<div class="section" id="ms-windows">
+<h2>MS Windows<a class="headerlink" href="#ms-windows" title="Permalink to this headline">¶</a></h2>
+<p>If you have not yet installed Python, do so first. You can find an automatic installer
+for Windows on
+the <a class="reference external" href="http://www.python.org/getit/">Python download page</a>. Make sure to use Python 2.7, not Python 3.3.</p>
+<p>Then install the newest version of NumPy. Look on <a class="reference external" href="https://pypi.python.org/pypi/numpy">NumPy&#8217;s PyPI page</a> for the automatic installer.</p>
+<p>If you want to produce plots or use htseq-qa, you will also need matplotlib. (For htseq-count, it
+is not required.) Follow the installation instructions on their web page.</p>
+<p>To install HTSeq itself, simply download the Windows installer from the <a class="reference external" href="http://pypi.python.org/pypi/HTSeq">HTSeq download page</a>
+and run it.</p>
+<p>To test your installation, start Python and then try whether typing <code class="docutils literal"><span class="pre">import</span> <span class="pre">HTSeq</span></code>
+causes an error meesage.</p>
+<p>If you get the error message &#8220;ImportError: DLL load failed&#8221;, you are most likely
+missing the file MSVCR110.DLL on your system, which you can get by downloading and
+installing the file &#8220;vcredist_x86.exe&#8221; from <a class="reference external" href="http://www.microsoft.com/en-us/download/details.aspx?id=30679">this page</a>.</p>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Prequisites and installation</a><ul>
+<li><a class="reference internal" href="#installation-on-linux">Installation on Linux</a></li>
+<li><a class="reference internal" href="#installation-on-macos-x">Installation on MacOS X</a></li>
+<li><a class="reference internal" href="#ms-windows">MS Windows</a></li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="overview.html"
+                        title="previous chapter">HTSeq: Analysing high-throughput sequencing data with Python</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="tour.html"
+                        title="next chapter">A tour through HTSeq</a></p>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="_sources/install.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <div><input type="text" name="q" /></div>
+      <div><input type="submit" value="Go" /></div>
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="tour.html" title="A tour through HTSeq"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="overview.html" title="HTSeq: Analysing high-throughput sequencing data with Python"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">HTSeq 0.7.2 documentation</a> &#187;</li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2010, Simon Anders.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.5.5.
+    </div>
+  </body>
+
+<!-- Start of StatCounter Code -->
+<script type="text/javascript">
+var sc_project=5680199; 
+var sc_invisible=1; 
+var sc_partition=63; 
+var sc_click_stat=1; 
+var sc_security="6e579550"; 
+</script>
+
+<script type="text/javascript"
+src="http://www.statcounter.com/counter/counter.js"></script><noscript><div
+class="statcounter"><a title="counter for iweb"
+href="http://www.statcounter.com/iweb/" target="_blank"><img
+class="statcounter"
+src="http://c.statcounter.com/5680199/0/6e579550/1/"
+alt="counter for iweb" ></a></div></noscript>
+<!-- End of StatCounter Code -->
+</html>

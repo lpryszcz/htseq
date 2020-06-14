@@ -1,0 +1,549 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Version history &#8212; HTSeq 0.7.2 documentation</title>
+    
+    <link rel="stylesheet" href="_static/classic.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    './',
+        VERSION:     '0.7.2',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true,
+        SOURCELINK_SUFFIX: '.txt'
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Notes for Contributers" href="contrib.html" />
+    <link rel="prev" title="Counting reads in features with htseq-count" href="count.html" /> 
+  </head>
+  <body role="document">
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="contrib.html" title="Notes for Contributers"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="count.html" title="Counting reads in features with htseq-count"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">HTSeq 0.7.2 documentation</a> &#187;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="version-history">
+<span id="history"></span><h1>Version history<a class="headerlink" href="#version-history" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="version-0-6-1">
+<h2>Version 0.6.1<a class="headerlink" href="#version-0-6-1" title="Permalink to this headline">¶</a></h2>
+<p>2014-02-27</p>
+<ul class="simple">
+<li>added parser classes for BED and Wiggle format</li>
+</ul>
+<p>Patch versions:</p>
+<ul class="simple">
+<li>0.6.1p1 (2014-04-13)<ul>
+<li>Fixed incorrect version tag</li>
+</ul>
+</li>
+<li>0.6.1p2 (2014-08-09)<ul>
+<li>some improvements to documentation</li>
+</ul>
+</li>
+</ul>
+</div>
+<div class="section" id="version-0-6-0">
+<h2>Version 0.6.0<a class="headerlink" href="#version-0-6-0" title="Permalink to this headline">¶</a></h2>
+<p>2014-02-26</p>
+<ul class="simple">
+<li>Several changes and improvements to htseq-count:<ul>
+<li>BAM files can now be read natively. (New option <code class="docutils literal"><span class="pre">--format</span></code>)</li>
+<li>Paired-end SAM files can be used also if sorted by position. No need any mroe to sort by name. (New option <code class="docutils literal"><span class="pre">--order</span></code>.)</li>
+<li>Documentation extended by a FAQ section.</li>
+<li>Default for <code class="docutils literal"><span class="pre">--minaqual</span></code> is now 10. (was: 0)</li>
+</ul>
+</li>
+<li>New chapter in documentation, with more information on counting reads.</li>
+<li>New function <code class="docutils literal"><span class="pre">pair_SAM_alignments_with_buffer</span></code> to implement pairing for position-sorted SAM files.</li>
+</ul>
+</div>
+<div class="section" id="version-0-5-4">
+<h2>Version 0.5.4<a class="headerlink" href="#version-0-5-4" title="Permalink to this headline">¶</a></h2>
+<p>2013-02-20</p>
+<p>Various bugs fixed, including</p>
+<blockquote>
+<div><ul class="simple">
+<li>GFF_Reader interpreted the constructor&#8217;s &#8220;end_included&#8221; flag
+in the wrong way, hence the end position of intervals of
+GFF features was off by 1 base pair before</li>
+<li>htseq-count no longer warns about missing chromosomes, as this
+warning was often misleading. Also, these reads are no properly
+included in the &#8220;no_feature&#8221; count.</li>
+<li>default for &#8220;max_qual&#8221; in &#8220;htseq-qa&#8221; is now 41, to accommodate newer
+Illumina FASTQ files</li>
+<li>BAM_Reader used to incorrectly label single-end reads as paired-end</li>
+</ul>
+</div></blockquote>
+<p>Patch versions:</p>
+<ul class="simple">
+<li>v0.5.4p1 (2013-02-22):<ul>
+<li>changed default for GFF_Reader to end_included=True, which is actually the
+correct style for Ensemble GTF files. Now the behavious should be as it
+was before.</li>
+</ul>
+</li>
+<li>v0.5.4p2 (2013-04-18):<ul>
+<li>fixed issue blocking proper built on Windows</li>
+</ul>
+</li>
+<li>v0.5.4p3 (2013-04-29):<ul>
+<li>htseq-count now correctly skips over &#8220;M0&#8221; cigar operations</li>
+</ul>
+</li>
+<li>v0.5.4p4 (2013-08-28):<ul>
+<li>added <code class="docutils literal"><span class="pre">.get_original_line()</span></code> function to <code class="docutils literal"><span class="pre">VariantCall</span></code></li>
+<li>firex a bug with reads not being read as paired if they were not
+flagged as proper pair</li>
+</ul>
+</li>
+<li>v0.5.4p5 (2013-10-02/2013-10-10):<ul>
+<li>parsing of GFF attribute field no longer fails on quoted semicolons</li>
+<li>fixed issue with get_line_number_string</li>
+</ul>
+</li>
+</ul>
+</div>
+<div class="section" id="version-0-5-3">
+<h2>Version 0.5.3<a class="headerlink" href="#version-0-5-3" title="Permalink to this headline">¶</a></h2>
+<p>2011-06-29</p>
+<ul class="simple">
+<li>added the &#8216;&#8211;stranded=reverse&#8217; option to htseq-count</li>
+</ul>
+<p>Patch versions:</p>
+<ul class="simple">
+<li>v0.5.3p1 (2011-07-15):<ul>
+<li>fix a bug in pair_sam_Alignment (many thanks for Justin Powell for
+finding the bug and suggesting a patch)</li>
+</ul>
+</li>
+<li>v0.5.3p2 (2011-09-15)<ul>
+<li>fixed a bug (and a documentation bug) in trim_left/right_end_with_quals</li>
+</ul>
+</li>
+<li>v0.5.3p3 (2011-09-15)<ul>
+<li>p2 was built improperly</li>
+</ul>
+</li>
+<li>v0.5.3p5 (2012-05-29)<ul>
+<li>added &#8216;to_line&#8217; function to VariantCall objects and &#8216;meta_info&#8217; function to VCF_Reader objects to print VCF-lines / -headers respectively</li>
+</ul>
+</li>
+<li>v0.5.3p5b (2012-06-01)
+- added &#8216;flag&#8217; field to SAM_Alignment objects and fixed &#8216;get_sam_line&#8217; function of those</li>
+<li>v0.5.3p6 (2012-06-11)
+- fixed mix-up between patches p3, p4 and p5</li>
+<li>v0.5.3p7 (2012-06-13)
+- switched global pysam import to on-demand version</li>
+<li>v0.5.3p9ur1 (2012-08-31)
+- corrected get_sam_line: tab isntead of space between optional fields</li>
+</ul>
+</div>
+<div class="section" id="version-0-5-2">
+<h2>Version 0.5.2<a class="headerlink" href="#version-0-5-2" title="Permalink to this headline">¶</a></h2>
+<p>2011-06-24</p>
+<ul class="simple">
+<li>added the &#8216;&#8211;maxqual&#8217; option to htseq-qa</li>
+</ul>
+</div>
+<div class="section" id="version-0-5-1">
+<h2>Version 0.5.1<a class="headerlink" href="#version-0-5-1" title="Permalink to this headline">¶</a></h2>
+<p>2011-05-03</p>
+<ul class="simple">
+<li>added steps method to GenomicArray</li>
+</ul>
+<p>Patch versions:</p>
+<ul class="simple">
+<li>v0.5.1p1 (2011-05-11):<ul>
+<li>fixed a bug in step_vector.h causing linkage failure under GCC 4.2</li>
+</ul>
+</li>
+<li>v0.5.1p2 (2011-05-12):<ul>
+<li>fixed pickling</li>
+</ul>
+</li>
+<li>v0.5.1p3 (2011-05-22):<ul>
+<li>fixed quality plot in htseq-qa (top pixel row, for quality score 40, was cut off)</li>
+</ul>
+</li>
+</ul>
+</div>
+<div class="section" id="version-0-5-0">
+<h2>Version 0.5.0<a class="headerlink" href="#version-0-5-0" title="Permalink to this headline">¶</a></h2>
+<p>2011-04-21</p>
+<ul class="simple">
+<li>refactoring of GenomicArray class:<ul>
+<li>field <code class="docutils literal"><span class="pre">step_vectors</span></code> replaced with <code class="docutils literal"><span class="pre">chrom_vector</span></code>. These now contain
+dicts of dicts of <code class="docutils literal"><span class="pre">ChromVector</span></code> objects rather than <code class="docutils literal"><span class="pre">StepVector</span></code> ones.</li>
+<li><code class="docutils literal"><span class="pre">chrom_vectors</span></code> is now always a dict of dict, even for unstranded GenomicArrays
+to make it easier to loop over them. (The inner dict has either keys <code class="docutils literal"><span class="pre">&quot;+&quot;</span></code>
+and <code class="docutils literal"><span class="pre">&quot;-&quot;</span></code>, or just one key, <code class="docutils literal"><span class="pre">&quot;.&quot;</span></code>.)</li>
+<li>The new <code class="docutils literal"><span class="pre">ChromVector</span></code> class wraps the actual vector and supports three different
+storage modes: <code class="docutils literal"><span class="pre">step</span></code>, <code class="docutils literal"><span class="pre">ndarray</span></code> and <code class="docutils literal"><span class="pre">memmap</span></code>, the latter two being numpy
+arrays, without and with memory mapping.</li>
+<li>The <code class="docutils literal"><span class="pre">GenomicArray</span></code> constructor now take two new arguments, one for the storage
+class, one for the memmap directory (if needed).</li>
+<li>The <code class="docutils literal"><span class="pre">add_value</span></code> methods had been replaced with an <code class="docutils literal"><span class="pre">__iadd__</span></code> method, to
+enable the <code class="docutils literal"><span class="pre">+=</span></code> semantics.</li>
+<li>Similarily, <code class="docutils literal"><span class="pre">+=</span></code> for <code class="docutils literal"><span class="pre">GenomicArrayOfSets</span></code> adds an element to the sets.</li>
+<li>Instead of <code class="docutils literal"><span class="pre">get_steps</span></code>, now use <code class="docutils literal"><span class="pre">steps</span></code>.</li>
+</ul>
+</li>
+<li>new parser class <code class="docutils literal"><span class="pre">VCF_Reader</span></code> and record class <code class="docutils literal"><span class="pre">VariantCall</span></code></li>
+<li>new parser class <code class="docutils literal"><span class="pre">BAM_Reader</span></code>, to add BAM support (including indexed random access)
+(requires PySam to be installed)</li>
+<li>new documentation page <a class="reference internal" href="tss.html#tss"><span class="std std-ref">A detailed use case: TSS plots</span></a></li>
+<li><code class="docutils literal"><span class="pre">Fasta_Reader</span></code> now allows indexed access to Fasta files (requires Pysam to be
+installed)</li>
+<li>peek function removed</li>
+</ul>
+<p>Patch Versions:</p>
+<ul class="simple">
+<li>v0.5.0p1  (2011-04-22):<ul>
+<li>build was incomplete; fixed</li>
+</ul>
+</li>
+<li>v0.5.0p2 (2011-04-22):<ul>
+<li>build was still faulty; new try</li>
+</ul>
+</li>
+<li>v0.5.0p3 (2011-04-26)<ul>
+<li>fixed regression bug in htseq-count</li>
+</ul>
+</li>
+</ul>
+</div>
+<div class="section" id="version-0-4-7">
+<h2>Version 0.4.7<a class="headerlink" href="#version-0-4-7" title="Permalink to this headline">¶</a></h2>
+<p>2010-12-22</p>
+<ul class="simple">
+<li>added new option <code class="docutils literal"><span class="pre">-o</span></code> (or <code class="docutils literal"><span class="pre">--samout</span></code>) to htseq-count</li>
+</ul>
+<p>Patch versions:</p>
+<ul class="simple">
+<li>Version 0.4.7p1 (2011-02-14)<ul>
+<li>bug fix: GFF files with empty attribute fiels are now read correctly</li>
+</ul>
+</li>
+<li>Version 0.4.7p2 (2011-03-13)<ul>
+<li>fixed assertion error in pair_SAM_alignment, triggered by incorrect flags</li>
+</ul>
+</li>
+<li>Version 0.4.7p3 (2011-03-15)<ul>
+<li>fixed problem due to SAM_Alignment.peek (by removing the method)</li>
+</ul>
+</li>
+<li>Version 0.4.7p4 (2011-03-18)<ul>
+<li>removed left-over debugging print statement</li>
+</ul>
+</li>
+</ul>
+</div>
+<div class="section" id="version-0-4-6">
+<h2>Version 0.4.6<a class="headerlink" href="#version-0-4-6" title="Permalink to this headline">¶</a></h2>
+<p>2010-12-09</p>
+<ul class="simple">
+<li>pair_SAM_alignments now handles multiple matches properly</li>
+<li>SAM_Alignments now allows access to optional fields via the new methods
+optional_field and optional_fields</li>
+<li>htseq-count now skips reads that are non-uniquely mapped according to the &#8216;NH&#8217;
+optional field</li>
+<li>updated documentation</li>
+</ul>
+<p>Patch versions:</p>
+<ul class="simple">
+<li>Version 0.4.6p1 (2010-12-17)<ul>
+<li>updated htseq-count documentation page</li>
+<li>htseq-count now accepts &#8216;-&#8216; as SAM file name</li>
+</ul>
+</li>
+<li>Version 0.4.6p2 (2012-12-21)<ul>
+<li>corrected a bug in htseq-count regarding the handling of warnings and
+added SAM_Reader.peek.</li>
+</ul>
+</li>
+</ul>
+</div>
+<div class="section" id="version-0-4-5">
+<h2>Version 0.4.5<a class="headerlink" href="#version-0-4-5" title="Permalink to this headline">¶</a></h2>
+<p>2010-08-30</p>
+<ul class="simple">
+<li>correction to GenomicArray.get_steps() when called without arguments</li>
+<li>correction to FileOrSequence.get_line_number_string</li>
+<li>removed use of urllib&#8217;s quote and unquote in GFF parsing/writing</li>
+<li>GFF_Reader now stores &#8220;meta information&#8221;</li>
+<li>qa.py now gives progress report</li>
+<li>auto add chrom now also works on read access</li>
+<li>refactored CIGAR parser</li>
+<li>added bool fields to SAM_Alignment for all flag bits</li>
+</ul>
+<p>Patch versions:</p>
+<ul class="simple">
+<li>Version 0.4.5p1 (2010-10-08)<ul>
+<li>correction of a mistake in CIGAR checking, misreading symbol &#8220;N&#8221;</li>
+</ul>
+</li>
+<li>Version 0.4.5p2 (2010-10-13)<ul>
+<li>Sequence.add_bases_to_count_array and hence htseq-qa now
+accepts &#8216;.&#8217; instead of &#8216;N&#8217; in a fastq file</li>
+</ul>
+</li>
+<li>Version 0.4.5p3 (2010-10-20)<ul>
+<li>fixed error reporting for PE in htseq-count</li>
+</ul>
+</li>
+<li>Version 0.4.5p4 (2010-10-21)<ul>
+<li>fixed another error reporting for PE in htseq-count</li>
+</ul>
+</li>
+<li>Version 0.4.5p5 (2010-10-28)<ul>
+<li>Not only &#8216;N&#8217; but also &#8216;S&#8217; was read the wrong way. Fixed.</li>
+<li>Cython had some odd way handling properties overloading attributes,
+which caused issues with &#8216;Alignment.read&#8217;. Worked around.</li>
+</ul>
+</li>
+<li>Version 0.4.5p6 (2010-11-02)<ul>
+<li>write_to_fastq should not break lines. Fixed.</li>
+</ul>
+</li>
+<li>Version 0.4.5p7 (2010-11-16)<ul>
+<li>added fallback to distutils in case setuptools in unavailable</li>
+<li>fixed documentation of &#8216;-a&#8217; option to htseq-count</li>
+</ul>
+</li>
+</ul>
+</div>
+<div class="section" id="version-0-4-4">
+<h2>Version 0.4.4<a class="headerlink" href="#version-0-4-4" title="Permalink to this headline">¶</a></h2>
+<p>2010-05-19</p>
+<ul class="simple">
+<li>StepVectors (and hence also GenomicArrays) now notice if, when setting the
+value of a step, this value is equal to an adjacent step and merge the steps.</li>
+<li>GenomicArray&#8217;s constructor now allows the special value <code class="docutils literal"><span class="pre">&quot;auto&quot;</span></code> for its
+first arguments in order to start without chromosomes and automatically add
+them when first encountered.</li>
+</ul>
+<p>Patch versions:</p>
+<ul class="simple">
+<li>Version 0.4.4p1 (2010-05-26):<ul>
+<li>minor change to make it run on Python 2.5 again</li>
+<li>changed &#8216;str&#8217; to &#8216;bytes&#8217; at various places, now compiles with Cython 0.12
+(but no longer with Cython 0.11 and Python 2.5)</li>
+</ul>
+</li>
+<li>Version 0.4.4p2 (2010-06-05):<ul>
+<li>change to SAM parser: if flag &#8220;query unmapped is set&#8221; but RNAME is not
+&#8220;*&#8221;, a warning (rather than an error) is issued</li>
+</ul>
+</li>
+<li>Version 0.4.4p3 (2010-06-25)<ul>
+<li>again removed an &#8220;except sth as e&#8221;</li>
+</ul>
+</li>
+<li>Version 0.4.4p4 (2010-07-12)<ul>
+<li>dto.</li>
+</ul>
+</li>
+<li>Version 0.4.4p5 (2010-07-13)<ul>
+<li>rebuilt with Cython 0.12.1 (previous one was accidently built with
+Cython 0.11.1, causing it to fail with Python 2.5)</li>
+</ul>
+</li>
+<li>Version 0.4.4p6 (2010-07-21)<ul>
+<li>fixed bug in error reporting in count.py</li>
+<li>losened GFF attribute parsing</li>
+<li>changed &#8220;mio&#8221; to &#8220;millions&#8221; in qa output</li>
+<li>improved error reporting in GFF parser</li>
+<li>made SAM parsing more tolerant</li>
+</ul>
+</li>
+</ul>
+</div>
+<div class="section" id="version-0-4-3">
+<h2>Version 0.4.3<a class="headerlink" href="#version-0-4-3" title="Permalink to this headline">¶</a></h2>
+<p>2010-05-01</p>
+<p>New argument to constructer of GFF_Reader: <code class="docutils literal"><span class="pre">end_include</span></code></p>
+<ul class="simple">
+<li>Version 0.4.3-p1 (2010-05-04): version number was messed up; fixed</li>
+<li>Version 0.4.3-p2 (2010-05-15): fixed &#8216;-q&#8217; option in htseq-count</li>
+<li>Version 0.4.3-p3 (2010-05-15): parse_GFF_attribute_string can now deal with
+empty fields; score treated as float, not int</li>
+<li>Version 0.4.3-p3 (2010-05-15):
+- parse_GFF_attribute_string can now deal with empty fields;
+score treated as float, not int
+- fixed bug in SAM_Reader: can now deal with SAM files with 11 columns
+- SAM_Alignment._tags is now a list of strings</li>
+<li>Version 0.4.3-p4 (2010-05-16):
+bumped version number again just to make sure</li>
+</ul>
+</div>
+<div class="section" id="version-0-4-2">
+<h2>Version 0.4.2<a class="headerlink" href="#version-0-4-2" title="Permalink to this headline">¶</a></h2>
+<p>2010-04-19</p>
+<p>Bug fixes to htseq-count and pair_SAM_alignments. Bumped version number to avoid
+confusion.</p>
+<ul class="simple">
+<li>Version 0.4.2-p1 (2010-04-20): there was still a bug left in htseq-count, fixed.</li>
+<li>Version 0.4.2-p2 (2010-04-26): bug fix: adapter trimming failed if the adapter
+was completely included in the sequence</li>
+<li>Version 0.4.2-p3</li>
+<li>Version 0.4.2-p4 (2010-04-29): bug fix: error in warning when htseq-count
+encountered an unknown chromosome</li>
+<li>Version 0.4.2-p5 (2010-04-30): bug fixes: error in warning when PE positions
+are mismatched, and misleading error when calling get_steps with unstranded
+interval in a stranded array</li>
+</ul>
+</div>
+<div class="section" id="version-0-4-1">
+<h2>Version 0.4.1<a class="headerlink" href="#version-0-4-1" title="Permalink to this headline">¶</a></h2>
+<p>2010-04-19</p>
+<p>Bug fixes:</p>
+<ul class="simple">
+<li>Fixed bug in <code class="docutils literal"><span class="pre">htseq-count</span></code>: CIGAR strings with gaps were not correctly handled</li>
+<li>Fixed bug in Tour (last section, on counting): An wrong indent, and accidental
+change to the <code class="docutils literal"><span class="pre">exons</span></code> variable invalidated data.</li>
+<li>SolexaExportReader no longer complains about multiplexing (indexing) not being supported.</li>
+<li>Mention link to example data in Tour.</li>
+<li>Fix installation instructions. (<code class="docutils literal"><span class="pre">--user</span></code> does not work for Python 2.5.)</li>
+</ul>
+<p>Enhancements:</p>
+<ul class="simple">
+<li>Paired-end support for SAM_Alignment.</li>
+<li>&#8220;_as_pos&#8221; attributes for GenomicInterval</li>
+</ul>
+</div>
+<div class="section" id="version-0-4-0">
+<h2>Version 0.4.0<a class="headerlink" href="#version-0-4-0" title="Permalink to this headline">¶</a></h2>
+<p>2010-04-07</p>
+<p>First &#8220;official&#8221; release, i.e., uploaded to PyPI and announced at SeqAnswers</p>
+</div>
+<div class="section" id="version-0-3-7">
+<h2>Version 0.3.7<a class="headerlink" href="#version-0-3-7" title="Permalink to this headline">¶</a></h2>
+<p>2010-03-12</p>
+<p>First version that was uploaded to PyPI</p>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Version history</a><ul>
+<li><a class="reference internal" href="#version-0-6-1">Version 0.6.1</a></li>
+<li><a class="reference internal" href="#version-0-6-0">Version 0.6.0</a></li>
+<li><a class="reference internal" href="#version-0-5-4">Version 0.5.4</a></li>
+<li><a class="reference internal" href="#version-0-5-3">Version 0.5.3</a></li>
+<li><a class="reference internal" href="#version-0-5-2">Version 0.5.2</a></li>
+<li><a class="reference internal" href="#version-0-5-1">Version 0.5.1</a></li>
+<li><a class="reference internal" href="#version-0-5-0">Version 0.5.0</a></li>
+<li><a class="reference internal" href="#version-0-4-7">Version 0.4.7</a></li>
+<li><a class="reference internal" href="#version-0-4-6">Version 0.4.6</a></li>
+<li><a class="reference internal" href="#version-0-4-5">Version 0.4.5</a></li>
+<li><a class="reference internal" href="#version-0-4-4">Version 0.4.4</a></li>
+<li><a class="reference internal" href="#version-0-4-3">Version 0.4.3</a></li>
+<li><a class="reference internal" href="#version-0-4-2">Version 0.4.2</a></li>
+<li><a class="reference internal" href="#version-0-4-1">Version 0.4.1</a></li>
+<li><a class="reference internal" href="#version-0-4-0">Version 0.4.0</a></li>
+<li><a class="reference internal" href="#version-0-3-7">Version 0.3.7</a></li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="count.html"
+                        title="previous chapter">Counting reads in features with <code class="docutils literal"><span class="pre">htseq-count</span></code></a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="contrib.html"
+                        title="next chapter">Notes for Contributers</a></p>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="_sources/history.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <div><input type="text" name="q" /></div>
+      <div><input type="submit" value="Go" /></div>
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="contrib.html" title="Notes for Contributers"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="count.html" title="Counting reads in features with htseq-count"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">HTSeq 0.7.2 documentation</a> &#187;</li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2010, Simon Anders.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.5.5.
+    </div>
+  </body>
+
+<!-- Start of StatCounter Code -->
+<script type="text/javascript">
+var sc_project=5680199; 
+var sc_invisible=1; 
+var sc_partition=63; 
+var sc_click_stat=1; 
+var sc_security="6e579550"; 
+</script>
+
+<script type="text/javascript"
+src="http://www.statcounter.com/counter/counter.js"></script><noscript><div
+class="statcounter"><a title="counter for iweb"
+href="http://www.statcounter.com/iweb/" target="_blank"><img
+class="statcounter"
+src="http://c.statcounter.com/5680199/0/6e579550/1/"
+alt="counter for iweb" ></a></div></noscript>
+<!-- End of StatCounter Code -->
+</html>

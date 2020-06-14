@@ -1,0 +1,384 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Counting reads in features with htseq-count &#8212; HTSeq 0.7.2 documentation</title>
+    
+    <link rel="stylesheet" href="_static/classic.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    './',
+        VERSION:     '0.7.2',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true,
+        SOURCELINK_SUFFIX: '.txt'
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Version history" href="history.html" />
+    <link rel="prev" title="Quality Assessment with htseq-qa" href="qa.html" /> 
+  </head>
+  <body role="document">
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="history.html" title="Version history"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="qa.html" title="Quality Assessment with htseq-qa"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">HTSeq 0.7.2 documentation</a> &#187;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="counting-reads-in-features-with-htseq-count">
+<span id="count"></span><h1>Counting reads in features with <code class="docutils literal"><span class="pre">htseq-count</span></code><a class="headerlink" href="#counting-reads-in-features-with-htseq-count" title="Permalink to this headline">¶</a></h1>
+<p>Given a file with aligned sequencing reads and a list of genomic
+features, a common task is to count how many reads map to each feature.</p>
+<p>A feature is here an interval (i.e., a range of positions) on a chromosome
+or a union of such intervals.</p>
+<p>In the case of RNA-Seq, the features are typically genes, where each gene
+is considered here as the union of all its exons. One may also consider
+each exon as a feature, e.g., in order to check for alternative splicing.
+For comparative ChIP-Seq, the features might be binding region from a
+pre-determined list.</p>
+<p>Special care must be taken to decide how to deal with reads that overlap more
+than one feature. The <code class="docutils literal"><span class="pre">htseq-count</span></code> script allows to choose between three
+modes. Of course, if none of these fits your needs, you can write your own
+script with HTSeq. See the chapter <a class="reference internal" href="tour.html#tour"><span class="std std-ref">A tour through HTSeq</span></a> for a step-by-step guide on
+how to do so. See also the FAQ at the end, if the following explanation seems
+to technical.</p>
+<p>The three overlap resolution modes of <code class="docutils literal"><span class="pre">htseq-count</span></code> work as follows. For
+each position <cite>i</cite> in the read, a set <cite>S(i)</cite> is defined as the set of all
+features overlapping position <cite>i</cite>. Then, consider the set <cite>S</cite>, which is
+(with <cite>i</cite> running through all position within the read or a read pair)</p>
+<ul class="simple">
+<li>the union of all the sets <cite>S(i)</cite> for mode <code class="docutils literal"><span class="pre">union</span></code>. This mode is recommended for most use cases.</li>
+<li>the intersection of all the sets <cite>S(i)</cite> for mode <code class="docutils literal"><span class="pre">intersection-strict</span></code>.</li>
+<li>the intersection of all non-empty sets <cite>S(i)</cite> for mode <code class="docutils literal"><span class="pre">intersection-nonempty</span></code>.</li>
+</ul>
+<p>If <cite>S</cite> contains precisely one feature, the read (or read pair) is counted for this feature. If
+it contains more than one feature, the read (or read pair) is counted as <code class="docutils literal"><span class="pre">ambiguous</span></code> (and
+not counted for any features), and if <code class="docutils literal"><span class="pre">S</span></code> is empty, the read (or read pair) is counted
+as <code class="docutils literal"><span class="pre">no_feature</span></code>.</p>
+<p>The following figure illustrates the effect of these three modes:</p>
+<img alt="_images/count_modes.png" src="_images/count_modes.png" />
+<div class="section" id="usage">
+<h2>Usage<a class="headerlink" href="#usage" title="Permalink to this headline">¶</a></h2>
+<p>After you have installed HTSeq (see <a class="reference internal" href="install.html#install"><span class="std std-ref">Prequisites and installation</span></a>), you can run <code class="docutils literal"><span class="pre">htseq-count</span></code> from
+the command line:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">htseq</span><span class="o">-</span><span class="n">count</span> <span class="p">[</span><span class="n">options</span><span class="p">]</span> <span class="o">&lt;</span><span class="n">alignment_file</span><span class="o">&gt;</span> <span class="o">&lt;</span><span class="n">gff_file</span><span class="o">&gt;</span>
+</pre></div>
+</div>
+<p>If the file <code class="docutils literal"><span class="pre">htseq-qa</span></code> is not in your path, you can, alternatively, call the script with</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">python</span> <span class="o">-</span><span class="n">m</span> <span class="n">HTSeq</span><span class="o">.</span><span class="n">scripts</span><span class="o">.</span><span class="n">count</span> <span class="p">[</span><span class="n">options</span><span class="p">]</span> <span class="o">&lt;</span><span class="n">alignment_file</span><span class="o">&gt;</span> <span class="o">&lt;</span><span class="n">gff_file</span><span class="o">&gt;</span>
+</pre></div>
+</div>
+<p>The <code class="docutils literal"><span class="pre">&lt;alignment_file&gt;</span></code> contains the aligned reads in the SAM format. (Note that the
+<a class="reference external" href="http://samtools.sourceforge.net/">SAMtools</a> contain Perl scripts to convert most alignment formats to SAM.)
+Make sure to use a splicing-aware aligner such as TopHat. HTSeq-count makes
+full use of the information in the CIGAR field.</p>
+<p>To read from standard input, use <code class="docutils literal"><span class="pre">-</span></code> as <code class="docutils literal"><span class="pre">&lt;alignment_file&gt;</span></code>.</p>
+<p>If you have paired-end data, pay attention to the <code class="docutils literal"><span class="pre">-r</span></code> option described below.</p>
+<p>The <code class="docutils literal"><span class="pre">&lt;gff_file&gt;</span></code> contains the features in the <a class="reference external" href="http://www.sanger.ac.uk/resources/software/gff/spec.html">GFF format</a>.</p>
+<p>The script outputs a table with counts for each feature, followed by
+the special counters, which count reads that were not counted for any feature
+for various reasons. The names of the special counters all start with
+a double underscore, to facilitate filtering. (Note: The double unscore
+was absent up to version 0.5.4). The special counters are:</p>
+<ul class="simple">
+<li><code class="docutils literal"><span class="pre">__no_feature</span></code>: reads (or read pairs) which could not be assigned to any feature
+(set <cite>S</cite> as described above was empty).</li>
+<li><code class="docutils literal"><span class="pre">__ambiguous</span></code>: reads (or read pairs) which could have been assigned to more than
+one feature and hence were not counted for any of these (set <cite>S</cite>
+had mroe than one element).</li>
+<li><code class="docutils literal"><span class="pre">__too_low_aQual</span></code>: reads (or read pairs) which were skipped due to the <code class="docutils literal"><span class="pre">-a</span></code>
+option, see below</li>
+<li><code class="docutils literal"><span class="pre">__not_aligned</span></code>: reads (or read pairs) in the SAM file without alignment</li>
+<li><code class="docutils literal"><span class="pre">__alignment_not_unique</span></code>: reads (or read pairs) with more than one reported alignment.
+These reads are recognized from the <code class="docutils literal"><span class="pre">NH</span></code> optional SAM field tag.
+(If the aligner does not set this field, multiply aligned reads will
+be counted multiple times, unless they getv filtered out by due to the <code class="docutils literal"><span class="pre">-a</span></code> option.)</li>
+</ul>
+<p><em>Important:</em> The default for strandedness is <em>yes</em>. If your RNA-Seq data has not been made
+with a strand-specific protocol, this causes half of the reads to be lost.
+Hence, make sure to set the option <code class="docutils literal"><span class="pre">--stranded=no</span></code> unless you have strand-specific
+data!</p>
+<div class="section" id="options">
+<h3>Options<a class="headerlink" href="#options" title="Permalink to this headline">¶</a></h3>
+<dl class="cmdoption">
+<dt id="cmdoption-htseq-count-f">
+<code class="descname">-f</code><code class="descclassname"> &lt;format&gt;</code><code class="descclassname">, </code><code class="descname">--format</code><code class="descclassname">=&lt;format&gt;</code><a class="headerlink" href="#cmdoption-htseq-count-f" title="Permalink to this definition">¶</a></dt>
+<dd><p>Format of the input data. Possible values are <code class="docutils literal"><span class="pre">sam</span></code> (for text SAM files)
+and <code class="docutils literal"><span class="pre">bam</span></code> (for binary BAM files). Default is <code class="docutils literal"><span class="pre">sam</span></code>.</p>
+</dd></dl>
+
+<dl class="cmdoption">
+<dt id="cmdoption-htseq-count-r">
+<code class="descname">-r</code><code class="descclassname"> &lt;order&gt;</code><code class="descclassname">, </code><code class="descname">--order</code><code class="descclassname">=&lt;order&gt;</code><a class="headerlink" href="#cmdoption-htseq-count-r" title="Permalink to this definition">¶</a></dt>
+<dd><p>For paired-end data, the alignment have to be sorted either by read name or
+by alignment position. If your data is not sorted, use the <code class="docutils literal"><span class="pre">samtools</span> <span class="pre">sort</span></code>
+function of <code class="docutils literal"><span class="pre">samtools</span></code> to sort it. Use this option, with <code class="docutils literal"><span class="pre">name</span></code> or <code class="docutils literal"><span class="pre">pos</span></code>
+for <code class="docutils literal"><span class="pre">&lt;order&gt;</span></code> to indicate how the input data has been sorted. The default
+is <code class="docutils literal"><span class="pre">name</span></code>.</p>
+<p>If <code class="docutils literal"><span class="pre">name</span></code> is indicated, <code class="docutils literal"><span class="pre">htseq-count</span></code> expects all the alignments for the
+reads of a given read pair to appear in adjacent records in the input data.
+For <code class="docutils literal"><span class="pre">pos</span></code>, this is not expected; rather, read alignments whose mate alignment
+have not yet been seen are kept in a buffer in memory until the mate is found.
+While, strictly speaking, the latter will also work with unsorted data, sorting
+ensures that most alignment mates appear close to each other in the data
+and hence the  buffer is much less likely to overflow.</p>
+</dd></dl>
+
+<dl class="cmdoption">
+<dt id="cmdoption-htseq-count-s">
+<code class="descname">-s</code><code class="descclassname"> &lt;yes/no/reverse&gt;</code><code class="descclassname">, </code><code class="descname">--stranded</code><code class="descclassname">=&lt;yes/no/reverse&gt;</code><a class="headerlink" href="#cmdoption-htseq-count-s" title="Permalink to this definition">¶</a></dt>
+<dd><p>whether the data is from a strand-specific assay (default: <code class="docutils literal"><span class="pre">yes</span></code>)</p>
+<p>For <code class="docutils literal"><span class="pre">stranded=no</span></code>, a read is considered overlapping with a feature regardless
+of whether it is mapped to the same or the opposite strand as the feature.
+For <code class="docutils literal"><span class="pre">stranded=yes</span></code> and single-end reads, the read has to be mapped to the same
+strand as the feature. For paired-end reads, the first
+read has to be on the same strand and the second read on the opposite strand.
+For <code class="docutils literal"><span class="pre">stranded=reverse</span></code>, these rules are reversed.</p>
+</dd></dl>
+
+<dl class="cmdoption">
+<dt id="cmdoption-htseq-count-a">
+<code class="descname">-a</code><code class="descclassname"> &lt;minaqual&gt;</code><code class="descclassname">, </code><code class="descname">--a</code><code class="descclassname">=&lt;minaqual&gt;</code><a class="headerlink" href="#cmdoption-htseq-count-a" title="Permalink to this definition">¶</a></dt>
+<dd><p>skip all reads with alignment quality lower than the given
+minimum value (default: 10 &#8212; Note: the default used to be 0 until
+version 0.5.4.)</p>
+</dd></dl>
+
+<dl class="cmdoption">
+<dt id="cmdoption-htseq-count-t">
+<code class="descname">-t</code><code class="descclassname"> &lt;feature type&gt;</code><code class="descclassname">, </code><code class="descname">--type</code><code class="descclassname">=&lt;feature type&gt;</code><a class="headerlink" href="#cmdoption-htseq-count-t" title="Permalink to this definition">¶</a></dt>
+<dd><p>feature type (3rd column in GFF file) to be used, all
+features of other type are ignored (default, suitable
+for RNA-Seq analysis using an <a class="reference external" href="http://mblab.wustl.edu/GTF22.html">Ensembl GTF</a> file: <code class="docutils literal"><span class="pre">exon</span></code>)</p>
+</dd></dl>
+
+<dl class="cmdoption">
+<dt id="cmdoption-htseq-count-i">
+<code class="descname">-i</code><code class="descclassname"> &lt;id attribute&gt;</code><code class="descclassname">, </code><code class="descname">--idattr</code><code class="descclassname">=&lt;id attribute&gt;</code><a class="headerlink" href="#cmdoption-htseq-count-i" title="Permalink to this definition">¶</a></dt>
+<dd><p>GFF attribute to be used as feature ID. Several GFF lines with the same
+feature ID will be considered as parts of the same feature. The feature ID
+is used to identity the counts in the output table. The default, suitable
+for RNA-Seq analysis using an Ensembl GTF file, is <code class="docutils literal"><span class="pre">gene_id</span></code>.</p>
+</dd></dl>
+
+<dl class="cmdoption">
+<dt id="cmdoption-htseq-count-m">
+<code class="descname">-m</code><code class="descclassname"> &lt;mode&gt;</code><code class="descclassname">, </code><code class="descname">--mode</code><code class="descclassname">=&lt;mode&gt;</code><a class="headerlink" href="#cmdoption-htseq-count-m" title="Permalink to this definition">¶</a></dt>
+<dd><p>Mode to handle reads overlapping more than one feature. Possible values for
+<cite>&lt;mode&gt;</cite> are <code class="docutils literal"><span class="pre">union</span></code>, <code class="docutils literal"><span class="pre">intersection-strict</span></code> and <code class="docutils literal"><span class="pre">intersection-nonempty</span></code>
+(default: <code class="docutils literal"><span class="pre">union</span></code>)</p>
+</dd></dl>
+
+<dl class="cmdoption">
+<dt id="cmdoption-htseq-count-o">
+<code class="descname">-o</code><code class="descclassname"> &lt;samout&gt;</code><code class="descclassname">, </code><code class="descname">--samout</code><code class="descclassname">=&lt;samout&gt;</code><a class="headerlink" href="#cmdoption-htseq-count-o" title="Permalink to this definition">¶</a></dt>
+<dd><p>write out all SAM alignment records into an output SAM
+file called &lt;samout&gt;, annotating each line with its
+assignment to a feature or a special counter
+(as an optional field with tag &#8216;XF&#8217;)</p>
+</dd></dl>
+
+<dl class="cmdoption">
+<dt id="cmdoption-htseq-count-q">
+<code class="descname">-q</code><code class="descclassname"></code><code class="descclassname">, </code><code class="descname">--quiet</code><code class="descclassname"></code><a class="headerlink" href="#cmdoption-htseq-count-q" title="Permalink to this definition">¶</a></dt>
+<dd><p>suppress progress report and warnings</p>
+</dd></dl>
+
+<dl class="cmdoption">
+<dt id="cmdoption-htseq-count-h">
+<code class="descname">-h</code><code class="descclassname"></code><code class="descclassname">, </code><code class="descname">--help</code><code class="descclassname"></code><a class="headerlink" href="#cmdoption-htseq-count-h" title="Permalink to this definition">¶</a></dt>
+<dd><p>Show a usage summary and exit</p>
+</dd></dl>
+
+</div>
+<div class="section" id="frequenctly-asked-questions">
+<h3>Frequenctly asked questions<a class="headerlink" href="#frequenctly-asked-questions" title="Permalink to this headline">¶</a></h3>
+<dl class="docutils">
+<dt><em>My shell reports &#8220;command not found&#8221; when I try to run &#8220;htseq-count&#8221;. How can I launch the script?</em></dt>
+<dd>The file &#8220;htseq-count&#8221; has to be in the system&#8217;s <a class="reference external" href="http://en.wikipedia.org/wiki/PATH_(variable)">search path</a>. By default, Python places it
+in its script directory, which you have to add to your search path. A maybe easier alternative
+is to write <code class="docutils literal"><span class="pre">python</span> <span class="pre">-m</span> <span class="pre">HTSeq.scripts.count</span></code> instead of <code class="docutils literal"><span class="pre">htseq-count</span></code>, followed by the
+options and arguments, which will launch the htseq-count script as well.</dd>
+</dl>
+<dl class="docutils">
+<dt><em>Why are multi-mapping reads and reads overlapping multiple features discarded rather than counted for each feature?</em></dt>
+<dd>The primary intended use case for <code class="docutils literal"><span class="pre">htseq-count</span></code> is <em>differential</em> expression analysis, where
+one compares the expression of the same gene across samples and not the expression of different
+genes within a sample. Now, consider two genes, which share a stretch of common sequence
+such that for a read mapping to this stretch, the aligner cannot decide which of the two genes
+the read originated from and hence reports a multiple alignment. If we discard all such reads,
+we undercount the total output of the genes, but the <em>ratio</em> of expression strength (the &#8220;fold
+change&#8221;) between samples or experimental condition will still be correct, because we discard the
+same fratcion of reads in all samples. On the other hand, if we counted these reads for both
+genes, a subsequent diffential-expression analysis might find false positives: Even if only one of the
+gene changes increases its expression in reaction to treatment, the additional read caused by this
+would be counted for both genes, giving the wrong appearance that both genes reacted to the treatment.</dd>
+<dt><em>I have used a GTF file generated by the Table Browser function of the UCSC Genome Browser, and most reads are counted as ambiguous. Why?</em></dt>
+<dd>In these files, the <code class="docutils literal"><span class="pre">gene_id</span></code> attribute incorrectly contains the same value as the <code class="docutils literal"><span class="pre">transcript_id</span></code>
+attribute and hence a different value for each transcript of the same gene. Hence, if a read maps to
+an exon shared by several transcripts of the same gene, this will appear to <code class="docutils literal"><span class="pre">htseq-count</span></code> as and
+overlap with several genes. Therefore, these GTF files cannot be used as is. Either correct the
+incorrect <code class="docutils literal"><span class="pre">gene_id</span></code> attributes with a suitable script, or use a GTF file from a different source.</dd>
+<dt><em>Can I use htseq-count to count reads mapping to transcripts rather than genes?</em></dt>
+<dd>In principle, you could instruct htseq-count to count for each of a gene&#8217;s transcript individually, by
+specifying <code class="docutils literal"><span class="pre">--idattr</span> <span class="pre">transcript_id</span></code>. However, all reads mapping to exons shared by several
+transcripts will then be considered ambiguous. (See second question.) Counting them for each transcript
+that contains the exons would be possible but makes little sense for typical use cases. (See first
+question.) If you want to perform differential expression analysis on the level of
+individual transcripts, maybe ahve a look at <a class="reference external" href="http://dx.doi.org/10.1101/gr.133744.111">our paper on DEXSeq</a> for a discussion on why we
+prefer performing such analyses on the level of exons instead.</dd>
+</dl>
+<dl class="docutils">
+<dt><em>For paired-end data, does htseq-count count reads or read pairs?</em></dt>
+<dd>Read pairs. The script is designed to count &#8220;units of evidence&#8221; for gene expression. If both mates map
+to the same gene, this still only shows that one cDNA fragment originated from that gene. Hence, it
+should be counted only once.</dd>
+<dt><em>What happens if the two reads in a pair overlap two different features?</em></dt>
+<dd>The same as if one read overlaps two features: The read or read pair is counted as ambiguous.</dd>
+<dt><em>What happend if the mate of an aligned read is not aligned?</em></dt>
+<dd>For the default mode &#8220;union&#8221;, only the aligned read determines how the read pair is counted. For the
+other modes, see their description.</dd>
+<dt><em>Most of my RNA-Seq reads are counted as ``__no_feature``. What could have gone wrong?</em></dt>
+<dd>Common causes include:
+- The <code class="docutils literal"><span class="pre">--stranded</span></code> option was set wrongly. Use a genome browser (e.g., IGV) to check.
+- The GTF file uses coordinates from another reference assembly as the SAM file.
+- The chromosome names differ between GTF and SAM file (e.g., <code class="docutils literal"><span class="pre">chr1</span></code> in one file and jsut <code class="docutils literal"><span class="pre">1</span></code> in the other).</dd>
+<dt><em>Which overlap mode should I use?</em></dt>
+<dd>When I wrote <code class="docutils literal"><span class="pre">htseq-count</span></code>, I was not sure which option is best and included three possibilities. Now,
+several years later, I have seen very few cases where the default <code class="docutils literal"><span class="pre">union</span></code> would not be appropriate
+and hence tend to recommend to just stick to <code class="docutils literal"><span class="pre">union</span></code>.</dd>
+<dt><em>I have a GTF file? How do I convert it to GFF?</em></dt>
+<dd>No need to do that, because GTF is a tightening of the GFF format. Hence, all GTF files are GFF files, too.
+By default, htseq-count expects a GTF file.</dd>
+<dt><em>I have a GFF file, not a GTF file. How can I use it to count RNA-Seq reads?</em></dt>
+<dd>The GTF format specifies, inter alia, that exons are marked by the word <code class="docutils literal"><span class="pre">exon</span></code> in the third column and
+that the gene ID is given in an attribute named <code class="docutils literal"><span class="pre">gene_id</span></code>, and htseq-count expects these words to be used
+by default. If you GFF file uses a word other than <code class="docutils literal"><span class="pre">exon</span></code> in its third column to mark lines describing
+exons, notify <code class="docutils literal"><span class="pre">htseq-count</span></code> using the <code class="docutils literal"><span class="pre">--type</span></code> option. If the name of the attribute containing the
+gene ID for exon lines is not <code class="docutils literal"><span class="pre">gene_id</span></code>, use the <code class="docutils literal"><span class="pre">--idattr</span></code>. Often, its is, for example,
+<code class="docutils literal"><span class="pre">Parent</span></code>, <code class="docutils literal"><span class="pre">GeneID</span></code> or <code class="docutils literal"><span class="pre">ID</span></code>. Make sure it is the gene ID and not the exon ID.</dd>
+<dt><em>How can I count overlaps with features other than genes/exons?</em></dt>
+<dd>If you have GFF file listing your features, use it together with the <code class="docutils literal"><span class="pre">--type</span></code> and <code class="docutils literal"><span class="pre">--idattr</span></code> options.
+If your feature intervals need to be computed, you are probably better off writing your own
+counting script (provided you have some knowledge of Python). Follow the tutorial in the other pages
+of this documentation to see how to use HTSeq for this.</dd>
+<dt><em>How should I cite htseq-count in a publication?</em></dt>
+<dd>Please cite HTSeq as follows: S Anders, T P Pyl, W Huber: <em>HTSeq &#8212; A Python framework to work with
+high-throughput sequencing data</em>. bioRxiv 2014. <a class="reference external" href="http://dx.doi.org/10.1101/002824">doi: 10.1101/002824</a>.
+(This is a preprint currently under review. We will replace this with the reference to the final
+published version once available.)</dd>
+</dl>
+</div>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Counting reads in features with <code class="docutils literal"><span class="pre">htseq-count</span></code></a><ul>
+<li><a class="reference internal" href="#usage">Usage</a><ul>
+<li><a class="reference internal" href="#options">Options</a></li>
+<li><a class="reference internal" href="#frequenctly-asked-questions">Frequenctly asked questions</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="qa.html"
+                        title="previous chapter">Quality Assessment with <code class="docutils literal"><span class="pre">htseq-qa</span></code></a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="history.html"
+                        title="next chapter">Version history</a></p>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="_sources/count.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <div><input type="text" name="q" /></div>
+      <div><input type="submit" value="Go" /></div>
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="history.html" title="Version history"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="qa.html" title="Quality Assessment with htseq-qa"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">HTSeq 0.7.2 documentation</a> &#187;</li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2010, Simon Anders.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.5.5.
+    </div>
+  </body>
+
+<!-- Start of StatCounter Code -->
+<script type="text/javascript">
+var sc_project=5680199; 
+var sc_invisible=1; 
+var sc_partition=63; 
+var sc_click_stat=1; 
+var sc_security="6e579550"; 
+</script>
+
+<script type="text/javascript"
+src="http://www.statcounter.com/counter/counter.js"></script><noscript><div
+class="statcounter"><a title="counter for iweb"
+href="http://www.statcounter.com/iweb/" target="_blank"><img
+class="statcounter"
+src="http://c.statcounter.com/5680199/0/6e579550/1/"
+alt="counter for iweb" ></a></div></noscript>
+<!-- End of StatCounter Code -->
+</html>

@@ -1,0 +1,315 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Other parsers &#8212; HTSeq 0.7.2 documentation</title>
+    
+    <link rel="stylesheet" href="_static/classic.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    './',
+        VERSION:     '0.7.2',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true,
+        SOURCELINK_SUFFIX: '.txt'
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Miscellaneous" href="misc.html" />
+    <link rel="prev" title="Features" href="features.html" /> 
+  </head>
+  <body role="document">
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="misc.html" title="Miscellaneous"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="features.html" title="Features"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">HTSeq 0.7.2 documentation</a> &#187;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="other-parsers">
+<span id="otherparsers"></span><h1>Other parsers<a class="headerlink" href="#other-parsers" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="vcf-reader-and-variantcall">
+<h2><code class="docutils literal"><span class="pre">VCF_Reader</span></code> and <code class="docutils literal"><span class="pre">VariantCall</span></code><a class="headerlink" href="#vcf-reader-and-variantcall" title="Permalink to this headline">¶</a></h2>
+<p>VCF is a text file format (most likely stored in a compressed manner). It contains meta-information lines, a header line, and then data lines each containing information about a position in the genome.</p>
+<p>There is an option whether to contain genotype information on samples for each position or not.</p>
+<p>See the definitions at</p>
+<p>As usual, there is a parser class, called <strong>VCF_Reader</strong>, that can generate an
+iterator of objects describing the structural variant calls. These objects are of type <a class="reference internal" href="#HTSeq.VariantCall" title="HTSeq.VariantCall"><code class="xref py py-class docutils literal"><span class="pre">VariantCall</span></code></a>
+and each describes one line of a VCF file. See below for an example.</p>
+<dl class="class">
+<dt id="HTSeq.VCF_Reader">
+<em class="property">class </em><code class="descclassname">HTSeq.</code><code class="descname">VCF_Reader</code><span class="sig-paren">(</span><em>filename_or_sequence</em><span class="sig-paren">)</span><a class="headerlink" href="#HTSeq.VCF_Reader" title="Permalink to this definition">¶</a></dt>
+<dd><p>As a subclass of <a class="reference internal" href="misc.html#HTSeq.FileOrSequence" title="HTSeq.FileOrSequence"><code class="xref py py-class docutils literal"><span class="pre">FileOrSequence</span></code></a>, VCF_Reader can be initialized either
+with a file name or with an open file or another sequence of lines.</p>
+<p>When requesting an iterator, it generates objects of type <a class="reference internal" href="#HTSeq.VariantCall" title="HTSeq.VariantCall"><code class="xref py py-class docutils literal"><span class="pre">VariantCall</span></code></a>.</p>
+<blockquote>
+<div><dl class="attribute">
+<dt id="HTSeq.VCF_Reader.metadata">
+<code class="descname">metadata</code><a class="headerlink" href="#HTSeq.VCF_Reader.metadata" title="Permalink to this definition">¶</a></dt>
+<dd><p>VCF_Reader skips all lines starting with a single &#8216;#&#8217; as this marks
+a comment. However, lines starying with &#8216;##&#8217; contain meta data (Information about filters, and the fields in the &#8216;info&#8217;-column).</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="HTSeq.VCF_Reader.parse_meta">
+<code class="descname">parse_meta</code><span class="sig-paren">(</span><em>header_filename = None</em><span class="sig-paren">)</span><a class="headerlink" href="#HTSeq.VCF_Reader.parse_meta" title="Permalink to this definition">¶</a></dt>
+<dd><p>The VCF_Reader normally does not parse the meta-information and also the <a class="reference internal" href="#HTSeq.VariantCall" title="HTSeq.VariantCall"><code class="xref py py-class docutils literal"><span class="pre">VariantCall</span></code></a> does not contain unpacked metainformation. The function parse_meta reads the header information either from the attached <a class="reference internal" href="misc.html#HTSeq.FileOrSequence" title="HTSeq.FileOrSequence"><code class="xref py py-class docutils literal"><span class="pre">FileOrSequence</span></code></a> or from a file connection being opened to a provided &#8216;header-filename&#8217;. This is important if you want to access sample-specific information for the :class`VariantCall`s in your .vcf-file.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="HTSeq.VCF_Reader.make_info_dict">
+<code class="descname">make_info_dict</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#HTSeq.VCF_Reader.make_info_dict" title="Permalink to this definition">¶</a></dt>
+<dd><p>This function will parse the info string and create the attribute <code class="xref py py-attr docutils literal"><span class="pre">infodict</span></code> which contains a dict
+with key:value-pairs containig the type-information for each entry of the <a class="reference internal" href="#HTSeq.VariantCall" title="HTSeq.VariantCall"><code class="xref py py-class docutils literal"><span class="pre">VariantCall</span></code></a>&#8216;s info field.</p>
+</dd></dl>
+
+</div></blockquote>
+</dd></dl>
+
+<dl class="class">
+<dt id="HTSeq.VariantCall">
+<em class="property">class </em><code class="descclassname">HTSeq.</code><code class="descname">VariantCall</code><span class="sig-paren">(</span><em>line</em>, <em>nsamples = 0</em>, <em>sampleids=[]</em><span class="sig-paren">)</span><a class="headerlink" href="#HTSeq.VariantCall" title="Permalink to this definition">¶</a></dt>
+<dd><p>A VariantCall object always contains the following attributes:</p>
+<blockquote>
+<div><dl class="attribute">
+<dt id="HTSeq.VariantCall.alt">
+<code class="descname">alt</code><a class="headerlink" href="#HTSeq.VariantCall.alt" title="Permalink to this definition">¶</a></dt>
+<dd><p>The alternative base(s) of the <a class="reference internal" href="#HTSeq.VariantCall" title="HTSeq.VariantCall"><code class="xref py py-class docutils literal"><span class="pre">VariantCall</span></code></a>. This is a list containing all called alternatives.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="HTSeq.VariantCall.chrom">
+<code class="descname">chrom</code><a class="headerlink" href="#HTSeq.VariantCall.chrom" title="Permalink to this definition">¶</a></dt>
+<dd><p>The Chromosome on which the <a class="reference internal" href="#HTSeq.VariantCall" title="HTSeq.VariantCall"><code class="xref py py-class docutils literal"><span class="pre">VariantCall</span></code></a> was called.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="HTSeq.VariantCall.filter">
+<code class="descname">filter</code><a class="headerlink" href="#HTSeq.VariantCall.filter" title="Permalink to this definition">¶</a></dt>
+<dd><p>This specifies if the <a class="reference internal" href="#HTSeq.VariantCall" title="HTSeq.VariantCall"><code class="xref py py-class docutils literal"><span class="pre">VariantCall</span></code></a> passed all the filters given in the .vcf-header (value=PASS) or
+contains a list of filters that failed (the filter-id&#8217;s are specified in the header also).</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="HTSeq.VariantCall.format">
+<code class="descname">format</code><a class="headerlink" href="#HTSeq.VariantCall.format" title="Permalink to this definition">¶</a></dt>
+<dd><p>Contains the format string specifying which per-sample information is stored
+in <a class="reference internal" href="#HTSeq.VariantCall.samples" title="HTSeq.VariantCall.samples"><code class="xref py py-attr docutils literal"><span class="pre">VariantCall.samples</span></code></a>.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="HTSeq.VariantCall.id">
+<code class="descname">id</code><a class="headerlink" href="#HTSeq.VariantCall.id" title="Permalink to this definition">¶</a></dt>
+<dd><p>The id of the <a class="reference internal" href="#HTSeq.VariantCall" title="HTSeq.VariantCall"><code class="xref py py-class docutils literal"><span class="pre">VariantCall</span></code></a>, if it has been found in any database, for unknown variants this will be
+&#8221;.&#8221;.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="HTSeq.VariantCall.info">
+<code class="descname">info</code><a class="headerlink" href="#HTSeq.VariantCall.info" title="Permalink to this definition">¶</a></dt>
+<dd><p>This will contain either the string version of the info field for this <a class="reference internal" href="#HTSeq.VariantCall" title="HTSeq.VariantCall"><code class="xref py py-class docutils literal"><span class="pre">VariantCall</span></code></a> or a dict with the
+parsed and processed info-string.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="HTSeq.VariantCall.pos">
+<code class="descname">pos</code><a class="headerlink" href="#HTSeq.VariantCall.pos" title="Permalink to this definition">¶</a></dt>
+<dd><p>A <a class="reference internal" href="genomic.html#HTSeq.GenomicPosition" title="HTSeq.GenomicPosition"><code class="xref py py-class docutils literal"><span class="pre">HTSeq.GenomicPosition</span></code></a> that specifies the position of the <a class="reference internal" href="#HTSeq.VariantCall" title="HTSeq.VariantCall"><code class="xref py py-class docutils literal"><span class="pre">VariantCall</span></code></a>.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="HTSeq.VariantCall.qual">
+<code class="descname">qual</code><a class="headerlink" href="#HTSeq.VariantCall.qual" title="Permalink to this definition">¶</a></dt>
+<dd><p>The quality of the <a class="reference internal" href="#HTSeq.VariantCall" title="HTSeq.VariantCall"><code class="xref py py-class docutils literal"><span class="pre">VariantCall</span></code></a>.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="HTSeq.VariantCall.ref">
+<code class="descname">ref</code><a class="headerlink" href="#HTSeq.VariantCall.ref" title="Permalink to this definition">¶</a></dt>
+<dd><p>The reference base(s) of the <a class="reference internal" href="#HTSeq.VariantCall" title="HTSeq.VariantCall"><code class="xref py py-class docutils literal"><span class="pre">VariantCall</span></code></a>.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="HTSeq.VariantCall.samples">
+<code class="descname">samples</code><a class="headerlink" href="#HTSeq.VariantCall.samples" title="Permalink to this definition">¶</a></dt>
+<dd><p>A dict mapping sample-id&#8217;s to subdicts which use the <a class="reference internal" href="#HTSeq.VariantCall.format" title="HTSeq.VariantCall.format"><code class="xref py py-attr docutils literal"><span class="pre">VariantCall.format</span></code></a> as
+keys to store the per-sample information.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="HTSeq.VariantCall.unpack_info">
+<code class="descname">unpack_info</code><span class="sig-paren">(</span><em>infodict</em><span class="sig-paren">)</span><a class="headerlink" href="#HTSeq.VariantCall.unpack_info" title="Permalink to this definition">¶</a></dt>
+<dd><p>This function parses the info-string and replaces it with a dict rperesentation if the infodict of the
+originating VCF_Reader is provided.</p>
+</dd></dl>
+
+</div></blockquote>
+</dd></dl>
+
+<p>Example Workflow for reading the dbSNP in VCF-format (obtained from <cite>dbSNP &lt;ftp://ftp.ncbi.nih.gov/snp/organisms/human_9606/VCF/v4.0/00-All.vcf.gz&gt;_</cite>):</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">vcfr</span> <span class="o">=</span> <span class="n">HTSeq</span><span class="o">.</span><span class="n">VCF_Reader</span><span class="p">(</span> <span class="s2">&quot;00-All.vcf.gz&quot;</span> <span class="p">)</span> 
+<span class="gp">&gt;&gt;&gt; </span><span class="n">vcfr</span><span class="o">.</span><span class="n">parse_meta</span><span class="p">()</span> 
+<span class="gp">&gt;&gt;&gt; </span><span class="n">vcfr</span><span class="o">.</span><span class="n">make_info_dict</span><span class="p">()</span> 
+<span class="gp">&gt;&gt;&gt; </span><span class="k">for</span> <span class="n">vc</span> <span class="ow">in</span> <span class="n">vcfr</span><span class="p">:</span> 
+<span class="gp">... </span>   <span class="nb">print</span> <span class="n">vc</span><span class="p">,</span>
+<span class="go">1:10327:&#39;T&#39;-&gt;&#39;C&#39;</span>
+<span class="go">1:10433:&#39;A&#39;-&gt;&#39;AC&#39;</span>
+<span class="go">1:10439:&#39;AC&#39;-&gt;&#39;A&#39;</span>
+<span class="go">1:10440:&#39;C&#39;-&gt;&#39;A&#39;</span>
+</pre></div>
+</div>
+<p><em>FIXME</em> The example above is not run, as the example file is still missing!</p>
+</div>
+<div class="section" id="wiggle-reader">
+<h2>Wiggle Reader<a class="headerlink" href="#wiggle-reader" title="Permalink to this headline">¶</a></h2>
+<p>The <a class="reference external" href="http://genome.ucsc.edu/goldenPath/help/wiggle.html">Wiggle format</a> (file extension often <code class="docutils literal"><span class="pre">.wig</span></code>) is a format to describe numeric scores assigned to base-pair positions on a genome.
+The class <a class="reference internal" href="#HTSeq.WiggleReader" title="HTSeq.WiggleReader"><code class="xref py py-class docutils literal"><span class="pre">WiggleReader</span></code></a> is parser for such files.</p>
+<dl class="class">
+<dt id="HTSeq.WiggleReader">
+<em class="property">class </em><code class="descclassname">HTSeq.</code><code class="descname">WiggleReader</code><span class="sig-paren">(</span><em>filename_or_sequence</em>, <em>verbose=True</em><span class="sig-paren">)</span><a class="headerlink" href="#HTSeq.WiggleReader" title="Permalink to this definition">¶</a></dt>
+<dd><p>The class is instatiated with the file name of a Wiggle file, or a sequence of lines in Wiggle format. A <code class="docutils literal"><span class="pre">WiggleReader</span></code>
+object generates an iterator, which yields pairs of the form <code class="docutils literal"><span class="pre">(iv,</span> <span class="pre">score)</span></code>, where <code class="docutils literal"><span class="pre">iv</span></code> is a <a class="reference internal" href="genomic.html#HTSeq.GenomicInterval" title="HTSeq.GenomicInterval"><code class="xref py py-class docutils literal"><span class="pre">GenomicInterval</span></code></a>
+object and <code class="docutils literal"><span class="pre">score</span></code> is a <code class="docutils literal"><span class="pre">float</span></code> with the score that the file assigns to the specified interval. If <code class="docutils literal"><span class="pre">verbose</span></code> is set to
+True, the user is alerted to skipped lines (comments or <code class="docutils literal"><span class="pre">browser</span></code> lines) by a message printed to the standard output.</p>
+</dd></dl>
+
+</div>
+<div class="section" id="bed-reader">
+<h2>BED Reader<a class="headerlink" href="#bed-reader" title="Permalink to this headline">¶</a></h2>
+<p>The <a class="reference external" href="http://genome.ucsc.edu/FAQ/FAQformat.html#format1">BED format</a>  is a format originally used to describe gene models but is also commonly used to describe other genomic features.</p>
+<dl class="class">
+<dt id="HTSeq.BED_Reader">
+<em class="property">class </em><code class="descclassname">HTSeq.</code><code class="descname">BED_Reader</code><span class="sig-paren">(</span><em>filename_or_sequence</em><span class="sig-paren">)</span><a class="headerlink" href="#HTSeq.BED_Reader" title="Permalink to this definition">¶</a></dt>
+<dd><p>The class is instatiated with the file name of a BED file, or a sequence of lines in BED format. A <code class="docutils literal"><span class="pre">BED_Reader</span></code>
+object generates an iterator, which yields a <a class="reference internal" href="features.html#HTSeq.GenomicFeature" title="HTSeq.GenomicFeature"><code class="xref py py-class docutils literal"><span class="pre">GenomicFeature</span></code></a> object for each line in the BED file (except for
+lines starting with <code class="docutils literal"><span class="pre">track</span></code>, whcih are skipped).</p>
+<p>The attributes of the yielded <code class="docutils literal"><span class="pre">GenomicFeature</span></code> objects are as follows:</p>
+<dl class="docutils">
+<dt><code class="docutils literal"><span class="pre">iv</span></code></dt>
+<dd>a <a class="reference internal" href="genomic.html#HTSeq.GenomicInterval" title="HTSeq.GenomicInterval"><code class="xref py py-class docutils literal"><span class="pre">GenomicInterval</span></code></a> object with the coordinates as given by the 1st, 2nd, 3rd, and 6th column of the BED file. If the
+BED file has less than 6 columns, the strand is set to &#8220;<code class="docutils literal"><span class="pre">.</span></code>&#8221;.</dd>
+<dt><code class="docutils literal"><span class="pre">name</span></code></dt>
+<dd>the name of feature as given in the 4th column, or <code class="docutils literal"><span class="pre">unnamed</span></code>, if the file has only three columns</dd>
+<dt><code class="docutils literal"><span class="pre">type</span></code></dt>
+<dd>always the string <code class="docutils literal"><span class="pre">BED</span> <span class="pre">line</span></code></dd>
+<dt><code class="docutils literal"><span class="pre">score</span></code></dt>
+<dd>a float with the score as given by the 5th column (or <code class="docutils literal"><span class="pre">None</span></code> if the BED file has less 5 columns).</dd>
+<dt><code class="docutils literal"><span class="pre">thick</span></code></dt>
+<dd>a <a class="reference internal" href="genomic.html#HTSeq.GenomicInterval" title="HTSeq.GenomicInterval"><code class="xref py py-class docutils literal"><span class="pre">GenomicInterval</span></code></a> object containg the &#8220;thick&#8221; part of the feature, as specified by the 6th and 7th column, with chromosome
+and strand copied from <code class="docutils literal"><span class="pre">iv</span></code> (or <code class="docutils literal"><span class="pre">None</span></code> if the BED file has less 7 columns).</dd>
+<dt><code class="docutils literal"><span class="pre">itemRgb</span></code></dt>
+<dd>a list of three <code class="docutils literal"><span class="pre">int</span></code> values, taken from the 8th column (<code class="docutils literal"><span class="pre">None</span></code> if the BED file has less 8 columns). In a BED file, this triple
+is meant to specify the colour in which the feature should be drawn in a browser.</dd>
+</dl>
+</dd></dl>
+
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Other parsers</a><ul>
+<li><a class="reference internal" href="#vcf-reader-and-variantcall"><code class="docutils literal"><span class="pre">VCF_Reader</span></code> and <code class="docutils literal"><span class="pre">VariantCall</span></code></a></li>
+<li><a class="reference internal" href="#wiggle-reader">Wiggle Reader</a></li>
+<li><a class="reference internal" href="#bed-reader">BED Reader</a></li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="features.html"
+                        title="previous chapter">Features</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="misc.html"
+                        title="next chapter">Miscellaneous</a></p>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="_sources/otherparsers.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <div><input type="text" name="q" /></div>
+      <div><input type="submit" value="Go" /></div>
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="misc.html" title="Miscellaneous"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="features.html" title="Features"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">HTSeq 0.7.2 documentation</a> &#187;</li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2010, Simon Anders.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.5.5.
+    </div>
+  </body>
+
+<!-- Start of StatCounter Code -->
+<script type="text/javascript">
+var sc_project=5680199; 
+var sc_invisible=1; 
+var sc_partition=63; 
+var sc_click_stat=1; 
+var sc_security="6e579550"; 
+</script>
+
+<script type="text/javascript"
+src="http://www.statcounter.com/counter/counter.js"></script><noscript><div
+class="statcounter"><a title="counter for iweb"
+href="http://www.statcounter.com/iweb/" target="_blank"><img
+class="statcounter"
+src="http://c.statcounter.com/5680199/0/6e579550/1/"
+alt="counter for iweb" ></a></div></noscript>
+<!-- End of StatCounter Code -->
+</html>

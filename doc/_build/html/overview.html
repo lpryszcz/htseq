@@ -1,0 +1,281 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>HTSeq: Analysing high-throughput sequencing data with Python &#8212; HTSeq 0.7.2 documentation</title>
+    
+    <link rel="stylesheet" href="_static/classic.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    './',
+        VERSION:     '0.7.2',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true,
+        SOURCELINK_SUFFIX: '.txt'
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Prequisites and installation" href="install.html" />
+    <link rel="prev" title="HTSeq: Analysing high-throughput sequencing data with Python" href="index.html" /> 
+  </head>
+  <body role="document">
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="install.html" title="Prequisites and installation"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="index.html" title="HTSeq: Analysing high-throughput sequencing data with Python"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">HTSeq 0.7.2 documentation</a> &#187;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="htseq-analysing-high-throughput-sequencing-data-with-python">
+<span id="overview"></span><h1>HTSeq: Analysing high-throughput sequencing data with Python<a class="headerlink" href="#htseq-analysing-high-throughput-sequencing-data-with-python" title="Permalink to this headline">¶</a></h1>
+<p>HTSeq is a Python package that provides infrastructure to process data
+from high-throughput sequencing assays.</p>
+<ul class="simple">
+<li>Please see the chapter <a class="reference internal" href="tour.html#tour"><span class="std std-ref">A tour through HTSeq</span></a> first for an overview on the kind of analysis
+you can do with HTSeq and the design of the package, and then look at the reference
+documentation.</li>
+</ul>
+<ul class="simple">
+<li>While the main purpose of HTSeq is to allow you to write your own analysis scripts,
+customized to your needs, there are also a couple of stand-alone scripts for
+common tasks that can be used without any Python knowledge. See the <em>Scripts</em>
+section in the overview below for what is available.</li>
+</ul>
+<ul class="simple">
+<li>For downloads and installation instructions, see <a class="reference internal" href="install.html#install"><span class="std std-ref">Prequisites and installation</span></a>.</li>
+</ul>
+<div class="section" id="paper">
+<h2>Paper<a class="headerlink" href="#paper" title="Permalink to this headline">¶</a></h2>
+<p>HTSeq is described in the following publication (which is currently under review but already
+available as preprint):</p>
+<blockquote>
+<div><div class="line-block">
+<div class="line">Simon Anders, Paul Theodor Pyl, Wolfgang Huber</div>
+<div class="line"><em>HTSeq &#8212; A Python framework to work with high-throughput sequencing data</em></div>
+<div class="line">bioRxiv preprint (2014), <a class="reference external" href="http://dx.doi.org/10.1101/002824">doi: 10.1101/002824</a></div>
+</div>
+</div></blockquote>
+<p>If you use HTSeq in research, please cite this paper in your publication.</p>
+</div>
+<div class="section" id="documentation-overview">
+<h2>Documentation overview<a class="headerlink" href="#documentation-overview" title="Permalink to this headline">¶</a></h2>
+<ul>
+<li><p class="first"><a class="reference internal" href="install.html#install"><span class="std std-ref">Prequisites and installation</span></a></p>
+<p>Download links and installation instructions can be found here</p>
+</li>
+<li><p class="first"><a class="reference internal" href="tour.html#tour"><span class="std std-ref">A tour through HTSeq</span></a></p>
+<p>The Tour shows you how to get started. It explains how to install HTSeq, and then
+demonstrates typical analysis steps with explicit examples. Read this first, and
+then see the Reference for details.</p>
+</li>
+<li><p class="first"><a class="reference internal" href="tss.html#tss"><span class="std std-ref">A detailed use case: TSS plots</span></a></p>
+<p>This chapter explains typical usage patterns for HTSeq by explaining in detail
+three different solutions to the same programming task.</p>
+</li>
+<li><p class="first"><a class="reference internal" href="counting.html#counting"><span class="std std-ref">Counting reads</span></a></p>
+<p>This chapter explorer in detail the use case of counting the overlap of reads
+with annotation features and explains how to implement custom logic by
+writing on&#8217;s own customized counting scripts</p>
+</li>
+<li><p class="first">Reference documentation</p>
+<p>The various classes of <cite>HTSeq</cite> are described here.</p>
+<ul>
+<li><p class="first"><a class="reference internal" href="refoverview.html#refoverview"><span class="std std-ref">Reference overview</span></a></p>
+<p>A brief overview over all classes.</p>
+</li>
+<li><p class="first"><a class="reference internal" href="sequences.html#sequences"><span class="std std-ref">Sequences and FASTA/FASTQ files</span></a></p>
+<p>In order to represent sequences and reads (i.e., sequences with base-call quality
+information), the classes <a class="reference internal" href="sequences.html#HTSeq.Sequence" title="HTSeq.Sequence"><code class="xref py py-class docutils literal"><span class="pre">Sequence</span></code></a> and <a class="reference internal" href="sequences.html#HTSeq.SequenceWithQualities" title="HTSeq.SequenceWithQualities"><code class="xref py py-class docutils literal"><span class="pre">SequenceWithQualities</span></code></a> are used.
+The classes <a class="reference internal" href="sequences.html#HTSeq.FastaReader" title="HTSeq.FastaReader"><code class="xref py py-class docutils literal"><span class="pre">FastaReader</span></code></a> and <a class="reference internal" href="sequences.html#HTSeq.FastqReader" title="HTSeq.FastqReader"><code class="xref py py-class docutils literal"><span class="pre">FastqReader</span></code></a> allow to parse FASTA and FASTQ
+files.</p>
+</li>
+<li><p class="first"><a class="reference internal" href="genomic.html#genomic"><span class="std std-ref">Genomic intervals and genomic arrays</span></a></p>
+<p>The classes <a class="reference internal" href="genomic.html#HTSeq.GenomicInterval" title="HTSeq.GenomicInterval"><code class="xref py py-class docutils literal"><span class="pre">GenomicInterval</span></code></a> and <a class="reference internal" href="genomic.html#HTSeq.GenomicPosition" title="HTSeq.GenomicPosition"><code class="xref py py-class docutils literal"><span class="pre">GenomicPosition</span></code></a> represent intervals and
+positions in a genome. The class <a class="reference internal" href="genomic.html#HTSeq.GenomicArray" title="HTSeq.GenomicArray"><code class="xref py py-class docutils literal"><span class="pre">GenomicArray</span></code></a> is an all-purpose container
+with easy access via a genomic interval or position, and <a class="reference internal" href="genomic.html#HTSeq.GenomicArrayOfSets" title="HTSeq.GenomicArrayOfSets"><code class="xref py py-class docutils literal"><span class="pre">GenomicArrayOfSets</span></code></a>
+is a special case useful to deal with genomic features (such as genes, exons,
+etc.)</p>
+</li>
+<li><p class="first"><a class="reference internal" href="alignments.html#alignments"><span class="std std-ref">Read alignments</span></a></p>
+<p>To process the output from short read aligners in various formats (e.g., SAM),
+the classes described here are used, to represent output files and alignments,
+i.e., reads with their alignment information.</p>
+</li>
+<li><p class="first"><a class="reference internal" href="features.html#features"><span class="std std-ref">Features</span></a></p>
+<p>The classes <a class="reference internal" href="features.html#HTSeq.GenomicFeature" title="HTSeq.GenomicFeature"><code class="xref py py-class docutils literal"><span class="pre">GenomicFeature</span></code></a> and <a class="reference internal" href="features.html#HTSeq.GFF_Reader" title="HTSeq.GFF_Reader"><code class="xref py py-class docutils literal"><span class="pre">GFF_Reader</span></code></a> help to deal with genomic
+annotation data.</p>
+</li>
+<li><p class="first"><a class="reference internal" href="otherparsers.html#otherparsers"><span class="std std-ref">Other parsers</span></a></p>
+<p>This page describes classes to parse VCF, Wiggle and BED files.</p>
+</li>
+<li><p class="first"><a class="reference internal" href="misc.html#misc"><span class="std std-ref">Miscellaneous</span></a></p>
+</li>
+</ul>
+</li>
+<li><p class="first">Scripts</p>
+<p>The following scripts can be used without any Python knowledge.</p>
+<ul>
+<li><p class="first"><a class="reference internal" href="qa.html#qa"><span class="std std-ref">Quality Assessment with htseq-qa</span></a></p>
+<p>Given a FASTQ or SAM file, this script produces a PDF file with plots depicting
+the base calls and base-call qualities by position in the read. This is useful to
+assess the technical quality of a sequencing run.</p>
+</li>
+<li><p class="first"><a class="reference internal" href="count.html#count"><span class="std std-ref">Counting reads in features with htseq-count</span></a></p>
+<p>Given a SAM file with alignments and a GFF file with genomic features, this script
+counts how many reads map to each feature.</p>
+</li>
+</ul>
+</li>
+<li><p class="first">Appendices</p>
+</li>
+</ul>
+<blockquote>
+<div><ul class="simple">
+<li><a class="reference internal" href="history.html#history"><span class="std std-ref">Version history</span></a></li>
+</ul>
+</div></blockquote>
+<blockquote>
+<div><ul class="simple">
+<li><a class="reference internal" href="contrib.html#contrib"><span class="std std-ref">Notes for Contributers</span></a></li>
+</ul>
+</div></blockquote>
+<blockquote>
+<div><ul class="simple">
+<li><a class="reference internal" href="index.html#tableofcontents"><span class="std std-ref">Table of Contents</span></a></li>
+</ul>
+</div></blockquote>
+<blockquote>
+<div><ul class="simple">
+<li><a class="reference internal" href="genindex.html"><span class="std std-ref">Index</span></a></li>
+</ul>
+</div></blockquote>
+</div>
+<div class="section" id="author">
+<h2>Author<a class="headerlink" href="#author" title="Permalink to this headline">¶</a></h2>
+<p>HTSeq is developed by <a class="reference external" href="http://www.embl.de/research/units/genome_biology/huber/members/index.php?s_personId=6001">Simon Anders</a> at <a class="reference external" href="http://www.embl.de/">EMBL Heidelberg</a> (<a class="reference external" href="http://www.embl.de/research/units/genome_biology/index.html">Genome Biology
+Unit</a>). Please do not hesitate to contact me (anders <em>at</em> embl <em>dot</em> de) if you
+have any comments or questions.</p>
+</div>
+<div class="section" id="license">
+<h2>License<a class="headerlink" href="#license" title="Permalink to this headline">¶</a></h2>
+<p>HTSeq is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.</p>
+<p>This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.</p>
+<p>The full text of the GNU General Public License, version 3, can be found
+here: <a class="reference external" href="http://www.gnu.org/licenses/gpl-3.0-standalone.html">http://www.gnu.org/licenses/gpl-3.0-standalone.html</a></p>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">HTSeq: Analysing high-throughput sequencing data with Python</a><ul>
+<li><a class="reference internal" href="#paper">Paper</a></li>
+<li><a class="reference internal" href="#documentation-overview">Documentation overview</a></li>
+<li><a class="reference internal" href="#author">Author</a></li>
+<li><a class="reference internal" href="#license">License</a></li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="index.html"
+                        title="previous chapter">HTSeq: Analysing high-throughput sequencing data with Python</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="install.html"
+                        title="next chapter">Prequisites and installation</a></p>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="_sources/overview.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <div><input type="text" name="q" /></div>
+      <div><input type="submit" value="Go" /></div>
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="install.html" title="Prequisites and installation"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="index.html" title="HTSeq: Analysing high-throughput sequencing data with Python"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">HTSeq 0.7.2 documentation</a> &#187;</li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2010, Simon Anders.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.5.5.
+    </div>
+  </body>
+
+<!-- Start of StatCounter Code -->
+<script type="text/javascript">
+var sc_project=5680199; 
+var sc_invisible=1; 
+var sc_partition=63; 
+var sc_click_stat=1; 
+var sc_security="6e579550"; 
+</script>
+
+<script type="text/javascript"
+src="http://www.statcounter.com/counter/counter.js"></script><noscript><div
+class="statcounter"><a title="counter for iweb"
+href="http://www.statcounter.com/iweb/" target="_blank"><img
+class="statcounter"
+src="http://c.statcounter.com/5680199/0/6e579550/1/"
+alt="counter for iweb" ></a></div></noscript>
+<!-- End of StatCounter Code -->
+</html>
