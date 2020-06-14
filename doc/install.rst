@@ -6,8 +6,7 @@ Prequisites and installation
 
 HTSeq is available from the `Python Package Index (PyPI)`_:
 
-To use HTSeq, you need Python_ 2.7 or 3.4 or above (3.0-3.3 are not supported), 
-together with:
+To use HTSeq, you need Python_ 3.5 or above with:
 
 - NumPy_, a commonly used Python package for numerical calculations
 - Pysam_, a Python interface to samtools_.
@@ -51,9 +50,9 @@ is generally recommended but might be updated less often than the `pip` version.
 Distribution package manager
 ----------------------------
 
-- Ubuntu (e.g. for Python 2.7)::
+- Ubuntu::
 
-   sudo apt-get install build-essential python2.7-dev python-numpy python-matplotlib python-pysam python-htseq
+   sudo apt-get install build-essential python3.6-dev python-numpy python-matplotlib python-pysam python-htseq
 
 - Arch (e.g. using ``aura``, you can grab the AUR packages otherwise)::
 
@@ -82,7 +81,14 @@ To test the installation, change to another director than the build directory, s
 
 Installation on MacOS X
 =======================
+PIP
+---
+Try pip first::
 
+  pip install HTSeq
+
+Installing from source
+----------------------
 Mac users should install NumPy as explained here_ in the NumPy/SciPy documentation. Note that you need
 to install Xcode to be able to compile NumPy. Due to the
 mess that Apple recently made out of Xcode, the whole process may be a slight bit more cumbersome than necessary, especially if you work with OSX Lion, so read the instructions carefully.
@@ -121,10 +127,8 @@ To test the installation, change to another director than the build directory, s
 
 MS Windows
 ==========
-
 If you have not yet installed Python, do so first. You can find an automatic installer 
-for Windows on
-the `Python download page`_. Make sure to use Python 2.7, not Python 3.3. 
+for Windows on the `Python download page`_. Make sure to use Python 3.5 or above. 
 
 .. _`Python download page`: http://www.python.org/getit/
 
@@ -135,6 +139,13 @@ Then install the newest version of NumPy. Look on `NumPy's PyPI page`_ for the a
 If you want to produce plots or use htseq-qa, you will also need matplotlib. (For htseq-count, it
 is not required.) Follow the installation instructions on their web page.
 
+Installation from source
+------------------------
+**Installation on Windows is not currently supported.** The notes below are left as a historical
+record in case a generous soul wants to help us bring back HTSeq to this OS.
+
+Old notes
+---------
 To install HTSeq itself, simply download the Windows installer from the `HTSeq download page`_
 and run it.
 

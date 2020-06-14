@@ -18,11 +18,6 @@ matrix:
      dist: trusty
      sudo: required
    - env: CC=gcc
-     python: 2.7
-     os: linux
-     dist: trusty
-     sudo: required
-   - env: CC=gcc
      python: 3.5
      os: linux
      dist: trusty
@@ -42,12 +37,6 @@ matrix:
      os: linux
      dist: bionic
      sudo: required
-   - env: CONDA_PY='2.7' CC=gcc
-     language: generic
-     os: osx
-   - env: CONDA_PY='3.6' CC=gcc
-     language: generic
-     os: osx
    - env: CONDA_PY='3.7' CC=gcc
      language: generic
      os: osx

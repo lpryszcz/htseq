@@ -15,15 +15,18 @@ experiments.
 
 To use ``HTSeq`` you will need:
 
--  ``Python 2.7`` or ``Python >= 3.5`` 
+-  ``Python >= 3.5`` (**note**: ``Python 2.7`` support has been dropped)
 -  ``numpy``
--  ``pysam >= 0.9.0``
+-  ``pysam``
 
 To run the ``htseq-qa`` script, you will also need:
 
--  ``matplotlib >=1.4``
+-  ``matplotlib``
 
-Both **Linux** and **OSX** are supported and binaries are provided on Pypi.
+Both **Linux** and **OSX** are supported and binaries are provided on Pypi. We
+would like to support **Windows** but currently lack the expertise to do so. If
+you would like to take on the Windows release and maintenance, please open an
+issue and we'll try to help.
 
 A source package which should not require ``Cython`` nor ``SWIG`` is also
 provided on Pypi.
@@ -32,12 +35,6 @@ To **develop** `HTSeq` you will **also** need:
 
 -  ``Cython >=0.29.5``
 -  ``SWIG >=3.0.8``
-
-**Windows is not officially supported** as we don't have access to a Continuous
-Integration Windows machine that supports ``pysam``. Please do **not** open an
-issue asking to support Windows installers: we do not know how to do that and 
-do not have the bandwidth to learn. However, if you are interested in giving it
-a try yourself, we are happy to provide as much support as we can.
 
 ## Installation
 
@@ -58,9 +55,9 @@ pip install 'HTSeq==0.14.0'
 If this fails, please install all dependencies first:
 
 ```bash
-pip install 'matplotlib>=1.4'
+pip install matplotlib
 pip install Cython
-pip install 'pysam>=0.9'
+pip install pysam
 pip install HTSeq
 ```
 
