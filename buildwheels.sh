@@ -24,7 +24,7 @@ fi
 
 # Install zlib dev libraries for HTSlib when needed
 # manylinux2010 is CentOS 6
-yum -y install zlib-devel bzip2-devel xz-devel Cython
+yum -y install zlib-devel bzip2-devel xz-devel
 
 # Python 2.6 is not supported
 rm -rf /opt/python/cp26*
@@ -41,6 +41,8 @@ rm -rf /opt/python/cp34*
 # Build wheels
 PYBINS="/opt/python/*/bin"
 for PYBIN in ${PYBINS}; do
+    # Make sure the wheelbuilder has a recent cython
+    ${PYBIN}/pip install Cython
     ${PYBIN}/pip install -r /io/requirements.txt
     ${PYBIN}/pip wheel /io/ -w wheelhouse/
 done
