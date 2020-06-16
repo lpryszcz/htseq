@@ -34,6 +34,9 @@ rm -rf /opt/python/cpython-2.7*
 rm -rf /opt/python/cp33*
 rm -rf /opt/python/cp34*
 
+# Python 3.9 is not supported YET:
+rm -rf /opt/python/cp39*
+
 # Deploy binary packages
 HTSEQ_VERSION=$(cat /io/VERSION)
 PYBINS="/opt/python/*/bin"

@@ -43,6 +43,9 @@ rm -rf /opt/python/cpython-2.7*
 rm -rf /opt/python/cp33*
 rm -rf /opt/python/cp34*
 
+# Python 3.9 is not supported YET:
+rm -rf /opt/python/cp39*
+
 # Build wheels
 PYBINS="/opt/python/*/bin"
 for PYBIN in ${PYBINS}; do
