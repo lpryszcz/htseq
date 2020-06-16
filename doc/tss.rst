@@ -1,8 +1,8 @@
 .. _tss:
 
-******************************
-A detailed use case: TSS plots
-******************************
+**********************************************
+A detailed use case: Transcription start sites
+**********************************************
 
 .. currentmodule:: HTSeq
 
@@ -69,7 +69,7 @@ to go through only the first 100 features in the GTF file)::
 
 As the GTF file contains several transcripts for each gene, one TSS may appear 
 multiple times, giving undue weight to it. Hence, we collect them in a ``set``
-as this data type enforces uniqueness.
+as this data type enforces uniqueness::
 
    >>> tsspos = set()
    >>> for feature in gtffile:
@@ -82,7 +82,7 @@ this one here, just for demonstration purposes::
 
    >>> p = HTSeq.GenomicPosition("1", 145439814, "+")
 
-This is really one of the TSSs in the set:
+This is really one of the TSSs in the set::
 
    >>> p in tsspos
    True
@@ -118,9 +118,10 @@ With matplotlib, we can see that this vector is, in effect, not all zero:
 
 .. doctest::
 
-   >>> from matplotlib import pyplot #doctest: +SKIP
-   >>> pyplot.plot(wincvg)    #doctest: +SKIP
-   >>> pyplot.show()          #doctest: +SKIP
+   >>> from matplotlib import pyplot as plt #doctest: +SKIP
+   >>> fig, ax = plt.subplots()             #doctest: +SKIP
+   >>> ax.plot(wincvg)                      #doctest: +SKIP
+   >>> plt.show()                           #doctest: +SKIP
 
 .. image:: tss_fig1.png
 
@@ -146,8 +147,10 @@ Using matplotlib, we can plot this:
 
 .. doctest::
 
-   >>> pyplot.plot( numpy.arange(-halfwinwidth, halfwinwidth), profile)  #doctest: +SKIP
-   >>> pyplot.show()  #doctest: +SKIP
+   >>> fig, ax = plt.subplots()             #doctest: +SKIP
+   >>> x = numpy.arange(-halfwinwidth, halfwinwidth)  #doctest: +SKIP
+   >>> ax.plot(x, profile)  #doctest: +SKIP
+   >>> plt.show()  #doctest: +SKIP
 
 .. image:: tss_fig2.png
 
@@ -171,8 +174,10 @@ to it:
 
 .. doctest::
 
-   pyplot.plot( numpy.arange(-halfwinwidth, halfwinwidth), profile)  #doctest: +SKIP
-   pyplot.show()  #doctest: +SKIP
+   >>> fig, ax = plt.subplots()             #doctest: +SKIP
+   >>> x = numpy.arange(-halfwinwidth, halfwinwidth)  #doctest: +SKIP
+   >>> ax.plot(x, profile)  #doctest: +SKIP
+   >>> plt.show()  #doctest: +SKIP
 
 .. image:: tss_fig3.png
 
@@ -258,9 +263,11 @@ We can plot the profiles obtained from our two methods on top of each other:
 
 .. doctest::
 
-   >>> pyplot.plot( numpy.arange(-halfwinwidth, halfwinwidth), profile, ls="-", color="blue")   #doctest: +SKIP
-   >>> pyplot.plot( numpy.arange(-halfwinwidth, halfwinwidth), profileB, ls="--", color="red")   #doctest: +SKIP
-   >>> pyplot.show()   #doctest: +SKIP
+   >>> fig, ax = plt.subplots()             #doctest: +SKIP
+   >>> x = numpy.arange(-halfwinwidth, halfwinwidth)  #doctest: +SKIP
+   >>> ax.plot(x, profile, ls="-", color="blue")   #doctest: +SKIP
+   >>> ax.plot(x, profileB, ls="--", color="red")   #doctest: +SKIP
+   >>> plt.show()   #doctest: +SKIP
 
 .. image:: tss_fig4.png
 
@@ -283,8 +290,10 @@ As before, to get a plot, add:
 
 .. doctest::
 
-   pyplot.plot( numpy.arange(-halfwinwidth, halfwinwidth), profile)   #doctest: +SKIP
-   pyplot.show()   #doctest: +SKIP
+   >>> fig, ax = plt.subplots()             #doctest: +SKIP
+   >>> x = numpy.arange(-halfwinwidth, halfwinwidth)  #doctest: +SKIP
+   >>> ax.plot(x, profile)   #doctest: +SKIP
+   >>> plt.show()   #doctest: +SKIP
 
 You will now get the same plot as we got with the first method.
    
@@ -375,6 +384,8 @@ Again, to get a plot (which will look the same as before), add:
 
 .. doctest::
 
-   pyplot.plot(numpy.arange(-halfwinwidth, halfwinwidth), profile)  #doctest: +SKIP
-   pyplot.show()  #doctest: +SKIP
+   >>> fig, ax = plt.subplots()             #doctest: +SKIP
+   >>> x = numpy.arange(-halfwinwidth, halfwinwidth)  #doctest: +SKIP
+   >>> ax.plot(ax, profile)  #doctest: +SKIP
+   >>> plt.show()  #doctest: +SKIP
    

@@ -167,7 +167,7 @@ class Preprocess_command(Command):
         swig = os.getenv('SWIG', 'swig')
         pyswigged = 'src/StepVector.py'
         try:
-            c(swig+' -Wall -c++ -python -py3 src/StepVector.i')
+            c(swig+' -Wall -c++ -python src/StepVector.i')
             p('correcting SWIG for python3')
             c("2to3 --no-diffs --write --nobackups "+pyswigged)
             c("sed -i 's/    import builtins as __builtin__/    import builtins/' "+pyswigged)
