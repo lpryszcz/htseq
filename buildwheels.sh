@@ -24,7 +24,7 @@ fi
 
 # Install zlib dev libraries for HTSlib when needed
 # manylinux2010 is CentOS 6
-yum -y install zlib-devel bzip2-devel xz-devel
+yum -y install zlib-devel bzip2-devel xz-devel Cython
 
 # Python 2.6 is not supported
 rm -rf /opt/python/cp26*
