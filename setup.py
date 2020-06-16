@@ -11,10 +11,6 @@ if ((sys.version_info[0] == 2) or
     sys.stderr.write("HTSeq requires Python 3.5+.")
     sys.exit(1)
 
-# Manage python2/3 compatibility with symlinks
-py_maj = sys.version_info[0]
-
-
 # Update version from VERSION file into module
 this_directory = os.path.abspath(os.path.dirname(__file__))
 with open(os.path.join(this_directory, 'VERSION')) as fversion:
@@ -138,10 +134,7 @@ class Preprocess_command(Command):
         import os
         from shutil import copy
         from subprocess import check_call
-        if py_maj == 2:
-            from subprocess import CalledProcessError as SubprocessError
-        else:
-            from subprocess import SubprocessError
+        from subprocess import SubprocessError
 
         def c(x): return check_call(x, shell=True)
         def p(x): return self.announce(x, level=logINFO)
@@ -157,10 +150,7 @@ class Preprocess_command(Command):
             else:
                 raise
         else:
-            if py_maj == 2:
-                c(cython+' src/HTSeq/_HTSeq.pyx -o src/_HTSeq.c')
-            else:
-                c(cython+' -3 src/HTSeq/_HTSeq.pyx -o src/_HTSeq.c')
+            c(cython+' -3 src/HTSeq/_HTSeq.pyx -o src/_HTSeq.c')
 
         # SWIG
         p('SWIGging')
