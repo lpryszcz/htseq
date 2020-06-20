@@ -1573,7 +1573,7 @@ cdef class SAM_Alignment(AlignmentWithSequenceReversal):
             elif op[1].__class__ == int:
                 tc = "i"
             elif op[1].__class__ == float:
-                tc = "j"
+                tc = "f"
             else:
                 tc = "H"
             res.append(":".join([op[0], tc, str(op[1])]))

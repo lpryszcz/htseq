@@ -2521,7 +2521,6 @@ static const char __pyx_k_Z[] = "Z";
 static const char __pyx_k_d[] = "d";
 static const char __pyx_k_f[] = "f";
 static const char __pyx_k_i[] = "i";
-static const char __pyx_k_j[] = "j";
 static const char __pyx_k_s[] = ">%s\n";
 static const char __pyx_k_w[] = "w+";
 static const char __pyx_k_x[] = "x";
@@ -3121,7 +3120,6 @@ static PyObject *__pyx_n_s_is_vector_of_sets;
 static PyObject *__pyx_n_s_isize;
 static PyObject *__pyx_n_s_itertools;
 static PyObject *__pyx_n_s_iv;
-static PyObject *__pyx_n_u_j;
 static PyObject *__pyx_n_s_join;
 static PyObject *__pyx_n_s_length;
 static PyObject *__pyx_kp_u_length_2;
@@ -36710,7 +36708,7 @@ static PyObject *__pyx_pf_5HTSeq_6_HTSeq_13SAM_Alignment_14raw_optional_fields(s
  *             elif op[1].__class__ == int:
  *                 tc = "i"             # <<<<<<<<<<<<<<
  *             elif op[1].__class__ == float:
- *                 tc = "j"
+ *                 tc = "f"
  */
       __Pyx_INCREF(__pyx_n_u_i);
       __Pyx_XDECREF_SET(__pyx_v_tc, __pyx_n_u_i);
@@ -36729,7 +36727,7 @@ static PyObject *__pyx_pf_5HTSeq_6_HTSeq_13SAM_Alignment_14raw_optional_fields(s
  *             elif op[1].__class__ == int:
  *                 tc = "i"
  *             elif op[1].__class__ == float:             # <<<<<<<<<<<<<<
- *                 tc = "j"
+ *                 tc = "f"
  *             else:
  */
     __pyx_t_3 = __Pyx_GetItemInt(__pyx_v_op, 1, long, 1, __Pyx_PyInt_From_long, 0, 0, 1); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 1575, __pyx_L1_error)
@@ -36746,25 +36744,25 @@ static PyObject *__pyx_pf_5HTSeq_6_HTSeq_13SAM_Alignment_14raw_optional_fields(s
       /* "HTSeq/_HTSeq.pyx":1576
  *                 tc = "i"
  *             elif op[1].__class__ == float:
- *                 tc = "j"             # <<<<<<<<<<<<<<
+ *                 tc = "f"             # <<<<<<<<<<<<<<
  *             else:
  *                 tc = "H"
  */
-      __Pyx_INCREF(__pyx_n_u_j);
-      __Pyx_XDECREF_SET(__pyx_v_tc, __pyx_n_u_j);
+      __Pyx_INCREF(__pyx_n_u_f);
+      __Pyx_XDECREF_SET(__pyx_v_tc, __pyx_n_u_f);
 
       /* "HTSeq/_HTSeq.pyx":1575
  *             elif op[1].__class__ == int:
  *                 tc = "i"
  *             elif op[1].__class__ == float:             # <<<<<<<<<<<<<<
- *                 tc = "j"
+ *                 tc = "f"
  *             else:
  */
       goto __pyx_L5;
     }
 
     /* "HTSeq/_HTSeq.pyx":1578
- *                 tc = "j"
+ *                 tc = "f"
  *             else:
  *                 tc = "H"             # <<<<<<<<<<<<<<
  *             res.append(":".join([op[0], tc, str(op[1])]))
@@ -46242,7 +46240,6 @@ static __Pyx_StringTabEntry __pyx_string_tab[] = {
   {&__pyx_n_s_isize, __pyx_k_isize, sizeof(__pyx_k_isize), 0, 0, 1, 1},
   {&__pyx_n_s_itertools, __pyx_k_itertools, sizeof(__pyx_k_itertools), 0, 0, 1, 1},
   {&__pyx_n_s_iv, __pyx_k_iv, sizeof(__pyx_k_iv), 0, 0, 1, 1},
-  {&__pyx_n_u_j, __pyx_k_j, sizeof(__pyx_k_j), 0, 1, 0, 1},
   {&__pyx_n_s_join, __pyx_k_join, sizeof(__pyx_k_join), 0, 0, 1, 1},
   {&__pyx_n_s_length, __pyx_k_length, sizeof(__pyx_k_length), 0, 0, 1, 1},
   {&__pyx_kp_u_length_2, __pyx_k_length_2, sizeof(__pyx_k_length_2), 0, 1, 0, 0},
