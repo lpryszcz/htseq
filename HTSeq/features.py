@@ -41,6 +41,9 @@ class GenomicFeature(object):
             return True
         return not self.__eq__(other)
 
+    def __hash__(self):
+        return (self.name, self.type, self.iv).__hash__()
+
     def get_gff_line(self, with_equal_sign=False):
         try:
             source = self.source
