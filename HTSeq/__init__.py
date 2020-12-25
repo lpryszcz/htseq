@@ -595,9 +595,30 @@ _vcf_typemap = {
 
 
 class VariantCall(object):
+    '''Class representing a variant call, close to VCF format'''
 
-    def __init__(self, chrom=None, pos=None, identifier=None, ref=None,
-                 alt=None, qual=None, filtr=None, info=None):
+    def __init__(
+            self,
+            chrom=None,
+            pos=None,
+            identifier=None,
+            ref=None,
+            alt=None,
+            qual=None,
+            filtr=None,
+            info=None):
+        '''Class representing a variant call.
+
+        Arguments:
+           chrom (str): Chromosome
+           pos (int): Position on the chromosome
+           identifier (str): ID of the variant
+           ref (str): Reference allele
+           alt (str): Alternate allele
+           qual (str): Quality of the variant
+           filtr (str): Filter flag indicating if the variant passed QC.
+           info (str): Additional info on the variant
+        '''
         self.chrom = chrom
         self.pos = pos
         self.id = identifier
@@ -610,6 +631,7 @@ class VariantCall(object):
 
     @classmethod
     def fromdict(cls, dictionary):
+        '''Create a VariantCall instance from a dict of properties'''
         ret = cls()
         ret.chrom = dictionary["chrom"]
         ret.pos = dictionary["pos"]
@@ -623,6 +645,7 @@ class VariantCall(object):
 
     @classmethod
     def fromline(cls, line, nsamples=0, sampleids=[]):
+        '''Create a VariantCall instance from a VCF line'''
         ret = cls()
         if nsamples == 0:
             ret.format = None
@@ -668,6 +691,7 @@ class VariantCall(object):
         return "\t".join(ret)
 
     def to_line(self):
+        '''Convert into a VCF line'''
         if self.format == None:
             return "\t".join(map(str, [self.pos.chrom, self.pos.pos, self.id, self.ref, ",".join(self.alt), self.qual, self.filter, self.infoline()])) + "\n"
         else:
@@ -701,6 +725,10 @@ class VariantCall(object):
 
 
 class VCF_Reader(FileOrSequence):
+    '''Reader for VCF files.
+
+    This class parses text VCF files from scratch, independently of pysam.
+    '''
 
     def __init__(self, filename_or_sequence):
         FileOrSequence.__init__(self, filename_or_sequence)
@@ -712,9 +740,9 @@ class VCF_Reader(FileOrSequence):
         self.sampleids = []
 
     def make_info_dict(self):
-        self.infodict = dict(
-            (key,
-             _vcf_typemap[self.info[key]["Type"]]) for key in list(self.info.keys()))
+        self.infodict = {}
+        for key in self.info.keys():
+            self.infodict[key] = _vcf_typemap[self.info[key]["Type"]]
 
     def parse_meta(self, header_filename=None):
         if header_filename is None:
@@ -832,14 +860,29 @@ class WiggleReader(FileOrSequence):
 
 
 class BAM_Reader(object):
+    '''Parser for SAM/BAM/CRAM files.
 
-    def __init__(self, filename, check_sq=True, ignore_truncation=False):
+    This is a thin wrapper on top of pysam.AlignmentFile. It detects
+    automatically whether the input file is text (SAM) or binary (BAM/CRAM) via
+    the HTSlib library.
+    '''
+
+    def __init__(
+            self,
+            filename,
+            check_sq=True):
+        '''Parser for SAM/BAM/CRAM files, a thin layer over pysam.AlignmentFile.
+
+        Arguments:
+           filename (str): The path to the input file to read
+           check_sq (bool): check if SQ entries are present in header
+        '''
+
         global pysam
         self.filename = filename
         self.sf = None
         self.record_no = -1
         self.check_sq = check_sq
-        self.ignore_truncation = ignore_truncation
         try:
             import pysam
         except ImportError:
@@ -847,13 +890,18 @@ class BAM_Reader(object):
                 "Please Install PySam to use the BAM_Reader Class (http://code.google.com/p/pysam/)")
             raise
 
+    def _open_file(self):
+        self.sf = pysam.AlignmentFile(
+                self.filename,
+                check_sq=self.check_sq,
+                )
+
+    def _close_file(self):
+        self.sf.close()
+
     def __iter__(self):
         if self.sf is None:
-            self.sf = pysam.AlignmentFile(
-                    self.filename, "r",
-                    check_sq=self.check_sq,
-                    ignore_truncation=self.ignore_truncation,
-                    )
+            self._open_file()
         self.record_no = 0
         for pa in self.sf:
             yield SAM_Alignment.from_pysam_AlignedSegment(pa, self.sf)
@@ -862,11 +910,12 @@ class BAM_Reader(object):
         self.sf = None
 
     def fetch(self, reference=None, start=None, end=None, region=None):
-        sf = pysam.AlignmentFile(self.filename, "r", check_sq=self.check_sq)
+        if self.sf is None:
+            self._open_file()
         self.record_no = 0
         try:
-            for pa in sf.fetch(reference, start, end, region):
-                yield SAM_Alignment.from_pysam_AlignedRead(pa, sf)
+            for pa in self.sf.fetch(reference, start, end, region):
+                yield SAM_Alignment.from_pysam_AlignedRead(pa, self.sf)
                 self.record_no += 1
         except ValueError as e:
             if e.message == "fetch called on bamfile without index":
@@ -889,7 +938,8 @@ class BAM_Reader(object):
             raise TypeError(
                 "Use a HTSeq.GenomicInterval to access regions within .bam-file!")
         if self.sf is None:
-            self.sf = pysam.AlignmentFile(self.filename, "r", check_sq=self.check_sq)
+            self._open_file()
+
         if (hasattr(self.sf, '_hasIndex') and (not self.sf._hasIndex())) or (not self.sf.has_index()):
             raise ValueError(
                 "The .bam-file has no index, random-access is disabled!")
@@ -898,12 +948,12 @@ class BAM_Reader(object):
 
     def get_header_dict(self):
         if self.sf is None:
-            self.sf = pysam.AlignmentFile(self.filename, "r", check_sq=self.check_sq)
+            self._open_file()
         return self.sf.header
 
     def get_template(self):
         if self.sf is None:
-            self.sf = pysam.AlignmentFile(self.filename, "r", check_sq=self.check_sq)
+            self._open_file()
         return self.sf
 
 
@@ -912,8 +962,15 @@ SAM_Reader = BAM_Reader
 
 
 class BAM_Writer(object):
-    def __init__(self, filename, template=None, referencenames=None,
-                 referencelengths=None, text=None, header=None):
+    '''Writer for SAM/BAM/CRAM files, a thin layer over pysam.AlignmentFile'''
+    def __init__(
+            self,
+            filename,
+            template=None,
+            referencenames=None,
+            referencelengths=None,
+            text=None,
+            header=None):
         try:
             import pysam
         except ImportError:
@@ -948,6 +1005,32 @@ class BAM_Writer(object):
 
 
 class BED_Reader(FileOrSequence):
+    '''Reader for BED files.
+
+    This class simply parses the BED as a text file and converts the various
+    columns into HTSeq objects. For each row it extracts:
+
+    - a GenomicInterval with chromosome equal to the first column, start and
+      end to the second and third columns, and strandedness equal to the sixth
+      column;
+
+    - a GenomicFeature with name equal to the fourth column (or "unnamed"),
+      type set to "BED line", score equal to the fifth column and interval set
+      as the GenomicInterval above.
+
+    - If the "thick" start and end are provided in the BED file as seventh and
+      eight columns, they are stored as a GenomicInterval in the "thick"
+      attribute of the GenomicFeature above (i.e. feature.thick).
+
+    - If the itemRgb color line is provided in the BED file as ninth column, it
+      is stored as "itemRgb" attribute in the GenomicFeature above (i.e.
+      feature.itemRgb).
+
+    - The blockCount, blockStart, blockSizes columns (tenth to twelth) are
+      currently ignored, this might change in the future.
+
+    Rows starting with "track" are skipped.
+    '''
 
     def __init__(self, filename_or_sequence):
         FileOrSequence.__init__(self, filename_or_sequence)
@@ -959,8 +1042,8 @@ class BED_Reader(FileOrSequence):
             fields = line.split()
             if len(fields) < 3:
                 raise ValueError("BED file line contains less than 3 fields")
-            if len(fields) > 9:
-                raise ValueError("BED file line contains more than 9 fields")
+            if len(fields) > 12:
+                raise ValueError("BED file line contains more than 12 fields")
             iv = GenomicInterval(
                 fields[0],
                 int(fields[1]),
