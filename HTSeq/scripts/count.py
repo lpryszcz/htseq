@@ -282,7 +282,7 @@ def count_reads_single_file(
                         for fsi in list(fs):
                             counts[fsi] += 1.0 / len(fs)
                     elif multimapped_mode == 'random':
-                        fsi = random.choice(fs)
+                        fsi = random.choice(list(fs))
                         counts[fsi] += 1
                     else:
                         sys.exit("Illegal multimap mode.")
