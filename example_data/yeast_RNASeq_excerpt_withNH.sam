@@ -17,7 +17,7 @@
 @SQ	SN:VII	LN:1090946
 @SQ	SN:XV	LN:1091289
 @SQ	SN:IV	LN:1531918
-@PG	ID=Bowtie	VN=0.11.3	CL="bowtie --sam --solexa1.3-quals Scerv yeast_RNASeq_excerpt_sequence.txt yeast_RNASeq_excerpt.sam"
+@PG	ID:Bowtie	VN:0.11.3	CL:"bowtie --sam --solexa1.3-quals Scerv yeast_RNASeq_excerpt_sequence.txt yeast_RNASeq_excerpt.sam"
 HWI-EAS225:1:10:1284:1974#0/1	0	VIII	394101	255	36M	*	0	0	CTTACGTTTTCTGTATCAATACTCGATTTATCATCT	B9AA>=:=@<;??9@@@@@>?7@@>::??>>==9>>	XA:i:0	MD:Z:36	NM:i:0	NH:i:1
 HWI-EAS225:1:10:1284:986#0/1	4	*	0	0	*	*	0	0	AATTGGTTTCCCCGCCGAGACCGTACACTACCAGCC	A9(?6.888?8??#######################	XM:i:0
 HWI-EAS225:1:10:1284:2012#0/1	0	VII	1001606	255	36M	*	0	0	TTTGGACTTGATTGTTGACGCTATCAAGGCTGCTGG	25::@@B@>>:3>=6>:8>7:@93?1>8<711.-4?	XA:i:0	MD:Z:36	NM:i:0	NH:i:1
