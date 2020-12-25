@@ -1,11 +1,11 @@
 #!/bin/bash
-if [ $TRAVIS_OS_NAME == 'linux' ]; then
+if [ $TRAVIS_OS_NAME == 'ubuntu-latest' ]; then
   echo "Installing deps for linux"
   sudo add-apt-repository ppa:nschloe/swig-backports -y
   sudo apt-get -qq update
   sudo apt-get install -y swig3.0
 
-elif [ $TRAVIS_OS_NAME == 'osx' ]; then
+elif [ $TRAVIS_OS_NAME == 'macos-latest' ]; then
   echo "Find out OSX version"
   osx_version=$(sw_vers -productVersion)
   echo "OSX version: $osx_version"

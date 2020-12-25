@@ -12,7 +12,7 @@ if [ $DOCKER_IMAGE ]; then
 
 # compile normally
 else
-  if [ $TRAVIS_OS_NAME == 'osx' ]; then
+  if [ $TRAVIS_OS_NAME == 'macos-latest' ]; then
     export PATH="$HOME/miniconda/bin:$PATH"
     source $HOME/miniconda/bin/activate
     conda activate travis
@@ -48,7 +48,7 @@ else
 fi
 
 # OSX makes wheels as well
-if [ $TRAVIS_OS_NAME == 'osx' ]; then
+if [ $TRAVIS_OS_NAME == 'macos-latest' ]; then
   mkdir wheelhouse
   pip wheel . -w wheelhouse/
   if [ $? != 0 ]; then
