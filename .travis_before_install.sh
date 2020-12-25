@@ -1,8 +1,8 @@
 #!/bin/bash
 if [ $TRAVIS_OS_NAME == 'ubuntu-latest' ]; then
   echo "Installing deps for linux"
-  sudo add-apt-repository ppa:nschloe/swig-backports -y
-  sudo apt-get -qq update
+  #sudo add-apt-repository ppa:nschloe/swig-backports -y
+  #sudo apt-get -qq update
   sudo apt-get install -y swig3.0
 
 elif [ $TRAVIS_OS_NAME == 'macos-latest' ]; then

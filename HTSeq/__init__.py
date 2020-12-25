@@ -833,12 +833,13 @@ class WiggleReader(FileOrSequence):
 
 class BAM_Reader(object):
 
-    def __init__(self, filename, check_sq=True):
+    def __init__(self, filename, check_sq=True, ignore_truncation=False):
         global pysam
         self.filename = filename
         self.sf = None
         self.record_no = -1
         self.check_sq = check_sq
+        self.ignore_truncation = ignore_truncation
         try:
             import pysam
         except ImportError:
@@ -848,7 +849,11 @@ class BAM_Reader(object):
 
     def __iter__(self):
         if self.sf is None:
-            self.sf = pysam.AlignmentFile(self.filename, "r", check_sq=self.check_sq)
+            self.sf = pysam.AlignmentFile(
+                    self.filename, "r",
+                    check_sq=self.check_sq,
+                    ignore_truncation=self.ignore_truncation,
+                    )
         self.record_no = 0
         for pa in self.sf:
             yield SAM_Alignment.from_pysam_AlignedSegment(pa, self.sf)

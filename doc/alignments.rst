@@ -42,7 +42,7 @@ If you have a SAM file (e.g., from BWA or BowTie), you can call it with:
 
 .. doctest::
 
-   >>> sorted(count_in_chroms( HTSeq.SAM_Reader( "yeast_RNASeq_excerpt.sam" ) ).items()) #doctest:+NORMALIZE_WHITESPACE
+   >>> sorted(count_in_chroms(HTSeq.BAM_Reader("yeast_RNASeq_excerpt.sam")).items()) #doctest:+NORMALIZE_WHITESPACE
    [('2-micron', 46), ('I', 362), ('II', 1724), ('III', 365), ('IV', 3015),
     ('IX', 648), ('V', 999), ('VI', 332), ('VII', 2316), ('VIII', 932),
     ('X', 1129), ('XI', 1170), ('XII', 4215), ('XIII', 1471), ('XIV', 1297),
@@ -50,7 +50,7 @@ If you have a SAM file (e.g., from BWA or BowTie), you can call it with:
 
 If, however, you have done your alignment with Eland from the SolexaPipeline, which
 uses the "Solexa export" format, you can use the same function, only using :class:`SolexaExportReader` 
-instead of :class:`SAM_Reader`:
+instead of :class:`BAM_Reader`:
 
 .. doctest::
 
@@ -66,7 +66,6 @@ Parser classes
 Depending on the format of your alignment file, choose from the following parsers:
 
 .. class:: BowtieReader( filename_or_sequence )
-           SAM_Reader( filename_or_sequence )
            BAM_Reader( filename_or_sequence )
            SolexaExportReader( filename_or_sequence )
            
@@ -81,10 +80,10 @@ contain Perl skripts to convert nearly all common formats.
    
 .. _SAMtools: http://samtools.sourceforge.net/
 
-   .. method:: SAM_Reader.peek( num = 1 ):
+   .. method:: BAM_Reader.peek( num = 1 ):
       
       Peek into a SAM file or connection, reporting the first ``num`` records.
-      If you then call an iterator on the ``SAM_Reader``, the record will
+      If you then call an iterator on the ``BAM_Reader``, the record will
       be yielded again.   
 
              
@@ -257,10 +256,10 @@ object you typically never call the constructor yourself.
 .. function:: pair_SAM_alignments( alnmt_seq )
 
    This function takes a generator of :class:`SAM_Alignment` objects (e.g., 
-   a :class:`SAM_Reader` object) and yields a sequence of pairs of alignments.
+   a :class:`BAM_Reader` object) and yields a sequence of pairs of alignments.
    A typical use may be::
    
-      for first, second in HTSeq.SAM_Reader( "some_paired_end_data.sam" ):
+      for first, second in HTSeq.BAM_Reader( "some_paired_end_data.sam" ):
           print("Pair, consisting of")
           print("   ", first)
           print("   ", second)
