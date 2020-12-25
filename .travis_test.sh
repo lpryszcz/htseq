@@ -5,7 +5,7 @@ if [ $DOCKER_IMAGE ]; then
   exit $?
 fi
 
-if [ "$TRAVIS_OS_NAME" == 'osx' ]; then
+if [ "$TRAVIS_OS_NAME" == 'macos-latest' ]; then
   export PATH="$HOME/miniconda/bin:$PATH"
   source $HOME/miniconda/bin/activate
   conda activate travis
