@@ -18,95 +18,23 @@ jobs:
       uses: actions/setup-python@v2
       with:
         python-version: ${{ matrix.python-version }}
-    - name: Install dependencies
+    - name: Install Python tools
       run: |
         python -m pip install --upgrade pip setuptools wheel
         pip install flake8 pytest
         if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
 
-    - name: Preinstall
+    - name: Preinstall HTSeq (swig, conda)
+      env:
+        TRAVIS_OS_NAME: ${{ matrix.os }}
+        SWIG: ${{ matrix.swig }}
       run: ./.travis_before_install.sh
     - name: Install HTSeq
       env:
+        TRAVIS_OS_NAME: ${{ matrix.os }}
         SWIG: ${{ matrix.swig }}
       run: ./.travis_install.sh
     - name: Test HTSeq
+      env:
+        TRAVIS_OS_NAME: ${{ matrix.os }}
       run: ./.travis_test.sh
-        #    - name: Deploy HTSeq
-        #      run: ./.travis_deploy.sh
-        #
-
-
-
-        #services:
-        #  - docker
-        #
-        #notifications:
-        #  email: false
-        #
-        #language: python
-        #
-        #env:
-        # global:
-        #  - SWIG=swig3.0
-        #
-        #matrix:
-        #  include:
-        #   - env: DOCKER_IMAGE=quay.io/pypa/manylinux2010_x86_64
-        #     python: 3.6
-        #     os: linux
-        #     dist: trusty
-        #     sudo: required
-        #   - env: CC=gcc
-        #     python: 3.5
-        #     os: linux
-        #     dist: trusty
-        #     sudo: required
-        #   - env: CC=gcc
-        #     python: 3.6
-        #     os: linux
-        #     dist: trusty
-        #     sudo: required
-        #   - env: CC=gcc
-        #     python: 3.7
-        #     os: linux
-        #     dist: bionic
-        #     sudo: required
-        #   - env: CC=gcc
-        #     python: 3.8
-        #     os: linux
-        #     dist: bionic
-        #     sudo: required
-        #   - env: CONDA_PY='3.6' CC=gcc
-        #     language: generic
-        #     os: osx
-        #   - env: CONDA_PY='3.7' CC=gcc
-        #     language: generic
-        #     os: osx
-        #   - env: CONDA_PY='3.8' CC=gcc
-        #     language: generic
-        #     os: osx
-        #   - env: CONDA_PY='3.6' CC=gcc
-        #     language: generic
-        #     os: osx
-        #     osx_image: xcode11
-        #   - env: CONDA_PY='3.7' CC=gcc
-        #     language: generic
-        #     os: osx
-        #     osx_image: xcode11
-        #   - env: CONDA_PY='3.8' CC=gcc
-        #     language: generic
-        #     os: osx
-        #     osx_image: xcode11
-        #
-        #before_install:
-        #  - ./.travis_before_install.sh
-        #
-        #install:
-        #  - ./.travis_install.sh
-        # 
-        #script:
-        #  - ./.travis_test.sh
-        #
-        #after_success:
-        #  - ./.travis_deploy.sh
