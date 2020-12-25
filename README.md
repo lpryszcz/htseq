@@ -1,4 +1,4 @@
-[![Build Status](https://travis-ci.org/htseq/htseq.svg?branch=master)](https://travis-ci.org/htseq/htseq)
+![CI](https://github.com/htseq/htseq/workflows/CI/badge.svg)
 [![Documentation Status](https://readthedocs.org/projects/htseq/badge/?version=master)](https://htseq.readthedocs.io)
 
 # HTSeq

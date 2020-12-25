@@ -28,13 +28,16 @@ jobs:
       env:
         TRAVIS_OS_NAME: ${{ matrix.os }}
         SWIG: ${{ matrix.swig }}
+        CONDA_PY: ${{ matrix.python-version }}
       run: ./.travis_before_install.sh
     - name: Install HTSeq
       env:
         TRAVIS_OS_NAME: ${{ matrix.os }}
         SWIG: ${{ matrix.swig }}
+        CONDA_PY: ${{ matrix.python-version }}
       run: ./.travis_install.sh
     - name: Test HTSeq
       env:
         TRAVIS_OS_NAME: ${{ matrix.os }}
+        CONDA_PY: ${{ matrix.python-version }}
       run: ./.travis_test.sh
