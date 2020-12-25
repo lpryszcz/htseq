@@ -8,7 +8,7 @@ jobs:
       matrix:
         os: [ubuntu-latest, macos-latest]
         python-version: [3.5, 3.6, 3.7, 3.8]
-        swig: swig3.0
+        swig: [swig3.0]
 
     runs-on: ${{ matrix.os }}
 
@@ -27,7 +27,8 @@ jobs:
     - name: Preinstall
       run: ./.travis_before_install.sh
     - name: Install HTSeq
-      env: SWIG: ${{ matrix.swig }}
+      env:
+        SWIG: ${{ matrix.swig }}
       run: ./.travis_install.sh
     - name: Test HTSeq
       run: ./.travis_test.sh
