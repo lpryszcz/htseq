@@ -44,7 +44,7 @@ HTSeq is described in the following publications:
 
   | Fabio Zanini et al.
   | * HTSeq 2.0 -- Efficient manipulation of high-throughput sequencing data with long genomes
-  | in preparation (2020)
+  | in preparation (2021)
 
 and:
 

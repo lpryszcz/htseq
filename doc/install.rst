@@ -6,7 +6,7 @@ Prequisites and installation
 
 HTSeq is available from the `Python Package Index (PyPI)`_:
 
-To use HTSeq, you need Python_ 3.5 or above with:
+To use HTSeq, you need Python_ 3.6 or above with:
 
 - NumPy_, a commonly used Python package for numerical calculations
 - Pysam_, a Python interface to samtools_.
@@ -54,7 +54,7 @@ Distribution package manager
 
    sudo apt-get install build-essential python3.6-dev python-numpy python-matplotlib python-pysam python-htseq
 
-- Arch (e.g. using ``aura``, you can grab the AUR packages otherwise)::
+- Arch (e.g. using ``aura``, you can grab the AUR packages manually otherwise)::
 
     sudo pacman -S python python-numpy python-matplotlib
     sudo aura -A python-pysam python-htseq
@@ -78,6 +78,8 @@ Typical setuptools options are available (e.g. ``--prefix``, ``--user``).
 
 To test the installation, change to another director than the build directory, start Python
 (by typing ``python`` or ``python2.7``) and then try whether typing ``import HTSeq`` causes an error meesage.
+
+Remember that Python can only import from your ``PYTHONPATH`` list of folders and from direct subfolders of the current working directory: if you have a folder called ``HTSeq`` in the current directory, your import will likely fail: move somewhere else.
 
 Installation on MacOS X
 =======================
@@ -109,7 +111,7 @@ go into the directory with the unpacked files and type there:
    python setup.py build
 
 to compile HTSeq. If you get an error regarding the availability of a C compiler, you may need to
-set environment variables to point Python to the . The NumPy/SciPy installation instructions above cover this topic well and
+set environment variables to point Python to it. The NumPy/SciPy installation instructions above cover this topic well and
 apply here, too, so simply do the same as you did to install NumPy.
 
 Once building has been successful, use::
