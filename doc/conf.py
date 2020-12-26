@@ -49,7 +49,7 @@ copyright = u'2010-2020, Simon Anders and Fabio Zanini'
 # built documents.
 #
 # The short X.Y version.
-with open('../../VERSION', 'rt') as f:
+with open('../VERSION', 'rt') as f:
     version = f.readline().rstrip()
 # The full version, including alpha/beta/rc tags.
 release = version
