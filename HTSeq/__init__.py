@@ -899,15 +899,28 @@ class BAM_Reader(object):
     def _close_file(self):
         self.sf.close()
 
+    def __enter__(self):
+        self._open_file()
+        return self
+
+    def __exit__(self, type, value, traceback):
+        self._close_file()
+
     def __iter__(self):
         if self.sf is None:
             self._open_file()
-        self.record_no = 0
-        for pa in self.sf:
-            yield SAM_Alignment.from_pysam_AlignedSegment(pa, self.sf)
-            self.record_no += 1
-        self.sf.close()
-        self.sf = None
+            call_exit = True
+        else:
+            call_exit = False
+        try:
+            self.record_no = 0
+            for pa in self.sf:
+                yield SAM_Alignment.from_pysam_AlignedSegment(pa, self.sf)
+                self.record_no += 1
+        finally:
+            if call_exit:
+                self._close_file()
+                self.sf = None
 
     def fetch(self, reference=None, start=None, end=None, region=None):
         if self.sf is None:

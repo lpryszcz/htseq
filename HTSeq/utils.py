@@ -28,9 +28,9 @@ class FileOrSequence(object):
     def __init__(self, filename_or_sequence):
         self.fos = filename_or_sequence
         self.line_no = None
+        self.lines = None
 
-    def __iter__(self):
-        self.line_no = 1
+    def __enter__(self):
         if isinstance(self.fos, str):
             if self.fos.lower().endswith((".gz", ".gzip")):
                 lines = gzip.open(self.fos, 'rt')
@@ -38,14 +38,29 @@ class FileOrSequence(object):
                 lines = open(self.fos)
         else:
             lines = self.fos
+        self.lines = lines
+        return self
+
+    def __exit__(self, type, value, traceback):
+        if isinstance(self.fos, str):
+            self.lines.close()
+
+    def __iter__(self):
+        self.line_no = 1
+        if self.lines is None:
+            call_exit = True
+            self.__enter__()
+        else:
+            call_exit = False
+        lines = self.lines
 
         try:
             for line in lines:
                 yield line
                 self.line_no += 1
         finally:
-            if isinstance(self.fos, str):
-                lines.close()
+            if call_exit:
+                self.__exit__(None, None, None)
         self.line_no = None
 
     def __repr__(self):

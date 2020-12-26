@@ -27,6 +27,19 @@ def test_fasta_parser():
         pass
     print("Test passed")
 
+    print('Test Fasta parser (with statement)')
+    with HTSeq.FastaReader('example_data/fastaExLong.fa') as f:
+        for seq in f:
+            pass
+    print('Test passed')
+
+    print('Test Fasta parser (with statement and file handle)')
+    with open('example_data/fastaExLong.fa') as fraw:
+        f = HTSeq.FastaReader(fraw)
+        for seq in f:
+            pass
+    print('Test passed')
+
 
 def test_fastq_parser():
     print("Test Fastq parser")
@@ -42,6 +55,34 @@ def test_fastq_parser():
                                  raw_iterator=True):
         pass
     print("Test passed")
+
+    print('Test Fastq parser (with statement)')
+    with HTSeq.FastqReader('example_data/fastqExgzip.fastq.gz') as f:
+        for seq in f:
+            pass
+    print('Test passed')
+
+    print('Test Fastq parser (with statement and file handle)')
+    import gzip
+    with gzip.open('example_data/fastqExgzip.fastq.gz', 'rt') as fraw:
+        f = HTSeq.FastqReader(fraw)
+        for seq in f:
+            pass
+    print('Test passed')
+
+
+def test_bam_reader():
+    print('Test BAM reader')
+    bamfile = HTSeq.BAM_Reader("example_data/yeast_RNASeq_excerpt.sam")
+    for read in bamfile:
+        pass
+    print('Test passed')
+
+    print('Test BAM reader (with statement)')
+    with HTSeq.BAM_Reader("example_data/yeast_RNASeq_excerpt.sam") as f:
+        for read in f:
+            pass
+    print('Test passed')
 
 
 def test_bam_inconsistent_mate():
@@ -93,6 +134,7 @@ if len(sys.argv) == 1:
     test_version()
     test_fasta_parser()
     test_fastq_parser()
+    test_bam_reader()
     test_bam_inconsistent_mate()
     test_pickle()
     test_bamfile_nosq()

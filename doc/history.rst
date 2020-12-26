@@ -7,6 +7,17 @@ Version history
 Next version (current master)
 =============================
 
+Version 0.13.1
+==============
+2020-12-28
+
+Maintenance and small feature release
+
+- Refactored CI to use Github actions.
+- Improved docs and fixed docs building bugs
+- Reader classes (e.g. FastaReader, BAM_Reader) can be used with ``with`` (as context managers)
+- Fixed a few bugs in ``htseq-count``
+
 Version 0.12.4
 ==============
 2020-04-20
