@@ -5,26 +5,18 @@ include README.md
 exclude todo.txt
 
 # Cython
-include python*/src/HTSeq/*
-include python*/src/*.c
+include src/HTSeq/*
+include src/*.c
 
 # SWIG
-include python*/src/step_vector.h
-include python*/src/*.i
-include python*/src/StepVector.py
-include python*/src/StepVector_wrap.cxx
+include src/step_vector.h
+include src/*.i
+include src/StepVector.py
+include src/StepVector_wrap.cxx
 
 # Pure
-include python*/HTSeq/*.py
+include HTSeq/*.py
 
 # Script
-include python*/HTSeq/scripts/*
-include python*/scripts/*
-
-# Symlinks
-prune example_data
-prune src
-prune HTSeq
-prune doc
-prune scripts
-prune test
+include HTSeq/scripts/*
+include scripts/*

@@ -1,5 +1,6 @@
 import os
 import subprocess as sp
+import pytest
 
 tests = [
     {'call': [
@@ -122,40 +123,52 @@ tests = [
 
 
 # Run the tests
-for t in tests:
-    expected_fn = t.get('expected_fn', None)
-    call = t['call']
-    # local testing
-    #call = ['python', 'HTSeq/scripts/count.py'] + call[1:]
+def test_htseq(data_folder):
+    print('Testing htseq-count')
 
-    print(' '.join(call))
-    output = sp.check_output(call).decode()
+    for it, t in enumerate(tests):
+        print('Test #'+str(it+1))
+        expected_fn = t.get('expected_fn', None)
+        call = t['call']
 
-    if '-c' in call:
-        output_fn = call[call.index('-c') + 1]
-        with open(output_fn, 'r') as f:
-            output = f.read()
-    else:
-        output_fn = None
+        # Replace with injected variable
+        call = [x.replace('example_data/', data_folder) for x in call]
+        if expected_fn is not None:
+            expected_fn = expected_fn.replace('example_data/', data_folder)
 
-    if expected_fn is None:
-        if '--version' in call:
-            print('version:', output)
-        continue
+        # local testing
+        #call = ['python', 'HTSeq/scripts/count.py'] + call[1:]
 
-    with open(expected_fn, 'r') as f:
-        expected = f.read()
+        print(' '.join(call))
+        output = sp.check_output(call).decode()
 
-    try:
-        assert output == expected
-    except AssertionError:
-        for out, exp in zip(output.split('\n'), expected.split('\n')):
-            print(out, exp)
-            if out != exp:
-                break
+        if '-c' in call:
+            output_fn = call[call.index('-c') + 1]
+            with open(output_fn, 'r') as f:
+                output = f.read()
+        else:
+            output_fn = None
 
-        raise
-    finally:
-        if output_fn is not None:
-            os.remove(output_fn)
+        if expected_fn is None:
+            if '--version' in call:
+                print('version:', output)
+            continue
 
+        with open(expected_fn, 'r') as f:
+            expected = f.read()
+
+        try:
+            assert output == expected
+        except AssertionError:
+            for out, exp in zip(output.split('\n'), expected.split('\n')):
+                print(out, exp)
+                if out != exp:
+                    break
+
+            raise
+        finally:
+            if output_fn is not None:
+                os.remove(output_fn)
+
+if __name__ == '__main__':
+    test_htseq('example_data/')

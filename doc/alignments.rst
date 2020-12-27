@@ -9,6 +9,9 @@ Read alignments
 .. doctest:: 
    :hide:
 
+   >>> import os
+   >>> if not os.getcwd().endswith('example_data'):
+   ...     os.chdir('example_data')
    >>> import HTSeq
 
 Concepts
