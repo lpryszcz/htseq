@@ -44,6 +44,7 @@ class FileOrSequence(object):
     def __exit__(self, type, value, traceback):
         if isinstance(self.fos, str):
             self.lines.close()
+        self.lines = None
 
     def __iter__(self):
         self.line_no = 1
