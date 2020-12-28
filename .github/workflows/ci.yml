@@ -1,8 +1,6 @@
 name: CI
 
-on:
-  push:
-    tags: !release_*
+on: push
 
 jobs:
   build_manylinux:
