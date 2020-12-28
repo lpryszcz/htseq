@@ -9,7 +9,7 @@ jobs:
     steps:
       - name: Clone repo
         run:
-          git clone -b ${GITHUB_REF} --single-branch https://github.com/${GITHUB_REPOSITORY}.git
+          git clone -b $(echo ${GITHUB_REF} | cut -d/ -f3) --single-branch https://github.com/${GITHUB_REPOSITORY}.git
       - name: Prepare docker image
         run:
           ./prepare_docker.sh
