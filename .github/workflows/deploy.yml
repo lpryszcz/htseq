@@ -45,7 +45,7 @@ jobs:
         /io/installwheels.sh
 
   deploy_mac:
-    os: macos-latest
+    runs-on: macos-latest
     strategy:
       matrix:
         python-version: [3.6, 3.7, 3.8, 3.9]
@@ -59,13 +59,13 @@ jobs:
 
     - name: Install dependencies
       env:
-        OS_NAME: ${{ matrix.os }}
+        OS_NAME: macos-latest
         CONDA_PY: ${{ matrix.python-version }}
       run: ./.ci_deps.sh
 
     - name: Build wheel and publish
       env:
-        OS_NAME: ${{ matrix.os }}
+        OS_NAME: macos-latest
         CONDA_PY: ${{ matrix.python-version }}
         TWINE_USERNAME: ${{ secrets.PYPI_USERNAME }}
         TWINE_PASSWORD: ${{ secrets.PYPI_PASSWORD }}
@@ -75,7 +75,7 @@ jobs:
 
     - name: Install deployed wheels
       env:
-        OS_NAME: ${{ matrix.os }}
+        OS_NAME: macos-latest
         CONDA_PY: ${{ matrix.python-version }}
       run: |
         ./.ci_postdeploy_install.sh

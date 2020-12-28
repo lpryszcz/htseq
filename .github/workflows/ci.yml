@@ -3,8 +3,7 @@ name: CI
 on:
   push:
     # No need to rerun CI on tags
-    tags-ignore:
-      - *
+    tags-ignore: '*'
 
 jobs:
   build_manylinux:
