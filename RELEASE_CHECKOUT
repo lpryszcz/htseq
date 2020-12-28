@@ -1,30 +1,32 @@
+RELEASE CHECKOUT
+
 - bump version in VERSION
 - update doc/history.rst
 - python setup.py build
   (this makes _version.py and SWIGs _HTSeq.c)
 - git add ...
 - git commit ...
-- git push fabio
+- git push
 
-(wait for CI to complete)
+(wait for CI/doc build to complete)
 
 If all well:
+
+- check documentation on readthedocs
+
+If all well:
+
 - git tag release_<semantic-version>_RC1
-- git push fabio release_<semantic-version>_RC1 (deploys to testpypi)
-else:
-- make changes on the branch and repeat (no additional version bump is needed, but an RC bump is needed)
+- git push origin release_<semantic-version>_RC1 (deploys to testpypi)
 
 (wait for CD to complete)
 
 If all well:
-- restart and, if necessary, update the pypi_CI branch
-else:
-- a minor version bump might be needed (pypi hates files with existing names)
+- check on testpypi that all files are there:
+ - source
+ - manylinux binaries
+ - mac binaries
 
 If all well:
 - git tag release_<semantic-version>
-- git push fabio release_<semantic-version> (pypi deploy trigger)
-- git push htseq release_<semantic-version> (github release deploy trigger)
-- restart the CI build on the CI_pypi branch
-- activate, triggen, and change default documentation page on readthedocs to the new release
-- document release notes on github releases
+- git push origin release_<semantic-version> (pypi deploy trigger)
