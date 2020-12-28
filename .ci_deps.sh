@@ -1,9 +1,9 @@
 #!/bin/bash
-if [ $TRAVIS_OS_NAME == 'ubuntu-latest' ]; then
+if [ $OS_NAME == 'ubuntu-latest' ]; then
   echo "Installing deps for linux"
   #sudo apt-get install -y swig3.0
 
-elif [ $TRAVIS_OS_NAME == 'macos-latest' ]; then
+elif [ $OS_NAME == 'macos-latest' ]; then
   echo "Find out OSX version"
   osx_version=$(sw_vers -productVersion)
   echo "OSX version: $osx_version"
@@ -34,7 +34,7 @@ elif [ $TRAVIS_OS_NAME == 'macos-latest' ]; then
   pip --version
 
 else
-  echo "OS not recognized: $TRAVIS_OS_NAME"
+  echo "OS not recognized: $OS_NAME"
   exit 1
 fi
 

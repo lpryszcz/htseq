@@ -8,7 +8,6 @@ jobs:
       matrix:
         os: [ubuntu-latest, macos-latest]
         python-version: [3.6, 3.7, 3.8, 3.9]
-        swig: [swig3.0]
 
     runs-on: ${{ matrix.os }}
 
@@ -21,21 +20,18 @@ jobs:
 
     - name: Install dependencies
       env:
-        TRAVIS_OS_NAME: ${{ matrix.os }}
-        SWIG: ${{ matrix.swig }}
+        OS_NAME: ${{ matrix.os }}
         CONDA_PY: ${{ matrix.python-version }}
-      run: ./.ci_install_deps.sh
+      run: ./.ci_deps.sh
 
     - name: Install HTSeq
       env:
-        TRAVIS_OS_NAME: ${{ matrix.os }}
-        SWIG: ${{ matrix.swig }}
+        OS_NAME: ${{ matrix.os }}
         CONDA_PY: ${{ matrix.python-version }}
       run: ./.ci_install.sh
 
     - name: Test with pytest
       env:
-        TRAVIS_OS_NAME: ${{ matrix.os }}
-        SWIG: ${{ matrix.swig }}
+        OS_NAME: ${{ matrix.os }}
         CONDA_PY: ${{ matrix.python-version }}
       run: ./.ci_test.sh
