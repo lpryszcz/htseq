@@ -21,9 +21,10 @@ if [ -z $GITHUB_REF ]; then
   echo 'No GITHUB_REF, exit'
   exit 0
 fi
-TAG1=$(echo $GITHUB_REF | cut -f1 -d_)
-TAG2=$(echo $GITHUB_REF | cut -f2 -d_)
-TAG3=$(echo $GITHUB_REF | cut -f3 -d_)
+TAG=$(echo $GITHUB_REF | cut -f3 -d/)
+TAG1=$(echo $TAG | cut -f1 -d_)
+TAG2=$(echo $TAG | cut -f2 -d_)
+TAG3=$(echo $TAG | cut -f3 -d_)
 if [ -z $TAG2 ]; then
   echo 'No TAG2, exit'
   exit 0;
