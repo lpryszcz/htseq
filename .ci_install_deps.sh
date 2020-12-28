@@ -1,9 +1,7 @@
 #!/bin/bash
 if [ $TRAVIS_OS_NAME == 'ubuntu-latest' ]; then
   echo "Installing deps for linux"
-  #sudo add-apt-repository ppa:nschloe/swig-backports -y
-  #sudo apt-get -qq update
-  sudo apt-get install -y swig3.0
+  #sudo apt-get install -y swig3.0
 
 elif [ $TRAVIS_OS_NAME == 'macos-latest' ]; then
   echo "Find out OSX version"
@@ -28,8 +26,8 @@ elif [ $TRAVIS_OS_NAME == 'macos-latest' ]; then
   source $HOME/miniconda/bin/activate
 
   # Make conda environment and activate
-  conda create -y -n travis python=$CONDA_PY
-  conda activate travis
+  conda create -y -n ci python=$CONDA_PY
+  conda activate ci
 
   # Use pip from conda
   conda install -y pip
@@ -41,6 +39,6 @@ else
 fi
 
 echo "Install Python dependencies"
-pip install setuptools wheel pytest Cython numpy pysam
+pip install setuptools wheel pytest Cython numpy pysam matplotlib
 
 

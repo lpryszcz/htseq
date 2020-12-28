@@ -1,7 +1,7 @@
 #!/bin/bash
 # try and make wheels
 if [ $DOCKER_IMAGE ]; then
-  docker run --rm -v `pwd`:/io $DOCKER_IMAGE /io/buildwheels.sh 
+  docker run --rm -v `pwd`:/io $DOCKER_IMAGE /io/testwheels.sh 
   if [ $? != 0 ]; then
       exit 1
   fi
@@ -10,7 +10,7 @@ if [ $DOCKER_IMAGE ]; then
       exit 1
   fi
 
-# compile normally
+# test normally
 else
   if [ $TRAVIS_OS_NAME == 'macos-latest' ]; then
     export PATH="$HOME/miniconda/bin:$PATH"
@@ -18,20 +18,8 @@ else
     conda activate ci
   fi
 
-  pip install -v '.[htseq-qa]'
+  pytest --doctest-glob="*.rst"
   if [ $? != 0 ]; then
       exit 1
   fi
 fi
-
-# OSX makes wheels as well
-if [ $TRAVIS_OS_NAME == 'macos-latest' ]; then
-  mkdir wheelhouse
-  pip wheel . -w wheelhouse/
-  if [ $? != 0 ]; then
-      exit 1
-  fi
-  #FIXME
-  ls wheelhouse
-fi
-
