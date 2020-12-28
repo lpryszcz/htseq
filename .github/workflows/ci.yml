@@ -5,12 +5,12 @@ on: [push]
 jobs:
   build_manylinux:
     runs-on: ubuntu-latest
-      #container: pypywheels/manylinux2010-pypy_x86_64
     container: quay.io/pypa/manylinux2010_x86_64
     steps:
-      - uses: actions/checkout@v2
+      #- uses: actions/checkout@v2
       - name: Build and test manylinux wheels
         run:
+          ./prepare_docker.sh
           ./buildwheels.sh
           ./testwheels.sh
 
