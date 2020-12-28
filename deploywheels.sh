@@ -68,7 +68,7 @@ for PYBIN in ${PYBINS}; do
 done
 
 echo "Deploy source code only from one version"
-if [ $PYTHON_VERSION == $SOURCE_VERSION]; then
+if [ x$SOURCE_VERSION == x$PYTHON_VERSION ]; then
   ${PYBIN}/twine upload --repository-url "${TWINE_REPOSITORY}" -u "${TWINE_USERNAME}" -p "${TWINE_PASSWORD}" /io/wheelhouse/HTSeq-${HTSEQ_VERSION}.tar.gz
   if [ $? != 0 ]; then
     ERRS=1
