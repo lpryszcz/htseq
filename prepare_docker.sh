@@ -22,12 +22,9 @@ if ! grep -q docker /proc/1/cgroup; then
   exec docker run --rm -v $(pwd):/io quay.io/pypa/manylinux2010_x86_64 /io/$0
 fi
 
-
 # Move repo into the expected folder
-mkdir /io
-mv htseq /io/
+mv htseq /io
 cd /io
-
 
 # Install zlib dev libraries for HTSlib when needed
 # manylinux2010 is CentOS 6
