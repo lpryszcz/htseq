@@ -10,7 +10,7 @@ jobs:
       - name: Clone repo
         run:
           git clone -b $(echo ${GITHUB_REF} | cut -d/ -f3) --single-branch https://github.com/${GITHUB_REPOSITORY}.git
-      - name: Move repo folder:
+      - name: Move repo folder
         run:
           mv htseq /io && cd /io
       - name: Prepare docker image
