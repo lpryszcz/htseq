@@ -1,47 +1,42 @@
 #!/bin/bash
-# only deploy builds for a release_<sematic-version>_RC?? tag to testpypi
-if [ -z $GITHUB_REF ]; then
-  echo 'No GITHUB_REF, exit'
-  exit 0
-fi
-TAG1=$(echo $GITHUB_REF | cut -f1 -d_)
-TAG2=$(echo $GITHUB_REF | cut -f2 -d_)
-TAG3=$(echo $GITHUB_REF | cut -f3 -d_)
-if [ -z $TAG2 ]; then
-  echo 'No TAG2, exit'
-  exit 0;
-fi
-if [ $TAG1 != 'release' ] || [ $TAG2 != $(cat VERSION) ]; then
-  echo 'No release tag or wrong version, exit'
-  exit 0;
-fi
-
-# do not deploy on linux outside of manylinux
-if [ -z $DOCKER_IMAGE ] && [ $OS_NAME != 'macos-latest' ]; then
-  echo 'Not inside manylinux docker image and not OSX, exit'
-  exit 0
-fi
-
-# deploy onto pypitest unless you have no RC
-if [ -z $TAG3 ]; then
-  TWINE_PASSWORD=${TWINE_PASSWORD_PYPI}
-  TWINE_REPOSITORY='https://upload.pypi.org/legacy/'
-  echo 'Deploying to production pypi'
-elif [ ${TAG3:0:2} == 'RC' ]; then
-  TWINE_PASSWORD=${TWINE_PASSWORD_TESTPYPI}
-  TWINE_REPOSITORY='https://test.pypi.org/legacy/'
-  echo 'Deploying to testpypi'
-else
-  echo "Tag not recognized: $GITHUB_REF"
-  exit 1
-fi
+if [ $OS_NAME == 'macos-latest' ]; then
+  # only deploy builds for a release_<sematic-version>_RC?? tag to testpypi
+  if [ -z $GITHUB_REF ]; then
+    echo 'No GITHUB_REF, exit'
+    exit 0
+  fi
+  TAG1=$(echo $GITHUB_REF | cut -f1 -d_)
+  TAG2=$(echo $GITHUB_REF | cut -f2 -d_)
+  TAG3=$(echo $GITHUB_REF | cut -f3 -d_)
+  if [ -z $TAG2 ]; then
+    echo 'No TAG2, exit'
+    exit 0;
+  fi
+  if [ $TAG1 != 'release' ] || [ $TAG2 != $(cat VERSION) ]; then
+    echo 'No release tag or wrong version, exit'
+    exit 0;
+  fi
+  
+  # do not deploy on linux outside of manylinux
+  if [ -z $DOCKER_IMAGE ] && [ $OS_NAME != 'macos-latest' ]; then
+    echo 'Not inside manylinux docker image and not OSX, exit'
+    exit 0
+  fi
+  
+  # deploy onto pypitest unless you have no RC
+  if [ -z $TAG3 ]; then
+    TWINE_PASSWORD=${TWINE_PASSWORD_PYPI}
+    TWINE_REPOSITORY='https://upload.pypi.org/legacy/'
+    echo 'Deploying to production pypi'
+  elif [ ${TAG3:0:2} == 'RC' ]; then
+    TWINE_PASSWORD=${TWINE_PASSWORD_TESTPYPI}
+    TWINE_REPOSITORY='https://test.pypi.org/legacy/'
+    echo 'Deploying to testpypi'
+  else
+    echo "Tag not recognized: $GITHUB_REF"
+    exit 1
+  fi
    
-if [ $DOCKER_IMAGE ]; then
-  # Wheels are already tested in docker image
-  docker run -e TWINE_REPOSITORY="$TWINE_REPOSITORY" -e TWINE_USERNAME="$TWINE_USERNAME" -e TWINE_PASSWORD="$TWINE_PASSWORD" --rm -v $(pwd):/io $DOCKER_IMAGE /io/deploywheels.sh 
-
-elif [ $OS_NAME == 'macos-latest' ]; then
-  # OSX deployment
   echo "Deploying for OSX"
   # Prepare to exit upon failure
   set -e  
@@ -87,10 +82,10 @@ elif [ $OS_NAME == 'macos-latest' ]; then
   echo "Uploading..."
   twine upload  --repository-url "${TWINE_REPOSITORY}" -u "${TWINE_USERNAME}" -p "${TWINE_PASSWORD}" "${TWINE_WHEEL}"
   if [ $? != 0 ]; then
-    echo "Upload failed" 
+    echo "Upload of wheel failed" 
     exit 1
   fi
-  echo "Upload complete"
+  echo "Upload of wheel complete"
 
 else
   echo "No DOCKER_IMAGE and not OSX, we should not be here!"

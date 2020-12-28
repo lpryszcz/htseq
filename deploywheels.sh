@@ -15,14 +15,37 @@
 
 set -xeuo pipefail
 
-# Python 2.6-3.5 is deprecated
-rm -rf /opt/python/cp26*
-rm -rf /opt/python/cpython-2.6*
-rm -rf /opt/python/cp27*
-rm -rf /opt/python/cpython-2.7*
-rm -rf /opt/python/cp33*
-rm -rf /opt/python/cp34*
-rm -rf /opt/python/cp35*
+# only deploy builds for a release_<sematic-version>_RC?? tag to testpypi
+echo "Figure out if a release is appropriate for this tag: ${GITHUB_REF}"
+if [ -z $GITHUB_REF ]; then
+  echo 'No GITHUB_REF, exit'
+  exit 0
+fi
+TAG1=$(echo $GITHUB_REF | cut -f1 -d_)
+TAG2=$(echo $GITHUB_REF | cut -f2 -d_)
+TAG3=$(echo $GITHUB_REF | cut -f3 -d_)
+if [ -z $TAG2 ]; then
+  echo 'No TAG2, exit'
+  exit 0;
+fi
+if [ $TAG1 != 'release' ] || [ $TAG2 != $(cat /io/VERSION) ]; then
+  echo 'No release tag or wrong version, exit'
+  exit 0;
+fi
+
+# deploy onto pypitest unless you have no RC
+if [ -z $TAG3 ]; then
+  TWINE_PASSWORD=${TWINE_PASSWORD_PYPI}
+  TWINE_REPOSITORY='https://upload.pypi.org/legacy/'
+  echo 'Deploying to production pypi'
+elif [ ${TAG3:0:2} == 'RC' ]; then
+  TWINE_PASSWORD=${TWINE_PASSWORD_TESTPYPI}
+  TWINE_REPOSITORY='https://test.pypi.org/legacy/'
+  echo 'Deploying to testpypi'
+else
+  echo "Tag not recognized: $GITHUB_REF"
+  exit 1
+fi
 
 # Deploy binary packages
 HTSEQ_VERSION=$(cat /io/VERSION)
