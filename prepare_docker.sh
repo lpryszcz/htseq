@@ -15,13 +15,6 @@
 
 set -xeuo pipefail
 
-# For convenience, if this script is called from outside of a docker container,
-# it starts a container and runs itself inside of it.
-if ! grep -q docker /proc/1/cgroup; then
-  # We are not inside a container
-  exec docker run --rm -v $(pwd):/io quay.io/pypa/manylinux2010_x86_64 /io/$0
-fi
-
 # Install zlib dev libraries for HTSlib when needed
 # manylinux2010 is CentOS 6
 yum -y install zlib-devel bzip2-devel xz-devel wget
