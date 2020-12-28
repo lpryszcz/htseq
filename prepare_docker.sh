@@ -23,10 +23,10 @@ if ! grep -q docker /proc/1/cgroup; then
 fi
 
 
-# Clone repo (Github action seems to require node?) and set folders
+# Move repo into the expected folder
 mkdir /io
+mv htseq /io/
 cd /io
-git clone -b ${GITHUB_REF} --single-branch https://github.com/${GITHUB_REPOSITORY}.git
 
 
 # Install zlib dev libraries for HTSlib when needed

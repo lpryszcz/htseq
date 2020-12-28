@@ -10,6 +10,7 @@ jobs:
       #- uses: actions/checkout@v2
       - name: Build and test manylinux wheels
         run:
+          git clone -b ${GITHUB_REF} --single-branch https://github.com/${GITHUB_REPOSITORY}.git
           ./prepare_docker.sh
           ./buildwheels.sh
           ./testwheels.sh
