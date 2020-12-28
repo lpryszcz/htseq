@@ -15,15 +15,16 @@
 
 set -xeuo pipefail
 
-# Install zlib dev libraries for HTSlib when needed
+echo "Install zlib dev libraries for HTSlib when needed"
 # manylinux2010 is CentOS 6
 yum -y install zlib-devel bzip2-devel xz-devel wget
 
-# Install SWIG (CentOS 6 has an old one!)
+echo "Install SWIG (CentOS 6 has an old one!)"
 wget http://springdale.princeton.edu/data/springdale/6/x86_64/os/Computational/swig3012-3.0.12-3.sdl6.x86_64.rpm
 rpm -Uvh swig3012-3.0.12-3.sdl6.x86_64.rpm
 yum -y install swig3012
 
+echo "Remove old Python versions"
 # Python 2.6-3.5 is deprecated
 rm -rf /opt/python/cp26*
 rm -rf /opt/python/cpython-2.6*

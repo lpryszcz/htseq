@@ -30,7 +30,7 @@ for PYBIN in ${PYBINS}; do
     echo "Testing $PYBIN"
     ${PYBIN}/pip install pytest
     ${PYBIN}/pip install HTSeq --no-index -f /io/wheelhouse
-    (cd /io; ls; DOCKER_IMAGE='' PYTHON=${PYBIN}/python PATH=${PYBIN}:${PATH} ./.ci_test.sh)
+    (cd /io; ls; DOCKER_IMAGE='' OS_NAME='centos-6' PYTHON=${PYBIN}/python PATH=${PYBIN}:${PATH} ./.ci_test.sh)
     if [ $? != 0 ]; then
         exit 1
     fi
