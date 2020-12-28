@@ -19,7 +19,7 @@ jobs:
         mv htseq /io
     - name: Prepare docker image
       env:
-      PYTHON_VERSION: ${{ matrix.python-version }}
+        PYTHON_VERSION: ${{ matrix.python-version }}
       run:
         /io/prepare_docker.sh
     - name: Build wheels
