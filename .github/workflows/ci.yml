@@ -12,16 +12,16 @@ jobs:
           git clone -b $(echo ${GITHUB_REF} | cut -d/ -f3) --single-branch https://github.com/${GITHUB_REPOSITORY}.git
       - name: Move repo folder
         run:
-          mv htseq /io && cd /io
+          mv htseq /io
       - name: Prepare docker image
         run:
-          ./prepare_docker.sh
+          /io/prepare_docker.sh
       - name: Build wheels
         run:
-          ./buildwheels.sh
+          /io/buildwheels.sh
       - name: Test wheels
         run:
-          ./testwheels.sh
+          /io/testwheels.sh
 
   build:
     strategy:
