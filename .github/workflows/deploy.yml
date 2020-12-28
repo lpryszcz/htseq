@@ -8,6 +8,9 @@ jobs:
   deploy_manylinux:
     runs-on: ubuntu-latest
     container: quay.io/pypa/manylinux2010_x86_64
+    strategy:
+      matrix:
+        python-version: [3.6, 3.7, 3.8, 3.9]
 
     steps:
     - name: Clone repo
@@ -16,7 +19,9 @@ jobs:
     - name: Move repo folder
       run:
         mv htseq /io
-    - name: Prepare docker image
+    - name: Prepare docker image (remove other Python versions)
+      env:
+        PYTHON_VERSION: ${{ matrix.python-version }}
       run:
         /io/prepare_docker.sh
     - name: Build wheels
@@ -24,11 +29,16 @@ jobs:
         /io/buildwheels.sh
     - name: Deploy source and manylinux wheels
       env:
+        SOURCE_VERSION: 3.6
         TWINE_USERNAME: ${{ secrets.PYPI_USERNAME }}
         TWINE_PASSWORD: ${{ secrets.PYPI_PASSWORD }}
         TWINE_PASSWORD_TESTPYPI: ${{ secrets.TESTPYPI_PASSWORD }}
       run:
         /io/deploywheels.sh
+
+    - name: Install deployed wheels
+      run:
+        /io/installwheels.sh
 
   deploy_mac:
     os: macos-latest
@@ -58,3 +68,10 @@ jobs:
         TWINE_PASSWORD_TESTPYPI: ${{ secrets.TESTPYPI_PASSWORD }}
       run: |
         ./.ci_deploy.sh
+
+    - name: Install deployed wheels
+      env:
+        OS_NAME: ${{ matrix.os }}
+        CONDA_PY: ${{ matrix.python-version }}
+      run: |
+        ./.ci_postdeploy_install.sh

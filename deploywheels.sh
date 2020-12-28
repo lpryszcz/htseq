@@ -64,9 +64,14 @@ for PYBIN in ${PYBINS}; do
   fi
 done
 
-# Deploy source code
-${PYBIN}/twine upload --repository-url "${TWINE_REPOSITORY}" -u "${TWINE_USERNAME}" -p "${TWINE_PASSWORD}" /io/wheelhouse/HTSeq-${HTSEQ_VERSION}.tar.gz
-if [ $? != 0 ]; then
-  ERRS=1
-fi
+echo "Deploy source code only from one version"
+export PYTHON_FDN=cp$(echo ${SOURCE_VERSION} | sed 's/\.//')
+PYBINS="/opt/python/${PYTHON_FDN}*/bin"
+# There should be only one here, but it's easiest to just use a for loop
+for PYBIN in ${PYBINS}; do
+  ${PYBIN}/twine upload --repository-url "${TWINE_REPOSITORY}" -u "${TWINE_USERNAME}" -p "${TWINE_PASSWORD}" /io/wheelhouse/HTSeq-${HTSEQ_VERSION}.tar.gz
+  if [ $? != 0 ]; then
+    ERRS=1
+  fi
+done
 exit $ERRS

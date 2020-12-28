@@ -6,22 +6,28 @@ jobs:
   build_manylinux:
     runs-on: ubuntu-latest
     container: quay.io/pypa/manylinux2010_x86_64
+    strategy:
+      matrix:
+        python-version: [3.6, 3.7, 3.8, 3.9]
+
     steps:
-      - name: Clone repo
-        run:
-          git clone -b $(echo ${GITHUB_REF} | cut -d/ -f3) --single-branch https://github.com/${GITHUB_REPOSITORY}.git
-      - name: Move repo folder
-        run:
-          mv htseq /io
-      - name: Prepare docker image
-        run:
-          /io/prepare_docker.sh
-      - name: Build wheels
-        run:
-          /io/buildwheels.sh
-      - name: Test wheels
-        run:
-          /io/testwheels.sh
+    - name: Clone repo
+      run:
+        git clone -b $(echo ${GITHUB_REF} | cut -d/ -f3) --single-branch https://github.com/${GITHUB_REPOSITORY}.git
+    - name: Move repo folder
+      run:
+        mv htseq /io
+    - name: Prepare docker image
+      env:
+      PYTHON_VERSION: ${{ matrix.python-version }}
+      run:
+        /io/prepare_docker.sh
+    - name: Build wheels
+      run:
+        /io/buildwheels.sh
+    - name: Test wheels
+      run:
+        /io/testwheels.sh
 
   build:
     strategy:
