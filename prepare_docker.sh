@@ -26,19 +26,8 @@ yum -y install swig3012
 
 echo "Remove old Python versions"
 # Python 2.6-3.5 is deprecated
-rm -rf /opt/python/cp26*
-rm -rf /opt/python/cpython-2.6*
 rm -rf /opt/python/cp27*
 rm -rf /opt/python/cpython-2.7*
 rm -rf /opt/python/cp33*
 rm -rf /opt/python/cp34*
 rm -rf /opt/python/cp35*
-
-echo "PYTHON_VERSION: ${PYTHON_VERSION}: Remove other Python versions"
-export PYTHON_FDN=cp$(echo ${PYTHON_VERSION} | sed 's/\.//')
-for fdn in cp36 cp37 cp38 cp39; do
- if [ $fdn != $PYTHON_FDN ]; then
-  echo "Remove ${fdn}"
-  rm -rf /opt/python/${fdn}*
- fi
-done

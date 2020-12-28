@@ -48,8 +48,10 @@ else
 fi
 
 # Deploy binary packages
+echo "PYTHON_VERSION: ${PYTHON_VERSION}"
+export PYTHON_FDN=cp$(echo ${PYTHON_VERSION} | sed 's/\.//')
+PYBINS="/opt/python/${PYTHON_FDN}*/bin"
 HTSEQ_VERSION=$(cat /io/VERSION)
-PYBINS="/opt/python/*/bin"
 ERRS=0
 for PYBIN in ${PYBINS}; do
   PYVER=$(basename $(dirname ${PYBIN}))
@@ -65,13 +67,9 @@ for PYBIN in ${PYBINS}; do
 done
 
 echo "Deploy source code only from one version"
-export PYTHON_FDN=cp$(echo ${SOURCE_VERSION} | sed 's/\.//')
-PYBINS="/opt/python/${PYTHON_FDN}*/bin"
-# There should be only one here, but it's easiest to just use a for loop
-for PYBIN in ${PYBINS}; do
+if [ $PYTHON_VERSION == $SOURCE_VERSION]; then
   ${PYBIN}/twine upload --repository-url "${TWINE_REPOSITORY}" -u "${TWINE_USERNAME}" -p "${TWINE_PASSWORD}" /io/wheelhouse/HTSeq-${HTSEQ_VERSION}.tar.gz
   if [ $? != 0 ]; then
     ERRS=1
   fi
-done
 exit $ERRS

@@ -15,17 +15,9 @@
 
 set -xeuo pipefail
 
-# Python 2.6-3.5 is deprecated
-rm -rf /opt/python/cp26*
-rm -rf /opt/python/cpython-2.6*
-rm -rf /opt/python/cp27*
-rm -rf /opt/python/cpython-2.7*
-rm -rf /opt/python/cp33*
-rm -rf /opt/python/cp34*
-rm -rf /opt/python/cp35*
-
-# Install packages and test them
-PYBINS="/opt/python/*/bin"
+echo "PYTHON_VERSION: ${PYTHON_VERSION}"
+export PYTHON_FDN=cp$(echo ${PYTHON_VERSION} | sed 's/\.//')
+PYBINS="/opt/python/${PYTHON_FDN}*/bin"
 for PYBIN in ${PYBINS}; do
     echo "Testing $PYBIN"
     ${PYBIN}/pip install pytest

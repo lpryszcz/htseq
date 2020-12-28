@@ -15,7 +15,9 @@
 
 set -xeuo pipefail
 
-PYBINS="/opt/python/*/bin"
+echo "PYTHON_VERSION: ${PYTHON_VERSION}"
+export PYTHON_FDN=cp$(echo ${PYTHON_VERSION} | sed 's/\.//')
+PYBINS="/opt/python/${PYTHON_FDN}*/bin"
 for PYBIN in ${PYBINS}; do
     echo "PYBIN = ${PYBIN}"
 
