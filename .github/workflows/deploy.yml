@@ -20,15 +20,16 @@ jobs:
       run:
         mv htseq /io
     - name: Prepare docker image (remove other Python versions)
-      env:
-        PYTHON_VERSION: ${{ matrix.python-version }}
       run:
         /io/prepare_docker.sh
     - name: Build wheels
+      env:
+        PYTHON_VERSION: ${{ matrix.python-version }}
       run:
         /io/buildwheels.sh
     - name: Deploy source and manylinux wheels
       env:
+        PYTHON_VERSION: ${{ matrix.python-version }}
         SOURCE_VERSION: 3.6
         TWINE_USERNAME: ${{ secrets.PYPI_USERNAME }}
         TWINE_PASSWORD: ${{ secrets.PYPI_PASSWORD }}
@@ -37,6 +38,8 @@ jobs:
         /io/deploywheels.sh
 
     - name: Install deployed wheels
+      env:
+        PYTHON_VERSION: ${{ matrix.python-version }}
       run:
         /io/installwheels.sh
 
