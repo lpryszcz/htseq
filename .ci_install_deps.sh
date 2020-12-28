@@ -39,3 +39,8 @@ else
   echo "OS not recognized: $TRAVIS_OS_NAME"
   exit 1
 fi
+
+echo "Install Python dependencies"
+pip install -y setuptools wheel pytest Cython numpy pysam
+
+

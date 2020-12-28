@@ -18,28 +18,26 @@ jobs:
       uses: actions/setup-python@v2
       with:
         python-version: ${{ matrix.python-version }}
-    - name: Install Python tools
-      run: |
-        python -m pip install --upgrade pip setuptools wheel
-        pip install flake8 setuptools wheel pytest
-        if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
 
-    - name: Preinstall HTSeq (swig, conda)
+    - name: Install dependencies
       env:
         TRAVIS_OS_NAME: ${{ matrix.os }}
         SWIG: ${{ matrix.swig }}
         CONDA_PY: ${{ matrix.python-version }}
-      run: ./.travis_before_install.sh
+      run: ./.ci_install_deps.sh
+
     - name: Install HTSeq
       env:
         TRAVIS_OS_NAME: ${{ matrix.os }}
         SWIG: ${{ matrix.swig }}
         CONDA_PY: ${{ matrix.python-version }}
-      run: ./.travis_install.sh
+      run: ./.ci_install.sh
+
         #- name: Test HTSeq
         #  env:
         #    TRAVIS_OS_NAME: ${{ matrix.os }}
         #    CONDA_PY: ${{ matrix.python-version }}
         #  run: ./.travis_test.sh
+
     - name: Test with pytest
       run: pytest --doctest-glob="*.rst"
