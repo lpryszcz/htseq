@@ -41,6 +41,6 @@ else
 fi
 
 echo "Install Python dependencies"
-pip install -y setuptools wheel pytest Cython numpy pysam
+pip install setuptools wheel pytest Cython numpy pysam
 
 
