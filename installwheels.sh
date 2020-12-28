@@ -15,12 +15,6 @@
 
 set -xeuo pipefail
 
-echo "Destroy wheelhouse and source (keep tests and docs)"
-rm -rf /io/wheelhouse /io/build /io/src /io/HTSeq /io/dist
-
-echo "Uninstall packages and (some) deps"
-pip uninstall numpy pysam matplotlib Cython wheel HTSeq
-
 echo "PYTHON_VERSION: ${PYTHON_VERSION}"
 export PYTHON_FDN=cp$(echo ${PYTHON_VERSION} | sed 's/\.//')
 PYBINS="/opt/python/${PYTHON_FDN}*/bin"
@@ -28,11 +22,9 @@ for PYBIN in ${PYBINS}; do
     echo "PYBIN = ${PYBIN}"
 
     echo "Install from Pypi..."
-    ${PYBIN}/pip install HTSeq
+    (cd /io; ls; OS_NAME='centos-6' PYTHON=${PYBIN}/python PATH=${PYBIN}:${PATH} ./.ci_postdeploy_install.sh)
+
     if [ $? != 0 ]; then
       exit 1
     fi
 done
-echo "Done installing"
-
-# Test after install?
