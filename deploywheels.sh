@@ -73,4 +73,5 @@ if [ x$SOURCE_VERSION == x$PYTHON_VERSION ]; then
   if [ $? != 0 ]; then
     ERRS=1
   fi
+fi
 exit $ERRS
