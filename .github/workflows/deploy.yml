@@ -1,26 +1,50 @@
-#name: Upload Python Package
-#
-#on:
-#  release:
-#    types: [created]
-#
-#jobs:
-#  deploy:
-#    runs-on: ubuntu-latest
-#    steps:
-#    - uses: actions/checkout@v2
-#    - name: Set up Python
-#      uses: actions/setup-python@v2
-#      with:
-#        python-version: '3.8'
-#    - name: Install dependencies
-#      run: |
-#        python -m pip install --upgrade pip
-#        pip install setuptools wheel twine
-#    - name: Build and publish
-#      env:
-#        TWINE_USERNAME: ${{ secrets.PYPI_USERNAME }}
-#        TWINE_PASSWORD: ${{ secrets.PYPI_PASSWORD }}
-#      run: |
-#        python setup.py sdist bdist_wheel
-#        twine upload dist/*
+name: Upload Python Package
+
+on:
+  release:
+    types: [created]
+
+jobs:
+  deploy_manylinux:
+    os: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v2
+    - name: Build manylinux wheels and deploy (including source)
+      env:
+        DOCKER_IMAGE: quay.io/pypa/manylinux2010_x86_64
+        TWINE_USERNAME: ${{ secrets.PYPI_USERNAME }}
+        TWINE_PASSWORD: ${{ secrets.PYPI_PASSWORD }}
+        TWINE_PASSWORD_TESTPYPI: ${{ secrets.TESTPYPI_PASSWORD }}
+      run:
+        ./.ci_install.sh
+        ./.ci_deploy.sh
+
+  deploy_mac:
+    os: macos-latest
+    strategy:
+      matrix:
+        python-version: [3.6, 3.7, 3.8, 3.9]
+
+    steps:
+    - uses: actions/checkout@v2
+    - name: Set up Python ${{ matrix.python-version }}
+      uses: actions/setup-python@v2
+      with:
+        python-version: ${{ matrix.python-version }}
+
+    - name: Install dependencies
+      env:
+        OS_NAME: ${{ matrix.os }}
+        CONDA_PY: ${{ matrix.python-version }}
+      run: ./.ci_deps.sh
+
+    - name: Build wheel and publish
+      env:
+        OS_NAME: ${{ matrix.os }}
+        CONDA_PY: ${{ matrix.python-version }}
+        TWINE_USERNAME: ${{ secrets.PYPI_USERNAME }}
+        TWINE_PASSWORD: ${{ secrets.PYPI_PASSWORD }}
+        TWINE_PASSWORD_TESTPYPI: ${{ secrets.TESTPYPI_PASSWORD }}
+      run: |
+        ./.ci_deploy.sh

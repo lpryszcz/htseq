@@ -31,35 +31,35 @@ wget http://springdale.princeton.edu/data/springdale/6/x86_64/os/Computational/s
 rpm -Uvh swig3012-3.0.12-3.sdl6.x86_64.rpm
 yum -y install swig3012
 
-# Python 2.6 is not supported
+# Python 2.6-3.5 is deprecated
 rm -rf /opt/python/cp26*
 rm -rf /opt/python/cpython-2.6*
-
-# Python 2.7 is deprecated
 rm -rf /opt/python/cp27*
 rm -rf /opt/python/cpython-2.7*
-
-# Python 3.3-4 is not supported:
 rm -rf /opt/python/cp33*
 rm -rf /opt/python/cp34*
-
-# Python 3.9 is not supported YET:
-rm -rf /opt/python/cp39*
+rm -rf /opt/python/cp35*
 
 # Build wheels
 PYBINS="/opt/python/*/bin"
 for PYBIN in ${PYBINS}; do
-    # Make sure the wheelbuilder has a recent cython
-    ${PYBIN}/pip install Cython
+    echo "PYBIN = ${PYBIN}"
+
+    echo "Install requirements..."
+    ${PYBIN}/pip install setuptools wheel Cython matplotlib
     ${PYBIN}/pip install -r /io/requirements.txt
+
+    echo "Build wheels..."
     ${PYBIN}/pip wheel /io/ -w wheelhouse/
 done
 
 # Repair HTSeq wheels, copy libraries
 for whl in wheelhouse/*.whl; do
     if [[ $whl == wheelhouse/HTSeq* ]]; then
+      echo "Repairing wheel: $whl"
       auditwheel repair -L . $whl -w /io/wheelhouse/
     else
+      echo "Copying wheel: $whl"
       cp $whl /io/wheelhouse/
     fi
 done
@@ -67,6 +67,7 @@ done
 # Created files are owned by root, so fix permissions.
 chown -R --reference=/io/setup.py /io/wheelhouse/
 
-# Build source dist
+echo "Build source dist..."
 cd /io
 ${PYBIN}/python setup.py sdist --dist-dir /io/wheelhouse/
+echo "Done building"

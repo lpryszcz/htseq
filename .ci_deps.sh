@@ -40,5 +40,3 @@ fi
 
 echo "Install Python dependencies"
 pip install setuptools wheel pytest Cython numpy pysam matplotlib
-
-

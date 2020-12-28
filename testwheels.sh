@@ -22,26 +22,22 @@ if ! grep -q docker /proc/1/cgroup; then
   exec docker run --rm -v $(pwd):/io quay.io/pypa/manylinux2010_x86_64 /io/$0
 fi
 
-# Python 2.6 is not supported
+# Python 2.6-3.5 is deprecated
 rm -rf /opt/python/cp26*
 rm -rf /opt/python/cpython-2.6*
-
-# Python 2.7 is deprecated
 rm -rf /opt/python/cp27*
 rm -rf /opt/python/cpython-2.7*
-
-# Python 3.3-4 is not supported:
 rm -rf /opt/python/cp33*
 rm -rf /opt/python/cp34*
-
-# Python 3.9 is not supported YET:
-rm -rf /opt/python/cp39*
+rm -rf /opt/python/cp35*
 
 # Install packages and test them
 PYBINS="/opt/python/*/bin"
 for PYBIN in ${PYBINS}; do
+    echo "Testing $PYBIN"
+    ${PYBIN}/pip install pytest
     ${PYBIN}/pip install HTSeq --no-index -f /io/wheelhouse
-    (cd /io; ls; DOCKER_IMAGE='' PYTHON=${PYBIN}/python PATH=${PYBIN}:${PATH} ./.travis_test.sh)
+    (cd /io; ls; DOCKER_IMAGE='' PYTHON=${PYBIN}/python PATH=${PYBIN}:${PATH} ./.ci_test.sh)
     if [ $? != 0 ]; then
         exit 1
     fi

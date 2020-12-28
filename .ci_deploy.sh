@@ -1,12 +1,12 @@
 #!/bin/bash
 # only deploy builds for a release_<sematic-version>_RC?? tag to testpypi
-if [ -z $TRAVIS_TAG ]; then
-  echo 'No TRAVIS_TAG, exit'
+if [ -z $GITHUB_REF ]; then
+  echo 'No GITHUB_REF, exit'
   exit 0
 fi
-TAG1=$(echo $TRAVIS_TAG | cut -f1 -d_)
-TAG2=$(echo $TRAVIS_TAG | cut -f2 -d_)
-TAG3=$(echo $TRAVIS_TAG | cut -f3 -d_)
+TAG1=$(echo $GITHUB_REF | cut -f1 -d_)
+TAG2=$(echo $GITHUB_REF | cut -f2 -d_)
+TAG3=$(echo $GITHUB_REF | cut -f3 -d_)
 if [ -z $TAG2 ]; then
   echo 'No TAG2, exit'
   exit 0;
@@ -17,14 +17,8 @@ if [ $TAG1 != 'release' ] || [ $TAG2 != $(cat VERSION) ]; then
 fi
 
 # do not deploy on linux outside of manylinux
-if [ -z $DOCKER_IMAGE ] && [ $TRAVIS_OS_NAME != 'osx' ]; then
+if [ -z $DOCKER_IMAGE ] && [ $OS_NAME != 'macos-latest' ]; then
   echo 'Not inside manylinux docker image and not OSX, exit'
-  exit 0
-fi
-
-# OSX only deploys on latest pysam
-if [ $TRAVIS_OS_NAME == 'osx' ] && [ $PYSAM_VERSION != 'pysam>=0.13.0' ]; then
-  echo "OSX on older pysam, exit"
   exit 0
 fi
 
@@ -38,7 +32,7 @@ elif [ ${TAG3:0:2} == 'RC' ]; then
   TWINE_REPOSITORY='https://test.pypi.org/legacy/'
   echo 'Deploying to testpypi'
 else
-  echo "Tag not recognized: $TRAVIS_TAG"
+  echo "Tag not recognized: $GITHUB_REF"
   exit 1
 fi
    
@@ -46,7 +40,7 @@ if [ $DOCKER_IMAGE ]; then
   # Wheels are already tested in docker image
   docker run -e TWINE_REPOSITORY="$TWINE_REPOSITORY" -e TWINE_USERNAME="$TWINE_USERNAME" -e TWINE_PASSWORD="$TWINE_PASSWORD" --rm -v $(pwd):/io $DOCKER_IMAGE /io/deploywheels.sh 
 
-elif [ $TRAVIS_OS_NAME == 'osx' ]; then
+elif [ $OS_NAME == 'macos-latest' ]; then
   # OSX deployment
   echo "Deploying for OSX"
   # Prepare to exit upon failure
@@ -68,19 +62,27 @@ elif [ $TRAVIS_OS_NAME == 'osx' ]; then
   echo "TWINE_PASSWORD=$TWINE_PASSWORD"
   export PATH="$HOME/miniconda/bin:$PATH"
   source $HOME/miniconda/bin/activate
-  conda activate travis
+  conda activate ci
 
-  pip --version
-  pip install twine
-
-  # Figure out architecture string
-  PYVER=$(echo $CONDA_PY | sed 's/\.//')
-  PYARCH=cp${PYVER}-cp${PYVER}
+  # make wheel
+  mkdir wheelhouse
+  pip wheel . -w wheelhouse/
+  if [ $? != 0 ]; then
+      exit 1
+  fi
 
   echo "Contents of wheelhouse:"
   ls wheelhouse
+
+  echo "Figure out architecture string for wheel..."
+  PYVER=$(echo $CONDA_PY | sed 's/\.//')
+  PYARCH=cp${PYVER}-cp${PYVER}
   TWINE_WHEEL=$(ls wheelhouse/HTSeq-${HTSEQ_VERSION}-${PYARCH}*.whl)
   echo "TWINE_WHEEL=$TWINE_WHEEL"
+
+  echo "Install twine for upload..."
+  pip --version
+  pip install twine
 
   echo "Uploading..."
   twine upload  --repository-url "${TWINE_REPOSITORY}" -u "${TWINE_USERNAME}" -p "${TWINE_PASSWORD}" "${TWINE_WHEEL}"

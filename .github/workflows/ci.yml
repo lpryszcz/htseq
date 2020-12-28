@@ -3,6 +3,18 @@ name: CI
 on: [push]
 
 jobs:
+  build_manylinux:
+    runs-on: ubuntu-latest
+    container: quay.io/pypa/manylinux2010_x86_64
+    steps:
+      - uses: actions/checkout@v2
+      - name: Build and test manylinux wheels
+        env:
+          DOCKER_IMAGE: ${{ container }}
+        run:
+          ./buildwheels.sh
+          ./testwheels.sh
+
   build:
     strategy:
       matrix:

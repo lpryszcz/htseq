@@ -24,7 +24,7 @@ else
   fi
 fi
 
-# OSX makes wheels as well
+# OSX makes wheels as well, test it to make sure
 if [ $OS_NAME == 'macos-latest' ]; then
   mkdir wheelhouse
   pip wheel . -w wheelhouse/
