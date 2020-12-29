@@ -73,5 +73,5 @@ python setup.py build install
 ```
 
 ## Authors
-- Since 2016: Fabio Zanini @ http://fabilab.org.
-- 2020-2015: Simon Anders, Wolfgang Huber
+- 2016-: Fabio Zanini @ http://fabilab.org.
+- 2010-2015: Simon Anders, Wolfgang Huber
