@@ -9,14 +9,11 @@ echo "Destroy wheelhouse and source (keep tests and docs)"
 rm -rf wheelhouse build src HTSeq dist
 
 echo "Uninstall packages and (some) deps"
-pip uninstall numpy pysam matplotlib Cython wheel HTSeq
+pip uninstall HTSeq
 
 echo "Install from Pypi..."
-pip install HTSeq
+pip install --no-binary ":all:" "HTSeq==$(cat VERSION)"
 if [ $? != 0 ]; then
   exit 1
 fi
 echo "Done installing"
-
-# Test after install?
-
