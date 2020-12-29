@@ -8,12 +8,13 @@ fi
 echo "Destroy wheelhouse and source (keep tests and docs)"
 rm -rf wheelhouse build src HTSeq dist
 
-echo "Uninstall packages and (some) deps"
-pip uninstall HTSeq
-
-echo "Install from Pypi..."
-pip install --no-binary ":all:" "HTSeq==$(cat VERSION)"
-if [ $? != 0 ]; then
-  exit 1
-fi
-echo "Done installing"
+#FIXME
+#echo "Uninstall packages and (some) deps"
+#pip uninstall HTSeq
+#
+#echo "Install from Pypi..."
+#pip install --no-binary ":all:" "HTSeq==$(cat VERSION)"
+#if [ $? != 0 ]; then
+#  exit 1
+#fi
+#echo "Done installing"
