@@ -3,6 +3,7 @@ import sys
 import os
 import glob
 import distutils.util
+from pathlib import Path
 
 build_dir = "build/lib.%s-%s" % (distutils.util.get_platform(), sys.version[0:3])
 
@@ -61,6 +62,31 @@ def test_fastq_parser(data_folder):
     with gzip.open(data_folder+'fastqExgzip.fastq.gz', 'rt') as fraw:
         f = HTSeq.FastqReader(fraw)
         for seq in f:
+            pass
+    print('Test passed')
+
+
+def test_path_like_reading(data_folder):
+    data_file = Path(data_folder) / 'yeast_RNASeq_excerpt.sam'
+    print('Test BAM reader with pathlib.Path')
+    bamfile = HTSeq.BAM_Reader(data_file)
+    for read in bamfile:
+        pass
+    print('Test passed')
+
+    print('Test BAM reader (with statement) with pathlib.Path')
+    with HTSeq.BAM_Reader(data_file) as f:
+        for read in f:
+            pass
+    print('Test passed')
+
+
+def test_open_handle_reading(data_folder):
+    data_file = Path(data_folder) / 'yeast_RNASeq_excerpt.sam'
+    print('Test BAM reader with open handle')
+    with open(data_file) as f:
+        reader = HTSeq.BAM_Reader(f)
+        for read in reader:
             pass
     print('Test passed')
 
