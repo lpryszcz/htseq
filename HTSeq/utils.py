@@ -9,7 +9,7 @@ from HTSeq._HTSeq import *
 from HTSeq._version import __version__
 
 
-class FileOrSequence(object):
+class FileOrSequence:
     """ The construcutor takes one argument, which may either be a string,
     which is interpreted as a file name (possibly with path), or a
     connection, by which we mean a text file opened for reading, or
@@ -27,22 +27,26 @@ class FileOrSequence(object):
 
     def __init__(self, filename_or_sequence):
         self.fos = filename_or_sequence
+        self.should_close = False
         self.line_no = None
         self.lines = None
 
     def __enter__(self):
-        if isinstance(self.fos, str):
-            if self.fos.lower().endswith((".gz", ".gzip")):
+        try:
+            fos = os.fspath(self.fos)
+            if fos.lower().endswith((".gz", ".gzip")):
                 lines = gzip.open(self.fos, 'rt')
             else:
                 lines = open(self.fos)
-        else:
+            self.should_close = True
+        except TypeError:
+            # must be an open file handle
             lines = self.fos
         self.lines = lines
         return self
 
     def __exit__(self, type, value, traceback):
-        if isinstance(self.fos, str):
+        if self.should_close:
             self.lines.close()
         self.lines = None
 
