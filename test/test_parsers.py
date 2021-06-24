@@ -91,6 +91,24 @@ def test_open_handle_reading(data_folder):
     print('Test passed')
 
 
+def test_unreadable_object_reading():
+    unreadable_object = object()
+
+    print('Test BAM reader with unreadable object')
+    with pytest.raises(TypeError):
+        reader = HTSeq.BAM_Reader(unreadable_object)
+        for read in reader:
+            pass
+    print('Test passed')
+
+    print('Test BAM reader with unreadable object, context manager')
+    with pytest.raises(TypeError):
+        with HTSeq.BAM_Reader(unreadable_object) as reader:
+            for read in reader:
+                pass
+    print('Test passed')
+
+
 def test_bam_reader(data_folder):
     print('Test BAM reader')
     bamfile = HTSeq.BAM_Reader(data_folder+"yeast_RNASeq_excerpt.sam")
