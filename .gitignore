@@ -4,11 +4,11 @@ build/
 dist/
 wheelhouse/
 .eggs/
+__pycache__/
 
 # Data and machine-generated
 HTSeq/StepVector.py
 HTSeq/_version.py
-HTSeq/__pycache__/
 src/_HTSeq.c
 src/StepVector_wrap.cxx
 example_data/minus.wig
