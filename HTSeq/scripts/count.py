@@ -262,7 +262,7 @@ def count_reads_single_file(
                     empty += 1
                 elif len(fs) > 1:
                     write_to_samout(
-                            r, "__ambiguous[" + '+'.join(fs) + "]",
+                            r, "__ambiguous[" + '+'.join(sorted(fs)) + "]",
                             samoutfile,
                             template)
                     ambiguous += 1
