@@ -874,7 +874,7 @@ class BAM_Reader(object):
         '''Parser for SAM/BAM/CRAM files, a thin layer over pysam.AlignmentFile.
 
         Arguments:
-           filename (str): The path to the input file to read
+           filename (str, Path): The path to the input file to read
            check_sq (bool): check if SQ entries are present in header
         '''
 
