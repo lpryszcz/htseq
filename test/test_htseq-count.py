@@ -136,8 +136,11 @@ def test_htseq(data_folder):
         if expected_fn is not None:
             expected_fn = expected_fn.replace('example_data/', data_folder)
 
-        # local testing
-        #call = ['python', 'HTSeq/scripts/count.py'] + call[1:]
+        ## local testing
+        #if call[0] == 'htseq-count':
+        #    call = ['python', 'HTSeq/scripts/count.py'] + call[1:]
+        #else:
+        #    call = ['python', 'HTSeq/scripts/count_with_barcodes.py'] + call[1:]
 
         print(' '.join(call))
         output = sp.check_output(call).decode()
@@ -160,10 +163,11 @@ def test_htseq(data_folder):
         try:
             assert output == expected
         except AssertionError:
+            print(f'Expected filename: {expected_fn}')
             for out, exp in zip(output.split('\n'), expected.split('\n')):
                 print(out, exp)
-                if out != exp:
-                    break
+                #if out != exp:
+                #    break
 
             raise
         finally:
