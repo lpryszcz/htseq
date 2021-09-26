@@ -34,14 +34,19 @@ class FileOrSequence:
     def __enter__(self):
         try:
             fos = os.fspath(self.fos)
+            fos_is_path = True
+        except TypeError:
+            # assumed to be a file handle
+            lines = self.fos
+            fos_is_path = False
+        
+        if fos_is_path:
+            self.should_close = True
             if fos.lower().endswith((".gz", ".gzip")):
                 lines = gzip.open(self.fos, 'rt')
             else:
                 lines = open(self.fos)
-            self.should_close = True
-        except TypeError:
-            # must be an open file handle
-            lines = self.fos
+
         self.lines = lines
         return self
 
