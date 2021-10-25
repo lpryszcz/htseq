@@ -10,21 +10,14 @@ import multiprocessing
 import pysam
 
 import HTSeq
-
-
-class UnknownChrom(Exception):
-    pass
-
-
-def invert_strand(iv):
-    iv2 = iv.copy()
-    if iv2.strand == "+":
-        iv2.strand = "-"
-    elif iv2.strand == "-":
-        iv2.strand = "+"
-    else:
-        raise ValueError("Illegal strand")
-    return iv2
+from HTSeq.scripts.utils import (
+    UnknownChrom,
+    my_showwarning,
+    invert_strand,
+    _count_table_to_sparse_mtx,
+    _count_table_to_h5ad,
+    _count_table_to_loom,
+)
 
 
 def count_reads_with_barcodes(
@@ -470,11 +463,6 @@ def count_reads_in_features(
             with open(output_filename, 'a') as f:
                 f.write(line)
                 f.write('\n')
-
-
-def my_showwarning(message, category, filename, lineno=None, file=None,
-                   line=None):
-    sys.stderr.write("Warning: %s\n" % message)
 
 
 def main():

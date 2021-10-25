@@ -41,7 +41,13 @@ try:
             'pysam',
         ],
         extras_require={
-            'htseq-qa': ['matplotlib>=1.4']
+            'htseq-qa': ['matplotlib>=1.4'],
+            'test': [
+                'scipy>=1.5.0',
+                'pytest>=6.2.5',
+                'pandas>=1.1.0',
+                'matplotlib>=1.4',
+            ],
         },
       )
 except ImportError:
@@ -223,6 +229,7 @@ setup(name='HTSeq',
          'HTSeq.scripts.qa',
          'HTSeq.scripts.count',
          'HTSeq.scripts.count_with_barcodes',
+         'HTSeq.scripts.utils',
          'HTSeq.utils',
          'HTSeq.features',
       ],

@@ -5,6 +5,7 @@ dist/
 wheelhouse/
 .eggs/
 __pycache__/
+.venv
 
 # Data and machine-generated
 HTSeq/StepVector.py

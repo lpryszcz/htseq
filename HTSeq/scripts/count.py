@@ -10,21 +10,15 @@ import pysam
 import random
 
 import HTSeq
-
-
-class UnknownChrom(Exception):
-    pass
-
-
-def invert_strand(iv):
-    iv2 = iv.copy()
-    if iv2.strand == "+":
-        iv2.strand = "-"
-    elif iv2.strand == "-":
-        iv2.strand = "+"
-    else:
-        raise ValueError("Illegal strand")
-    return iv2
+from HTSeq.scripts.utils import (
+    UnknownChrom,
+    my_showwarning,
+    invert_strand,
+    _count_results_to_tsv,
+    _count_table_to_sparse_mtx,
+    _count_table_to_h5ad,
+    _count_table_to_loom,
+)
 
 
 def count_reads_single_file(
@@ -424,39 +418,15 @@ def count_reads_in_features(
         results = list(itertools.starmap(count_reads_single_file, args))
 
     # Write output
-    other_features = [
-        ('__no_feature', 'empty'),
-        ('__ambiguous', 'ambiguous'),
-        ('__too_low_aQual', 'lowqual'),
-        ('__not_aligned', 'notaligned'),
-        ('__alignment_not_unique', 'nonunique'),
-        ]
-    pad = ['' for attr in additional_attributes]
-    for ifn, fn in enumerate(feature_attr):
-        fields = [fn] + attributes[fn] + [str(r['counts'][fn]) for r in results]
-        line = output_delimiter.join(fields)
-        if output_filename == '':
-            print(line)
-        else:
-            omode = 'a' if output_append or (ifn > 0) else 'w'
-            with open(output_filename, omode) as f:
-                f.write(line)
-                f.write('\n')
-
-    for title, fn in other_features:
-        fields = [title] + pad + [str(r[fn]) for r in results]
-        line = output_delimiter.join(fields)
-        if output_filename == '':
-            print(line)
-        else:
-            with open(output_filename, 'a') as f:
-                f.write(line)
-                f.write('\n')
-
-
-def my_showwarning(message, category, filename, lineno=None, file=None,
-                   line=None):
-    sys.stderr.write("Warning: %s\n" % message)
+    _count_results_to_tsv(
+        results,
+        feature_attr,
+        attributes,
+        additional_attributes,
+        output_filename,
+        output_append,
+        output_delimiter,
+    )
 
 
 def main():
