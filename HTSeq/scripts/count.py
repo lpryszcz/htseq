@@ -6,6 +6,7 @@ import warnings
 import traceback
 import os.path
 import multiprocessing
+import numpy as np
 import pysam
 import random
 
@@ -14,10 +15,7 @@ from HTSeq.scripts.utils import (
     UnknownChrom,
     my_showwarning,
     invert_strand,
-    _count_results_to_tsv,
-    _count_table_to_sparse_mtx,
-    _count_table_to_h5ad,
-    _count_table_to_loom,
+    _write_output,
 )
 
 
@@ -335,6 +333,7 @@ def count_reads_in_features(
         output_append,
         nprocesses,
         feature_query,
+        counts_output_sparse,
         ):
     '''Count reads in features, parallelizing by file'''
 
@@ -409,7 +408,7 @@ def count_reads_in_features(
             samout_filename,
             ))
 
-    # Count reads
+    # Count reads in parallel
     if nprocesses > 1:
         with multiprocessing.Pool(nprocesses) as pool:
             results = pool.starmap(count_reads_single_file, args)
@@ -417,15 +416,17 @@ def count_reads_in_features(
     else:
         results = list(itertools.starmap(count_reads_single_file, args))
 
-    # Write output
-    _count_results_to_tsv(
+    # Merge and write output
+    _write_output(
         results,
-        feature_attr,
+        sam_filenames,
         attributes,
         additional_attributes,
         output_filename,
-        output_append,
         output_delimiter,
+        output_append,
+        sparse=counts_output_sparse,
+        dtype=np.float32,
     )
 
 
@@ -574,6 +575,11 @@ def main():
             )
 
     pa.add_argument(
+            "--counts_output_sparse", action='store_true',
+            help="Store the counts as a sparse matrix (mtx, h5ad, loom)."
+            )
+
+    pa.add_argument(
             '--append-output', action='store_true', dest='output_append',
             help='Append counts output to an existing file instead of ' +
             'creating a new one. This option is useful if you have ' +
@@ -634,6 +640,7 @@ def main():
                 args.output_append,
                 args.nprocesses,
                 args.feature_query,
+                args.counts_output_sparse,
                 )
     except:
         sys.stderr.write("  %s\n" % str(sys.exc_info()[1]))

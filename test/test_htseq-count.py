@@ -3,6 +3,17 @@ import subprocess as sp
 import unittest
 import pytest
 
+try:
+    import anndata
+except ImportError:
+    anndata = None
+
+try:
+    import loompy
+except ImportError:
+    loompy = None
+
+
 data_folder = 'example_data/'
 
 
@@ -83,6 +94,41 @@ class HTSeqCount(unittest.TestCase):
                 'example_data/bamfile_no_qualities.gtf',
                 ],
         'expected_fn': 'example_data/bamfile_no_qualities.tsv',
+        })
+
+    def test_output_mtx(self):
+        self._run({
+            'call': [
+                'htseq-count',
+                '-c', 'test_output.mtx',
+                'example_data/bamfile_no_qualities.sam',
+                'example_data/bamfile_no_qualities.gtf',
+                ],
+        'expected_fn': 'example_data/bamfile_no_qualities.mtx',
+        })
+
+    @unittest.skipIf(anndata is None, "test case depends on anndata")
+    def test_output_h5ad(self):
+        self._run({
+            'call': [
+                'htseq-count',
+                '-c', 'test_output.h5ad',
+                'example_data/bamfile_no_qualities.sam',
+                'example_data/bamfile_no_qualities.gtf',
+                ],
+        'expected_fn': 'example_data/bamfile_no_qualities.h5ad',
+        })
+
+    @unittest.skipIf(loompy is None, "test case depends on loompy")
+    def test_output_loom(self):
+        self._run({
+            'call': [
+                'htseq-count',
+                '-c', 'test_output.loom',
+                'example_data/bamfile_no_qualities.sam',
+                'example_data/bamfile_no_qualities.gtf',
+                ],
+        'expected_fn': 'example_data/bamfile_no_qualities.loom',
         })
 
     # Testing multiple cores on travis makes a mess

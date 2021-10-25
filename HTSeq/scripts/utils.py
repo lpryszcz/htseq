@@ -23,13 +23,13 @@ def invert_strand(iv):
 
 def _merge_counts(
         results,
-        feature_attr,
         attributes,
         additional_attributes,
         sparse=False,
         dtype=np.float32,
         ):
 
+    feature_attr = sorted(attributes.keys())
     other_features = [
         ('__no_feature', 'empty'),
         ('__ambiguous', 'ambiguous'),
@@ -37,6 +37,7 @@ def _merge_counts(
         ('__not_aligned', 'notaligned'),
         ('__alignment_not_unique', 'nonunique'),
         ]
+
     fea_names = [fea for fea in feature_attr] + [fea[0] for fea in other_features]
     L = len(fea_names)
     n = len(results)
@@ -63,6 +64,8 @@ def _merge_counts(
     feature_metadata = {
         'id': fea_names,
     }
+    for iadd, attr in enumerate(additional_attributes):
+        feature_metadata[attr] = [attributes[fn][iadd] for fn in feature_attr]
 
     return {
         'feature_metadata': feature_metadata,
@@ -72,17 +75,17 @@ def _merge_counts(
 
 def _count_results_to_tsv(
         results,
-        feature_attr,
         attributes,
         additional_attributes,
         output_filename,
-        output_append,
         output_delimiter,
+        output_append=False,
         ):
 
     # Print or write header??
 
     # Each feature is a row with feature id, additional attrs, and counts
+    feature_attr = sorted(attributes.keys())
     for ifn, fn in enumerate(feature_attr):
         fields = [fn] + attributes[fn] + [str(r['counts'][fn]) for r in results]
         line = output_delimiter.join(fields)
@@ -114,12 +117,11 @@ def _count_results_to_tsv(
                 f.write('\n')
 
 
-def _count_table_to_sparse_mtx(
+def _count_table_to_mtx(
         filename,
         table,
         feature_metadata,
         sample_filenames,
-        sparse=False,
         ):
     if not str(filename).endswith('.mtx'):
         raise ValueError('Matrix Marker filename should end with ".mtx"')
@@ -129,15 +131,11 @@ def _count_table_to_sparse_mtx(
     except ImportError:
         raise ImportError('Install scipy for mtx support')
 
-    if sparse:
-        from scipy.sparse import csr_matrix
-        table = csr_matrix(table)
-
     filename_pfx = str(filename)[:-4]
     filename_feature_meta = filename_pfx+'_features.tsv'
     filename_samples = filename_pfx+'_samples.tsv'
 
-    # Write main matrix
+    # Write main matrix (features as columns)
     mmwrite(
         filename,
         table,
@@ -170,7 +168,6 @@ def _count_table_to_h5ad(
         table,
         feature_metadata,
         sample_filenames,
-        sparse=False,
         ):
     try:
         import anndata
@@ -182,11 +179,6 @@ def _count_table_to_h5ad(
 
     feature_metadata = pd.DataFrame(feature_metadata)
     feature_metadata.set_index(feature_metadata.columns[0], inplace=True)
-
-
-    if sparse:
-        from scipy.sparse import csr_matrix
-        table = csr_matrix(table)
 
     adata = anndata.AnnData(
         X=table,
@@ -201,7 +193,6 @@ def _count_table_to_loom(
         table,
         feature_metadata,
         sample_filenames,
-        sparse=False,
         ):
 
     try:
@@ -209,11 +200,8 @@ def _count_table_to_loom(
     except ImportError:
         raise ImportError('Install the loompy package for loom support')
 
-    if sparse:
-        from scipy.sparse import csr_matrix
-        table = csr_matrix(table)
-
-    layers = table.T
+    # Loom uses features as rows...
+    layers = {'': table.T}
     row_attrs = feature_metadata
     col_attrs = {'_index': sample_filenames}
     loompy.create(
@@ -222,3 +210,81 @@ def _count_table_to_loom(
         row_attrs=row_attrs,
         col_attrs=col_attrs,
     )
+
+
+def _write_output(
+    results,
+    sam_filenames,
+    attributes,
+    additional_attributes,
+    output_filename,
+    output_delimiter,
+    output_append,
+    sparse=False,
+    dtype=np.float32,
+    ):
+
+    # Write output to stdout or TSV/CSV
+    if output_filename == '':
+        _count_results_to_tsv(
+            results,
+            attributes,
+            additional_attributes,
+            output_filename,
+            output_delimiter,
+            output_append=False,
+        )
+        return
+
+    # Get file extension/format
+    output_sfx = output_filename.split('.')[-1].lower()
+
+    if output_sfx in ('.csv', '.tsv'):
+        _count_results_to_tsv(
+            results,
+            attributes,
+            additional_attributes,
+            output_filename,
+            output_delimiter,
+            output_append,
+        )
+        return
+
+    # Make unified object of counts and feature metadata
+    output_dict = _merge_counts(
+        results,
+        attributes,
+        additional_attributes,
+        sparse=sparse,
+        dtype=dtype,
+    )
+
+    if output_sfx == '.mtx':
+        _count_table_to_mtx(
+            output_filename,
+            output_dict['table'],
+            output_dict['feature_metadata'],
+            sam_filenames,
+        )
+        return
+
+    if output_sfx == '.loom':
+        _count_table_to_loom(
+            output_filename,
+            output_dict['table'],
+            output_dict['feature_metadata'],
+            sam_filenames,
+        )
+        return
+
+    if output_sfx == '.h5ad':
+        _count_table_to_h5ad(
+            output_filename,
+            output_dict['table'],
+            output_dict['feature_metadata'],
+            sam_filenames,
+        )
+        return
+
+    raise ValueError(
+        f'Format not recognized for output count file: {output_sfx}')
