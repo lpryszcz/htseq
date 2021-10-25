@@ -1,3 +1,6 @@
+import numpy as np
+
+
 class UnknownChrom(Exception):
     pass
 
@@ -20,9 +23,51 @@ def invert_strand(iv):
 
 def _merge_counts(
         results,
-
+        feature_attr,
+        attributes,
+        additional_attributes,
+        sparse=False,
+        dtype=np.float32,
         ):
-    pass
+
+    other_features = [
+        ('__no_feature', 'empty'),
+        ('__ambiguous', 'ambiguous'),
+        ('__too_low_aQual', 'lowqual'),
+        ('__not_aligned', 'notaligned'),
+        ('__alignment_not_unique', 'nonunique'),
+        ]
+    fea_names = [fea for fea in feature_attr] + [fea[0] for fea in other_features]
+    L = len(fea_names)
+    n = len(results)
+    if not sparse:
+        table = np.zeros(
+            (n, L),
+            dtype=dtype,
+        )
+    else:
+        from scipy.sparse import lil_matrix
+        table = lil_matrix((n, L), dtype=dtype)
+
+    fea_ids = [fea for fea in feature_attr] + [fea[1] for fea in other_features]
+    for j, r in enumerate(results):
+        countj = r['counts']
+        for i, fn in enumerate(fea_ids):
+            countji = countj[fn]
+            if countji > 0:
+                table[j, i] = countji
+
+    if sparse:
+        table = table.tocsr()
+
+    feature_metadata = {
+        'id': fea_names,
+    }
+
+    return {
+        'feature_metadata': feature_metadata,
+        'table': table,
+    }
 
 
 def _count_results_to_tsv(
