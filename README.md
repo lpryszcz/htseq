@@ -72,6 +72,17 @@ To install ``HTSeq`` itself, run:
 python setup.py build install
 ```
 
+## Testing
+To test locally, run
+
+```bash
+./test.sh
+```
+
+To test `htseq-count` alone, run it with the `-o` option.
+
+A virtual environment is created in the `.venv` folder and `HTSeq` is installed inside it, including all modules and scripts.
+
 ## Authors
-- 2016-: Fabio Zanini @ http://fabilab.org.
+- 2016-: Fabio Zanini @ https://fabilab.org.
 - 2010-2015: Simon Anders, Wolfgang Huber
