@@ -18,6 +18,54 @@ data_folder = 'example_data/'
 
 
 class HTSeqCount(unittest.TestCase):
+    @staticmethod
+    def load_result_file(filename):
+        sfx = filename.split('.')[-1]
+        if sfx in ('csv', 'tsv'):
+            with open(filename, 'r') as f:
+                result = f.read()
+        elif sfx == 'mtx':
+            from scipy.io import mmread
+            result = mmread(filename)
+        elif sfx == 'h5ad':
+            result = anndata.read_h5ad(filename)
+        elif sfx == 'loom':
+            result = loompy.connect(filename)
+        else:
+            raise ValueError(f'File extension not supported: {sfx}')
+
+        return {'result': result, 'fmt': sfx}
+
+    @staticmethod
+    def close_file(filename, resultd):
+        fmt = resultd['fmt']
+        if fmt == 'loom':
+            resultd['result'].close()
+
+    def _customAssertEqual(self, outputd, expectedd):
+        output_fmt = outputd['fmt']
+        expected_fmt = expectedd['fmt']
+        self.assertEqual(output_fmt, expected_fmt)
+
+        fmt = output_fmt
+        output = outputd['result']
+        expected = expectedd['result']
+
+        if fmt in ('tsv', 'csv'):
+            self.assertEqual(output, expected)
+        elif fmt == 'mtx':
+            import numpy as np
+            self.assertIsNone(
+                np.testing.assert_array_equal(
+                    output, expected,
+                ))
+        elif fmt == 'loom':
+            self.assertIsNone(
+                np.testing.assert_array_equal(
+                    output[:, :], expected[:, :],
+                ))
+
+
     def _run(self, t):
         expected_fn = t.get('expected_fn', None)
         call = t['call']
@@ -41,32 +89,28 @@ class HTSeqCount(unittest.TestCase):
 
         if '-c' in call:
             output_fn = call[call.index('-c') + 1]
-            with open(output_fn, 'r') as f:
-                output = f.read()
+            output = self.load_result_file(output_fn)
         else:
+            output = {'result': output, 'fmt': 'tsv'}
             output_fn = None
 
         if expected_fn is None:
             if '--version' in call:
-                print('version:', output)
+                print('version:', output['result'])
             return
 
-        with open(expected_fn, 'r') as f:
-            expected = f.read()
+        expected = self.load_result_file(expected_fn)
 
         try:
-            self.assertEqual(output, expected)
-        except AssertionError:
-            print(f'Expected filename: {expected_fn}')
-            for out, exp in zip(output.split('\n'), expected.split('\n')):
-                print(out, exp)
-                #if out != exp:
-                #    break
-
-            raise
-        finally:
+            self._customAssertEqual(output, expected)
+        except:
             if output_fn is not None:
-                os.remove(output_fn)
+                self.close_file(output_fn, output)
+                self.close_file(expected_fn, expected)
+                # FIXME
+                if output['fmt'] not in ['h5ad', 'loom']:
+                    os.remove(output_fn)
+            raise
 
     def test_version(self):
         self._run({

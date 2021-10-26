@@ -42,7 +42,7 @@ if [ x$CLEAN = x1 ]; then
     rm -rf build/
 fi
 
-$VENV_DIR/bin/python setup.py build
+#$VENV_DIR/bin/python setup.py build
 $VENV_DIR/bin/pip install --use-feature=in-tree-build .[htseq-qa,test]
 if [ x$COUNT_ONLY = x1 ]; then
   PATH=${VENV_DIR}/bin:${PATH} $VENV_DIR/bin/pytest test/test_htseq-count.py ${PYTEST_ARGS}

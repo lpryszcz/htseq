@@ -14,7 +14,7 @@ from HTSeq.scripts.utils import (
     UnknownChrom,
     my_showwarning,
     invert_strand,
-    _count_table_to_sparse_mtx,
+    _count_table_to_mtx,
     _count_table_to_h5ad,
     _count_table_to_loom,
 )

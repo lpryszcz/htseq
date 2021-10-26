@@ -52,9 +52,11 @@ def _merge_counts(
 
     fea_ids = [fea for fea in feature_attr] + [fea[1] for fea in other_features]
     for j, r in enumerate(results):
-        countj = r['counts']
         for i, fn in enumerate(fea_ids):
-            countji = countj[fn]
+            if i < len(feature_attr):
+                countji = r['counts'][fn]
+            else:
+                countji = r[fn]
             if countji > 0:
                 table[j, i] = countji
 
@@ -151,16 +153,16 @@ def _count_table_to_mtx(
         nkeys = len(feature_metadata)
         for ik, key in enumerate(feature_metadata):
             if ik != nkeys - 1:
-                f.write(key+'\t')
+                fout.write(key+'\t')
             else:
-                f.write(key+'\n')
+                fout.write(key+'\n')
         nfeatures = len(feature_metadata[key])
         for i in range(nfeatures):
             for ik, key in enumerate(feature_metadata):
                 if ik != nkeys - 1:
-                    f.write(feature_metadata[key][i]+'\t')
+                    fout.write(feature_metadata[key][i]+'\t')
                 else:
-                    f.write(feature_metadata[key][i]+'\n')
+                    fout.write(feature_metadata[key][i]+'\n')
 
 
 def _count_table_to_h5ad(
@@ -239,7 +241,7 @@ def _write_output(
     # Get file extension/format
     output_sfx = output_filename.split('.')[-1].lower()
 
-    if output_sfx in ('.csv', '.tsv'):
+    if output_sfx in ('csv', 'tsv'):
         _count_results_to_tsv(
             results,
             attributes,
@@ -259,7 +261,7 @@ def _write_output(
         dtype=dtype,
     )
 
-    if output_sfx == '.mtx':
+    if output_sfx == 'mtx':
         _count_table_to_mtx(
             output_filename,
             output_dict['table'],
@@ -268,7 +270,7 @@ def _write_output(
         )
         return
 
-    if output_sfx == '.loom':
+    if output_sfx == 'loom':
         _count_table_to_loom(
             output_filename,
             output_dict['table'],
@@ -277,7 +279,7 @@ def _write_output(
         )
         return
 
-    if output_sfx == '.h5ad':
+    if output_sfx == 'h5ad':
         _count_table_to_h5ad(
             output_filename,
             output_dict['table'],
