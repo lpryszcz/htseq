@@ -1,7 +1,7 @@
 .. _install:
 
 ****************************
-Prequisites and installation
+Installation
 ****************************
 
 HTSeq is available from the `Python Package Index (PyPI)`_:
@@ -25,12 +25,10 @@ should install from PyPI like this::
 If this does not work, please open an issue on Github_ and also try the instructions
 below.
 
-..note::
+.. note::
 
-It sometimes happens that the precompiled version on `pip` is a little too old for
-your computer. If that happens, `pip` will try to build HTSeq from source. That should
-work but you'll need a few more dependencies, e.g. Cython. See the Github_ page for
-more info.
+  ``pip`` will occasionally try to build HTSeq from source. If that's the case, you
+  need two additional dependencies: Cython_ and SWIG_. See the Github_ page for more info.
 
 .. _`Python Package Index (PyPI)`: http://pypi.python.org/pypi/HTSeq
 .. _Python: http://www.python.org/
@@ -38,6 +36,8 @@ more info.
 .. _Pysam: https://github.com/pysam-developers/pysam
 .. _samtools: http://www.htslib.org/
 .. _matplotlib: http://matplotlib.org/
+.. _Cython: https://cython.org/
+.. _SWIG: http://swig.org/
 .. _Github: https://github.com/htseq/htseq
 
 

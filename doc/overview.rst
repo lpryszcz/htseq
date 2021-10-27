@@ -3,62 +3,8 @@
 .. currentmodule:: HTSeq
 
 ************************************************************
-HTSeq: Analysing high-throughput sequencing data with Python
+Overview
 ************************************************************
-
-HTSeq is a Python package that provides infrastructure to process data
-from high-throughput sequencing assays.
-
-* Please see the chapter :ref:`tour` first for an overview on the kind of analysis 
-  you can do with HTSeq and the design of the package, and then look at the reference
-  documentation. 
-
-..
-
-* While the main purpose of HTSeq is to allow you to write your own analysis scripts,
-  customized to your needs, there are also a couple of stand-alone scripts for
-  common tasks that can be used without any Python knowledge. See the *Scripts* 
-  section in the overview below for what is available.
-
-..
-
-* For downloads and installation instructions, see :ref:`install`.
-
-Authors
-=======
-
-HTSeq is currently developed by `Fabio Zanini`_ at University of New South Wales in Sydney
-(fabio *dot* zanini *at* unsw *dot* edu *dot* au) and `Simon Anders`_
-(anders *at* embl *dot* de) at `EMBL Heidelberg`_ (`Genome Biology Unit`_).
-
-.. _`Fabio Zanini`: http://fabilab.org
-.. _`Simon Anders`: http://www.embl.de/research/units/genome_biology/huber/members/index.php?s_personId=6001
-.. _`EMBL Heidelberg`: http://www.embl.de/
-.. _`Genome Biology Unit`: http://www.embl.de/research/units/genome_biology/index.html
-
-
-Citation
-========
-
-HTSeq is described in the following publications:
-
-  | Fabio Zanini et al.
-  | * HTSeq 2.0 -- Efficient manipulation of high-throughput sequencing data with long genomes
-  | in preparation (2021)
-
-and:
-
-  | Simon Anders, Paul Theodor Pyl, Wolfgang Huber
-  | *HTSeq --- A Python framework to work with high-throughput sequencing data*
-  | Bioinformatics (2014), in print, online at `doi:10.1093/bioinformatics/btu638`_
-
-.. _`doi:10.1093/bioinformatics/btu638`: https://doi.org/10.1093/bioinformatics/btu638
-
-If you use HTSeq in research, please cite this paper in your publication.   
-
-
-Documentation overview
-======================
 
 * :ref:`install`
 
@@ -163,26 +109,3 @@ Documentation overview
 
 ..
 
-  * :ref:`genindex`
-
-
-..
-   * :ref:`modindex`
-   * :ref:`search`
-
-
-License
-=======
-
-HTSeq is free software: you can redistribute it and/or modify
-it under the terms of the GNU General Public License as published by
-the Free Software Foundation, either version 3 of the License, or
-(at your option) any later version.
-
-This program is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU General Public License for more details.
-
-The full text of the GNU General Public License, version 3, can be found
-here: http://www.gnu.org/licenses/gpl-3.0-standalone.html

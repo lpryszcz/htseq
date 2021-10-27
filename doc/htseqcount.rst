@@ -4,7 +4,7 @@
 
 
 ***********************************************
-Counting reads in features with ``htseq-count``
+``htseq-count``: counting reads within features
 ***********************************************
 
 Given a file with aligned sequencing reads and a list of genomic

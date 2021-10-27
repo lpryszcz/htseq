@@ -1,7 +1,7 @@
 .. _contrib:
 
 **********************
-Notes for Contributors
+Contributing
 **********************
 
 If you intend to contribute to the development of HTSeq, these notes will
@@ -21,27 +21,27 @@ The source code is on Github_. To check out the repository, use
 Languages
 ---------
 
-HTSeq is mostly written in Python and is compatible with both Python 2.7 and
-Python 3.4 and above. However, the codebases for Python 2/3 are separate and
-development happens mainly on the Python 3 branch.
+HTSeq is exposed in and mostly written in Python 3.
 
-A good part of HTSeq is actually not written in Python but in 
-Cython_. In case you don't know it yet: Cython, a fork from Pyrex, is a
-kind of Python compiler. You annotate Python code with additional type
-informations (the lines starting with ``cdef`` in the source code). Cython
-will then transform the Cython source file (with extension ``pyx``) into
-a C file, which calls the appropriate funnctions of Python's C API. Without
-type annotation, this looks and feels the same as normal Python and is not 
-really faster, either. With type annotation, significant performance gains 
-are possible, especially in inner loops.
+Several parts of HTSeq are written in Cython_. In case you don't know it
+yet: Cython, a fork from Pyrex, is a kind of Python compiler. You annotate
+Python code with additional type informations (the lines starting with
+``cdef`` in the source code). Cython will then transform the Cython source
+file (with extension ``pyx``) into a C file, which calls the appropriate
+functions of Python's C API. Without type annotation, this looks and feels
+the same as normal Python and is not really faster, either. With type
+annotation, significant performance gains are possible.
 
 A small part, namely the StepVector class, is written in C++ and exported with
-SWIG. (SWIG_, the "Simple Wrapper and Interface Generator" is a very useful
+SWIG_. SWIG_, the "Simple Wrapper and Interface Generator" is a very useful
 tool to generate C/C++ code to wrap an existing C/C++ library such that it
-becomes accessible as a native library within a number of scripting languages.)
-I am not so happy with this any more (the abstraction panelty of the object-oriented 
-SWIG wrapping turned out to be a bit high) and ultimatively want to rewrite this
-part.
+becomes accessible as a native library within a number of scripting languages.
+
+.. note::
+
+  We are considering moving away from SWIG in order to improve code readability.
+  If you are interested in contributing to this aspect of HTSeq and are proficient
+  in C++ and a cross-language tool (e.g. pybind11), please reach out!
 
 .. _Cython: http://www.cython.org/
 .. _SWIG: http://www.swig.org/
@@ -60,6 +60,17 @@ and to install::
 
   python setup.py install
 
+To test the code, run::
+
+  ./test.sh
+
+and to test specifically ``htseq-count`` and ``htseq-count-barcodes`` only::
+
+  ./test.sh -o
+
+To use anaconda for testing, use the ``-a`` option and edit the test
+script to use your evironment.
+
 If you are not modifying the low-level C/C++/Cython interfaces, you can do
 without Cython and SWIG. This is how users normally install HTSeq using
 ``pip``. If you do modify those files, the ``setup.py`` has a preprocessing
@@ -67,15 +78,14 @@ step that calls Cython and/or SWIG if these programs are found. You set
 the ``SWIG`` and ``CYTHON`` environment variables to point to your executables
 if you have special requirements.
     
-To test during development, HTSeq relies on Continuous Integration (CI), at
-the moment Travis CI is set up.
+HTSeq relies on Continuous Integration (CI), at the moment Github Actions is used.
 
-To build the documentation, Sphinx_ was used. Just go into the appropriate
-``doc`` folder and call::
+To build the documentation, Sphinx_ is used. Just go into the ``doc`` folder
+and call::
 
   make html
 
-to regenerate the documentation. Docs are stored on readthedocs_.
+to regenerate the documentation. Official docs are stored on readthedocs_.
 
 .. _Sphinx: http://www.sphinx-doc.org/
 .. _readthedocs: https://readthedocs.org/
@@ -138,19 +148,20 @@ Within each of those folders, the following files are found:
    A very small SWIG library that allows SWIG-wrapped C++ container classes to
    store Python objects in a way that Python's garbage collector is happy with.
 
-``HTSeq/scripts/count.py`` and ``HTSeq/scripts/qa.py``:
+``HTSeq/scripts/count.py``, ``HTSeq/scripts/count_with_barcodes.py`` and
+``HTSeq/scripts/qa.py``:
    The source code for the stand-alone scripts ``htseq-count`` and ``htseq-qa``.
    They reside in the sub-package ``HTSeq.scripts``, allowing to call the scripts
    with, e.g., ``python -m HTSeq.scripts.qa``.
 
-``scripts/htseq-count`` and ``scripts/htseq-qa``:
-   Short stubs to call the scripts from the command line simply as, e.g., ``htseq-qa``.
+``scripts/htseq-count``, ``scripts/htseq-count-barcodes`` and ``scripts/htseq-qa``:
+   Short stubs to call the scripts from the command line, e.g., ``htseq-qa``.
 
 ``doc/``:
    this documentation, in Sphinx reStructuredText format, and a Makefile to drive
    Sphinx. 
 
-``test/test.py``
+``test.sh``
   Performs all the deoctests in the documentation, using the example data in the
   ``example_data`` directory.
 
@@ -179,4 +190,4 @@ Finally, there are these files
 and these directories
 
 ``example_files/``:   
-   a few example files to be use by the doctests in the documentation.
+   a few example files used for testing purposes.

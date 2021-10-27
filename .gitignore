@@ -6,6 +6,7 @@ wheelhouse/
 .eggs/
 __pycache__/
 .venv
+doc/_build
 
 # Data and machine-generated
 HTSeq/StepVector.py

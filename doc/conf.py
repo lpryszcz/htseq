@@ -14,7 +14,8 @@
 # All configuration values have a default; values that are commented out
 # serve to show the default.
 
-import sys, os
+import os
+import sys
 
 # If your extensions (or modules documented by autodoc) are in another directory,
 # add these directories to sys.path here. If the directory is relative to the
@@ -41,8 +42,8 @@ source_suffix = '.rst'
 master_doc = 'index'
 
 # General information about the project.
-project = u'HTSeq'
-copyright = u'2010-2020, Simon Anders and Fabio Zanini'
+project = 'HTSeq'
+copyright = '2010-2022, the HTSeq team'
 
 # The version info for the project you're documenting, acts as replacement for
 # |version| and |release|, also used in various other places throughout the
@@ -169,8 +170,8 @@ htmlhelp_basename = 'HTSeqdoc'
 # Grouping the document tree into LaTeX files. List of tuples
 # (source start file, target name, title, author, document class [howto/manual]).
 latex_documents = [
-  ('index', 'HTSeq.tex', ur'HTSeq Documentation',
-   ur'Simon Anders and Fabio Zanini', 'manual'),
+  ('index', 'HTSeq.tex', 'HTSeq Documentation',
+   'The HTSeq team', 'manual'),
 ]
 
 # The name of an image file (relative to this directory) to place at the top of
@@ -190,11 +191,12 @@ latex_documents = [
 # If false, no module index is generated.
 #latex_use_modindex = True
 
+#html_theme = "default"
+html_theme = "sphinx_rtd_theme"
 
-html_theme = "classic"
-html_theme_options = {
-    "sidebarbgcolor": "#006666",
-    "sidebarlinkcolor": "#FFFEFF",
-    "sidebartextcolor": "white"
-}
+#html_theme_options = {
+#    "sidebarbgcolor": "#006666",
+#    "sidebarlinkcolor": "#FFFEFF",
+#    "sidebartextcolor": "white"
+#}
 
