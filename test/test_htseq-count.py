@@ -116,7 +116,7 @@ class HTSeqCountBase(unittest.TestCase):
                 close_file(output_fn, output)
                 close_file(expected_fn, expected)
                 # FIXME
-                if output['fmt'] not in ['h5ad', 'loom']:
+                if False:#output['fmt'] not in ['h5ad', 'loom']:
                     os.remove(output_fn)
             raise
 
@@ -319,7 +319,7 @@ class HTSeqCountBarcodes(HTSeqCountBase):
                 self.cmd,
                 '--version'],
             })
-    def test_barcodes(self):
+    def test_simple(self):
         self._run({
             'call': [
                 self.cmd,
@@ -332,6 +332,22 @@ class HTSeqCountBarcodes(HTSeqCountBase):
                 ],
             'expected_fn': 'example_data/yeast_RNASeq_excerpt_withbarcodes.tsv',
             })
+
+    def test_output_tsv(self):
+        self._run({
+            'call': [
+                self.cmd,
+                '-c', 'test_output.tsv',
+                '-m', 'intersection-nonempty',
+                '--nonunique', 'none',
+                '--secondary-alignments', 'score',
+                '--supplementary-alignments', 'score',
+                'example_data/yeast_RNASeq_excerpt_withbarcodes.sam',
+                'example_data/Saccharomyces_cerevisiae.SGD1.01.56.gtf.gz',
+                ],
+            'expected_fn': 'example_data/yeast_RNASeq_excerpt_withbarcodes.tsv',
+            })
+
 
 if __name__ == '__main__':
 

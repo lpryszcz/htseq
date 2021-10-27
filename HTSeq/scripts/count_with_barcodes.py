@@ -7,6 +7,7 @@ import warnings
 import traceback
 import os.path
 import multiprocessing
+import numpy as np
 import pysam
 
 import HTSeq
@@ -14,9 +15,7 @@ from HTSeq.scripts.utils import (
     UnknownChrom,
     my_showwarning,
     invert_strand,
-    _count_table_to_mtx,
-    _count_table_to_h5ad,
-    _count_table_to_loom,
+    _write_output,
 )
 
 
@@ -319,7 +318,7 @@ def count_reads_with_barcodes(
     if samoutfile is not None:
         samoutfile.close()
 
-    # Get rid of UMI by majority rule
+    # UMI consensus by majority rule
     cbs = sorted(counts.keys())
     counts_noumi = {}
     for cb in cbs:
@@ -357,6 +356,7 @@ def count_reads_in_features(
         samout_format,
         output_delimiter,
         output_filename,
+        counts_output_sparse,
         cb_tag,
         ub_tag,
         ):
@@ -419,50 +419,19 @@ def count_reads_in_features(
         cb_tag,
         ub_tag,
         )
-    # Cell barcodes
-    cbs = results['cell_barcodes']
-    counts = results['counts']
 
     # Write output
-    other_features = [
-        '__no_feature',
-        '__ambiguous',
-        '__too_low_aQual',
-        '__not_aligned',
-        '__alignment_not_unique',
-        ]
-    pad = ['' for attr in additional_attributes]
-    # Header
-    fields = [''] + pad + cbs
-    line = output_delimiter.join(fields)
-    if output_filename == '':
-        print(line)
-    else:
-        with open(output_filename, 'w') as f:
-            f.write(line)
-            f.write('\n')
-
-    # Features
-    for ifn, fn in enumerate(feature_attr):
-        fields = [fn] + attributes[fn] + [str(counts[cb][fn]) for cb in cbs]
-        line = output_delimiter.join(fields)
-        if output_filename == '':
-            print(line)
-        else:
-            with open(output_filename, 'a') as f:
-                f.write(line)
-                f.write('\n')
-
-    # Other features
-    for fn in other_features:
-        fields = [fn] + pad + [str(counts[cb][fn]) for cb in cbs]
-        line = output_delimiter.join(fields)
-        if output_filename == '':
-            print(line)
-        else:
-            with open(output_filename, 'a') as f:
-                f.write(line)
-                f.write('\n')
+    _write_output(
+        results,
+        results['cell_barcodes'],
+        attributes,
+        additional_attributes,
+        output_filename,
+        output_delimiter,
+        False,
+        sparse=counts_output_sparse,
+        dtype=np.float32,
+    )
 
 
 def main():
@@ -602,6 +571,11 @@ def main():
             )
 
     pa.add_argument(
+            "--counts_output_sparse", action='store_true',
+            help="Store the counts as a sparse matrix (mtx, h5ad, loom)."
+            )
+
+    pa.add_argument(
             '--cell-barcode', type=str, dest='cb_tag',
             default='CB',
             help='BAM tag used for the cell barcode (default compatible ' +
@@ -643,6 +617,7 @@ def main():
                 args.samout_format,
                 args.output_delimiter,
                 args.output_filename,
+                args.counts_output_sparse,
                 args.cb_tag,
                 args.ub_tag,
                 )

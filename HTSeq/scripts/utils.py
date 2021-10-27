@@ -84,17 +84,37 @@ def _count_results_to_tsv(
         output_append=False,
         ):
 
-    # Print or write header??
+    barcodes = 'cell_barcodes' in results
 
-    # Each feature is a row with feature id, additional attrs, and counts
-    feature_attr = sorted(attributes.keys())
-    for ifn, fn in enumerate(feature_attr):
-        fields = [fn] + attributes[fn] + [str(r['counts'][fn]) for r in results]
+    pad = ['' for attr in additional_attributes]
+
+    if barcodes:
+        cbs = results['cell_barcodes']
+        counts = results['counts']
+
+        # Print or write header
+        fields = [''] + pad + cbs
         line = output_delimiter.join(fields)
         if output_filename == '':
             print(line)
         else:
-            omode = 'a' if output_append or (ifn > 0) else 'w'
+            with open(output_filename, 'w') as f:
+                f.write(line)
+                f.write('\n')
+
+    # Each feature is a row with feature id, additional attrs, and counts
+    feature_attr = sorted(attributes.keys())
+    for ifn, fn in enumerate(feature_attr):
+        if not barcodes:
+            fields = [fn] + attributes[fn] + [str(r['counts'][fn]) for r in results]
+        else:
+            fields = [fn] + attributes[fn] + [str(counts[cb][fn]) for cb in cbs]
+
+        line = output_delimiter.join(fields)
+        if output_filename == '':
+            print(line)
+        else:
+            omode = 'a' if output_append or (ifn > 0) or barcodes else 'w'
             with open(output_filename, omode) as f:
                 f.write(line)
                 f.write('\n')
@@ -107,9 +127,11 @@ def _count_results_to_tsv(
         ('__not_aligned', 'notaligned'),
         ('__alignment_not_unique', 'nonunique'),
         ]
-    pad = ['' for attr in additional_attributes]
     for title, fn in other_features:
-        fields = [title] + pad + [str(r[fn]) for r in results]
+        if not barcodes:
+            fields = [title] + pad + [str(r[fn]) for r in results]
+        else:
+            fields = [title] + pad + [str(counts[cb][title]) for cb in cbs]
         line = output_delimiter.join(fields)
         if output_filename == '':
             print(line)
@@ -123,7 +145,7 @@ def _count_table_to_mtx(
         filename,
         table,
         feature_metadata,
-        sample_filenames,
+        samples,
         ):
     if not str(filename).endswith('.mtx'):
         raise ValueError('Matrix Marker filename should end with ".mtx"')
@@ -145,7 +167,7 @@ def _count_table_to_mtx(
 
     # Write input filenames
     with open(filename_samples, 'wt') as fout:
-        for fn in sample_filenames:
+        for fn in samples:
             fout.write(fn+'\n')
 
     # Write feature metadata (ids and additional attributes)
@@ -169,7 +191,7 @@ def _count_table_to_h5ad(
         filename,
         table,
         feature_metadata,
-        sample_filenames,
+        samples,
         ):
     try:
         import anndata
@@ -184,7 +206,7 @@ def _count_table_to_h5ad(
 
     adata = anndata.AnnData(
         X=table,
-        obs=pd.DataFrame([], index=sample_filenames),
+        obs=pd.DataFrame([], index=samples),
         var=feature_metadata,
     )
     adata.write_h5ad(filename)
@@ -194,7 +216,7 @@ def _count_table_to_loom(
         filename,
         table,
         feature_metadata,
-        sample_filenames,
+        samples,
         ):
 
     try:
@@ -205,7 +227,7 @@ def _count_table_to_loom(
     # Loom uses features as rows...
     layers = {'': table.T}
     row_attrs = feature_metadata
-    col_attrs = {'_index': sample_filenames}
+    col_attrs = {'_index': samples}
     loompy.create(
         filename,
         layers=layers,
@@ -216,7 +238,7 @@ def _count_table_to_loom(
 
 def _write_output(
     results,
-    sam_filenames,
+    samples,
     attributes,
     additional_attributes,
     output_filename,
@@ -266,7 +288,7 @@ def _write_output(
             output_filename,
             output_dict['table'],
             output_dict['feature_metadata'],
-            sam_filenames,
+            samples,
         )
         return
 
@@ -275,7 +297,7 @@ def _write_output(
             output_filename,
             output_dict['table'],
             output_dict['feature_metadata'],
-            sam_filenames,
+            samples,
         )
         return
 
@@ -284,7 +306,7 @@ def _write_output(
             output_filename,
             output_dict['table'],
             output_dict['feature_metadata'],
-            sam_filenames,
+            samples,
         )
         return
 
