@@ -18,31 +18,31 @@ except ImportError:
 data_folder = 'example_data/'
 
 
-class HTSeqCount(unittest.TestCase):
-    @staticmethod
-    def load_result_file(filename):
-        sfx = filename.split('.')[-1]
-        if sfx in ('csv', 'tsv'):
-            with open(filename, 'r') as f:
-                result = f.read()
-        elif sfx == 'mtx':
-            from scipy.io import mmread
-            result = mmread(filename)
-        elif sfx == 'h5ad':
-            result = anndata.read_h5ad(filename)
-        elif sfx == 'loom':
-            result = loompy.connect(filename)
-        else:
-            raise ValueError(f'File extension not supported: {sfx}')
+def load_result_file(filename):
+    sfx = filename.split('.')[-1]
+    if sfx in ('csv', 'tsv'):
+        with open(filename, 'r') as f:
+            result = f.read()
+    elif sfx == 'mtx':
+        from scipy.io import mmread
+        result = mmread(filename)
+    elif sfx == 'h5ad':
+        result = anndata.read_h5ad(filename)
+    elif sfx == 'loom':
+        result = loompy.connect(filename)
+    else:
+        raise ValueError(f'File extension not supported: {sfx}')
 
-        return {'result': result, 'fmt': sfx}
+    return {'result': result, 'fmt': sfx}
 
-    @staticmethod
-    def close_file(filename, resultd):
-        fmt = resultd['fmt']
-        if fmt == 'loom':
-            resultd['result'].close()
 
+def close_file(filename, resultd):
+    fmt = resultd['fmt']
+    if fmt == 'loom':
+        resultd['result'].close()
+
+
+class HTSeqCountBase(unittest.TestCase):
     def _customAssertEqual(self, outputd, expectedd):
         output_fmt = outputd['fmt']
         expected_fmt = expectedd['fmt']
@@ -97,7 +97,7 @@ class HTSeqCount(unittest.TestCase):
 
         if '-c' in call:
             output_fn = call[call.index('-c') + 1]
-            output = self.load_result_file(output_fn)
+            output = load_result_file(output_fn)
         else:
             output = {'result': output, 'fmt': 'tsv'}
             output_fn = None
@@ -107,30 +107,33 @@ class HTSeqCount(unittest.TestCase):
                 print('version:', output['result'])
             return
 
-        expected = self.load_result_file(expected_fn)
+        expected = load_result_file(expected_fn)
 
         try:
             self._customAssertEqual(output, expected)
         except:
             if output_fn is not None:
-                self.close_file(output_fn, output)
-                self.close_file(expected_fn, expected)
+                close_file(output_fn, output)
+                close_file(expected_fn, expected)
                 # FIXME
                 if output['fmt'] not in ['h5ad', 'loom']:
                     os.remove(output_fn)
             raise
 
+class HTSeqCount(HTSeqCountBase):
+    cmd = 'htseq-count'
+
     def test_version(self):
         self._run({
             'call': [
-                'htseq-count',
+                self.cmd,
                 '--version'],
             })
 
     def test_simple(self):
         self._run({
             'call': [
-                'htseq-count',
+                self.cmd,
                 'example_data/bamfile_no_qualities.sam',
                 'example_data/bamfile_no_qualities.gtf',
             ],
@@ -140,7 +143,7 @@ class HTSeqCount(unittest.TestCase):
     def test_output_tsv(self):
         self._run({
             'call': [
-                'htseq-count',
+                self.cmd,
                 '-c', 'test_output.tsv',
                 'example_data/bamfile_no_qualities.sam',
                 'example_data/bamfile_no_qualities.gtf',
@@ -151,7 +154,7 @@ class HTSeqCount(unittest.TestCase):
     def test_output_mtx(self):
         self._run({
             'call': [
-                'htseq-count',
+                self.cmd,
                 '-c', 'test_output.mtx',
                 'example_data/bamfile_no_qualities.sam',
                 'example_data/bamfile_no_qualities.gtf',
@@ -163,7 +166,7 @@ class HTSeqCount(unittest.TestCase):
     def test_output_h5ad(self):
         self._run({
             'call': [
-                'htseq-count',
+                self.cmd,
                 '-c', 'test_output.h5ad',
                 'example_data/bamfile_no_qualities.sam',
                 'example_data/bamfile_no_qualities.gtf',
@@ -175,7 +178,7 @@ class HTSeqCount(unittest.TestCase):
     def test_output_loom(self):
         self._run({
             'call': [
-                'htseq-count',
+                self.cmd,
                 '-c', 'test_output.loom',
                 'example_data/bamfile_no_qualities.sam',
                 'example_data/bamfile_no_qualities.gtf',
@@ -195,7 +198,7 @@ class HTSeqCount(unittest.TestCase):
     def test_no_qualities(self):
         self._run({
             'call': [
-                'htseq-count',
+                self.cmd,
                 'example_data/bamfile_no_qualities.bam',
                 'example_data/bamfile_no_qualities.gtf',
             ],
@@ -205,7 +208,7 @@ class HTSeqCount(unittest.TestCase):
     def test_intersection_nonempty(self):
         self._run({
             'call': [
-                'htseq-count',
+                self.cmd,
                 '-m', 'intersection-nonempty',
                 '--nonunique', 'none',
                 '--secondary-alignments', 'score',
@@ -219,7 +222,7 @@ class HTSeqCount(unittest.TestCase):
     def test_feature_query(self):
         self._run({
             'call': [
-                'htseq-count',
+                self.cmd,
                 '-m', 'intersection-nonempty',
                 '--nonunique', 'none',
                 '--secondary-alignments', 'score',
@@ -231,24 +234,10 @@ class HTSeqCount(unittest.TestCase):
             'expected_fn': 'example_data/yeast_RNASeq_excerpt_withNH_counts_YPR036W-A.tsv',
             })
 
-    def test_barcodes(self):
-        self._run({
-            'call': [
-                'htseq-count-barcodes',
-                '-m', 'intersection-nonempty',
-                '--nonunique', 'none',
-                '--secondary-alignments', 'score',
-                '--supplementary-alignments', 'score',
-                'example_data/yeast_RNASeq_excerpt_withbarcodes.sam',
-                'example_data/Saccharomyces_cerevisiae.SGD1.01.56.gtf.gz',
-                ],
-            'expected_fn': 'example_data/yeast_RNASeq_excerpt_withbarcodes.tsv',
-            })
-
     def test_additional_attributes(self):
         self._run({
             'call': [
-                'htseq-count',
+                self.cmd,
                 '-m', 'intersection-nonempty',
                 '--nonunique', 'none',
                 '--secondary-alignments', 'score',
@@ -264,7 +253,7 @@ class HTSeqCount(unittest.TestCase):
     def test_nonunique_fraction(self):
         self._run({
             'call': [
-                'htseq-count',
+                self.cmd,
                 '-m', 'intersection-nonempty',
                 '--nonunique', 'fraction',
                 '--secondary-alignments', 'score',
@@ -278,7 +267,7 @@ class HTSeqCount(unittest.TestCase):
     def test_withNH(self):
         self._run({
             'call': [
-                'htseq-count',
+                self.cmd,
                 '-m', 'intersection-nonempty',
                 '--nonunique', 'all',
                 '--secondary-alignments', 'score',
@@ -292,7 +281,7 @@ class HTSeqCount(unittest.TestCase):
     def test_twocolumns(self):
         self._run({
             'call': [
-                'htseq-count',
+                self.cmd,
                 '-m', 'intersection-nonempty',
                 '-i', 'gene_id',
                 '--additional-attr', 'gene_name',
@@ -309,7 +298,7 @@ class HTSeqCount(unittest.TestCase):
     def test_ignore_secondary(self):
         self._run({
             'call': [
-                'htseq-count',
+                self.cmd,
                 '-m', 'intersection-nonempty',
                 '--nonunique', 'none',
                 '--secondary-alignments', 'ignore',
@@ -321,19 +310,45 @@ class HTSeqCount(unittest.TestCase):
             })
 
 
+class HTSeqCountBarcodes(HTSeqCountBase):
+    cmd = 'htseq-count-barcodes'
+
+    def test_version(self):
+        self._run({
+            'call': [
+                self.cmd,
+                '--version'],
+            })
+    def test_barcodes(self):
+        self._run({
+            'call': [
+                self.cmd,
+                '-m', 'intersection-nonempty',
+                '--nonunique', 'none',
+                '--secondary-alignments', 'score',
+                '--supplementary-alignments', 'score',
+                'example_data/yeast_RNASeq_excerpt_withbarcodes.sam',
+                'example_data/Saccharomyces_cerevisiae.SGD1.01.56.gtf.gz',
+                ],
+            'expected_fn': 'example_data/yeast_RNASeq_excerpt_withbarcodes.tsv',
+            })
+
 if __name__ == '__main__':
 
     suite = HTSeqCount()
-
     suite.test_version()
     suite.test_simple()
     suite.test_output_tsv()
     suite.test_no_qualities()
     suite.test_intersection_nonempty()
     suite.test_feature_query()
-    suite.test_barcodes()
     suite.test_additional_attributes()
     suite.test_nonunique_fraction()
     suite.test_withNH()
     suite.test_twocolumns()
     suite.test_ignore_secondary()
+
+    suite = HTSeqCountBarcodes()
+    suite.test_version()
+    suite.test_barcodes()
+
