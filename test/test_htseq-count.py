@@ -1,6 +1,7 @@
 import os
 import subprocess as sp
 import unittest
+import numpy as np
 import pytest
 
 try:
@@ -54,7 +55,6 @@ class HTSeqCount(unittest.TestCase):
         if fmt in ('tsv', 'csv'):
             self.assertEqual(output, expected)
         elif fmt == 'mtx':
-            import numpy as np
             self.assertIsNone(
                 np.testing.assert_array_equal(
                     output, expected,
@@ -64,7 +64,15 @@ class HTSeqCount(unittest.TestCase):
                 np.testing.assert_array_equal(
                     output[:, :], expected[:, :],
                 ))
-
+            #TODO: metadata and filenames
+        elif fmt == 'h5ad':
+            self.assertIsNone(
+                np.testing.assert_array_equal(
+                    output.X, output.X,
+                ))
+            #TODO: metadata and filenames
+        else:
+            raise ValueError(f'Format not supported: {fmt}')
 
     def _run(self, t):
         expected_fn = t.get('expected_fn', None)

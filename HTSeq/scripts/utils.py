@@ -187,7 +187,7 @@ def _count_table_to_h5ad(
         obs=pd.DataFrame([], index=sample_filenames),
         var=feature_metadata,
     )
-    adata.to_h5ad(filename)
+    adata.write_h5ad(filename)
 
 
 def _count_table_to_loom(
