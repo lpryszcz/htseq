@@ -1,4 +1,4 @@
-.. _count:
+.. _htseqcount:
 
 .. program:: htseq-count
 
@@ -78,18 +78,21 @@ Usage
 After you have installed HTSeq (see :ref:`install`), you can run ``htseq-count`` from
 the command line::
 
-   htseq-count [options] <alignment_files> <gff_file>
+   htseq-count [options] <alignment_files> <gtf_file>
    
 If the file ``htseq-count`` is not in your path, you can, alternatively, call the script with
 
 ::
    
-   python -m HTSeq.scripts.count [options] <alignment_files> <gff_file>
+   python -m HTSeq.scripts.count [options] <alignment_files> <gtf_file>
    
-The ``<alignment_files>`` are one or more files containing the aligned reads in SAM format.
-(SAMtools_ contain Perl scripts to convert most alignment formats to SAM.)
-Make sure to use a splicing-aware aligner such as STAR_. HTSeq-count makes 
-full use of the information in the CIGAR field.
+The ``<alignment_files>`` are one or more files containing the aligned reads in
+SAM/BAM/CRAM format. Under the hood, we use pysam_ for automatic file type detection,
+so whatever pysam_ can parse we can too (SAMtools_ can convert most alignment formats
+to one of these.) Make sure to use a splicing-aware aligner such as STAR_.
+`htseq-count` makes full use of the information in the CIGAR field.
+
+.. _pysam: https://pysam.readthedocs.io/en/latest/
 
 To read from standard input, use ``-`` as ``<alignment_files>``.
 
@@ -98,9 +101,9 @@ If you have paired-end data, pay attention to the ``-r`` option described below.
 .. _SAMtools: http://www.htslib.org/
 .. _STAR: https://github.com/alexdobin/STAR
 
-The ``<gff_file>`` contains the features in the `GFF format`_.
+The ``<gtf_file>`` contains the features in the `GTF format`_.
 
-.. _`GFF format`: http://www.sanger.ac.uk/resources/software/gff/spec.html
+.. _`GTF format`: http://www.sanger.ac.uk/resources/software/gff/spec.html
 
 The script outputs a table with counts for each feature, followed by
 the special counters, which count reads that were not counted for any feature
@@ -132,7 +135,9 @@ was absent up to version 0.5.4). The special counters are:
 with a strand-specific protocol, this causes half of the reads to be lost.
 Hence, make sure to set the option ``--stranded=no`` unless you have strand-specific
 data!
-  
+
+*Important:* For paired-end reads, although position-sorted BAM files are supported, unsorted BAM files (i.e. in which the two reads of the pair are in consecutive lines of the BAM file) are highly recommended for `htseq-count`. If you are having trouble or unexpected results, sort your BAM file by name and try again.
+ 
       
 Options
 .......
@@ -211,6 +216,19 @@ Options
    the option in the command line more than once, with a single attribute each
    time, e.g. ``--additional-attr=gene_name --additional_attr=exon_number``.
 
+.. cmdoption:: --add-chromosome-info
+
+   Store information about the chromosome of each feature as an additional
+   attribute (e.g. column in the TSV output file). 
+
+.. cmdoption:: --feature-query=<query>
+
+   Restrict to features descibed in this expression. Currently supports a single
+   kind of expression: attribute == "one attr" to restrict the GFF to a single
+   gene or transcript, e.g. --feature-query 'gene_name == "ACTB"' - notice the
+   single quotes around the argument of this option and the double quotes around
+   the gene name. Broader queries might become available in the future.
+
 .. cmdoption::  -m <mode>, --mode=<mode>  
 
    Mode to handle reads overlapping more than one feature. Possible values for
@@ -238,6 +256,18 @@ Options
    Write out all SAM alignment records into SAM files (one per input file
    needed), annotating each line with its feature assignment (as an optional
    field with tag 'XF')
+
+.. cmdoption:: -c <countsoutput>, --counts_output=<countsoutput>
+
+   Filename to output the counts to instead of stdout. File format is autodetected
+   based on the filename suffix (extension). Supported formats: tsv, csv, mtx,
+   h5ad, loom. You need `anndata` for h5ad and `loompy` for loom support. For mtx,
+   h5ad, and loom formats, the data type is float32.
+
+.. cmdoption:: --counts-output-sparse
+
+   Store the counts as a sparse matrix. Only used for the following output file
+   formats: mtx, h5ad, loom.
 
 .. cmdoption:: -n <n>, --nprocesses=<n>
 

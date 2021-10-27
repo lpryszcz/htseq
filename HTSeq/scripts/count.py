@@ -529,7 +529,7 @@ def main():
     pa.add_argument(
             "--add-chromosome-info", action='store_true',
             help="Store information about the chromosome of each feature as " +
-            "an additional argument.",
+            "an additional attribute (e.g. colunm in the TSV output file).",
             )
 
     pa.add_argument(
@@ -583,7 +583,7 @@ def main():
             )
 
     pa.add_argument(
-            "--counts_output_sparse", action='store_true',
+            "--counts-output-sparse", action='store_true',
             help="Store the counts as a sparse matrix (mtx, h5ad, loom)."
             )
 

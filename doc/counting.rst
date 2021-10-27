@@ -9,7 +9,7 @@ Counting reads
 A very typical use case for the HTSeq library is to for a given list of genomic features (such as genes,
 exons, ChIP-Seq peaks, or the like), how many sequencing reads overlap each of the features. As a more 
 complex example for using HTSeq, we supply the script ``htseq-count``, which takes a GTF file with
-gene models and a SAM file and counts for each gene how many reads map to it; see Section :ref:`count`.
+gene models and a SAM file and counts for each gene how many reads map to it; see Section :ref:`htseqcount`.
 
 The ``htseq-count`` script, however, has implementation details which were chosen with a specific use
 case in mind, namely to quantify gene expression for subsequent testing for differential expression, 
@@ -203,7 +203,7 @@ for a given read are spread throughout the file. If the purpose of the counting 
 testing for differential expression, it is often safest, anyway, to skip all multiply
 aligned reads (because a read that is counted for several genes may cause spurious calls of 
 differential expression), and then, we merely need to recognize that a read has multiple
-alignments. In the *htseq-count* script (see ref:`count`), this is done by two means:
+alignments. In the *htseq-count* script (see ref:`htseqcount`), this is done by two means:
 First, many (but not all aligners) use the optional field "NH", which indicates the number
 of reported alignments. Testing for ``almnt.optional_field("NH") > 1`` allows to find these
 read. Also, if there are multiple good alignments, without one of them being considered by the

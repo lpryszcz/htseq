@@ -133,11 +133,19 @@ Documentation overview
     the base calls and base-call qualities by position in the read. This is useful to
     assess the technical quality of a sequencing run.
   
-  * :ref:`count`
+  * :ref:`htseqcount`
   
-    Given a SAM file with alignments and a GFF file with genomic features, this script
-    counts how many reads map to each feature. 
+    Given one/multiple SAM/BAM/CRAM files with alignments and a GTF file with genomic
+    features, this script counts how many reads map to each feature. This script is
+    especially popular for bulk and single-cell RNA-Seq analysis.
 
+  * :ref:`htseqcount_with_barcodes`
+
+    Similar to `htseq-count`, but for a single SAM/BAM/CRAM file containing reads with
+    cell and molecular barcodes (e.g. 10X Genomics `cellranger` output). This script
+    enables customization of single-cell RNA-Seq pipelines, e.g. to quantify exon-level
+    expression or simply to obtain a count matrix that contains chromosome information
+    additional feature metadata.
 
 * Appendices
 

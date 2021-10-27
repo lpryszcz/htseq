@@ -663,7 +663,7 @@ We can now conveniently print the result with:
    
 Some aligners can output gapped or spliced alignments. In a SAM file, this in encoded
 in the CIGAR string. HTSeq has facilities to handle this conveniently, too, with the
-class :class:`CigarOperation`. Chapter :ref:`count` describes a script which offers
+class :class:`CigarOperation`. Chapter :ref:`htseqcount` describes a script which offers
 some further counting schemes.
 
 
