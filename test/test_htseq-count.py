@@ -107,18 +107,26 @@ class HTSeqCountBase(unittest.TestCase):
                 print('version:', output['result'])
             return
 
+        if not os.path.isfile(expected_fn):
+            import shutil
+            print('Missing output file, creating one in current folder')
+            out_fn = os.path.basename(expected_fn)
+            shutil.copy(output_fn, out_fn)
+            pytest.fail(
+                'Expected filename not found, output filename copied in {out_fn}',
+            )
+
         expected = load_result_file(expected_fn)
 
         try:
             self._customAssertEqual(output, expected)
-        except:
+        finally:
             if output_fn is not None:
                 close_file(output_fn, output)
                 close_file(expected_fn, expected)
                 # FIXME
-                if False:#output['fmt'] not in ['h5ad', 'loom']:
+                if True:#output['fmt'] not in ['h5ad', 'loom']:
                     os.remove(output_fn)
-            raise
 
 class HTSeqCount(HTSeqCountBase):
     cmd = 'htseq-count'
@@ -250,6 +258,24 @@ class HTSeqCount(HTSeqCountBase):
             'expected_fn': 'example_data/yeast_RNASeq_excerpt_withNH_counts_additional_attributes.tsv',
             })
 
+    def test_additional_attributes_chromosome_info(self):
+        self._run({
+            'call': [
+                self.cmd,
+                '-c', 'test_output.tsv',
+                '-m', 'intersection-nonempty',
+                '--nonunique', 'none',
+                '--secondary-alignments', 'score',
+                '--supplementary-alignments', 'score',
+                '--additional-attr', 'gene_name',
+                '--additional-attr', 'exon_number',
+                '--add-chromosome-info',
+                'example_data/yeast_RNASeq_excerpt_withNH.sam',
+                'example_data/Saccharomyces_cerevisiae.SGD1.01.56.gtf.gz',
+                ],
+            'expected_fn': 'example_data/yeast_RNASeq_excerpt_withNH_counts_additional_attributes_chromosome_info.tsv',
+            })
+
     def test_nonunique_fraction(self):
         self._run({
             'call': [
@@ -346,6 +372,22 @@ class HTSeqCountBarcodes(HTSeqCountBase):
                 'example_data/Saccharomyces_cerevisiae.SGD1.01.56.gtf.gz',
                 ],
             'expected_fn': 'example_data/yeast_RNASeq_excerpt_withbarcodes.tsv',
+            })
+
+    def test_output_tsv_chromosome_info(self):
+        self._run({
+            'call': [
+                self.cmd,
+                '-c', 'test_output.tsv',
+                '-m', 'intersection-nonempty',
+                '--add-chromosome-info',
+                '--nonunique', 'none',
+                '--secondary-alignments', 'score',
+                '--supplementary-alignments', 'score',
+                'example_data/yeast_RNASeq_excerpt_withbarcodes.sam',
+                'example_data/Saccharomyces_cerevisiae.SGD1.01.56.gtf.gz',
+                ],
+            'expected_fn': 'example_data/yeast_RNASeq_excerpt_withbarcodes_chromosome_info.tsv',
             })
 
     def test_output_h5ad(self):

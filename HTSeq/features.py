@@ -259,6 +259,7 @@ def make_feature_genomicarrayofsets(
         additional_attributes=None,
         stranded=False,
         verbose=False,
+        add_chromosome_info=False,
         ):
     """Organize a sequence of Feature objects into a GenomicArrayOfSets.
 
@@ -289,6 +290,9 @@ def make_feature_genomicarrayofsets(
             instance ['gene_name']
         stranded (bool): Whether to keep strandedness information
         verbose (bool): Whether to output progress and error messages
+        add_chromosome_info (bool): Whether to add chromosome infoormation for
+            each feature. If this option is True, the fuction appends at the
+            end of the "additional_attributes" list a "Chromosome" attribute.
 
     Returns:
         dict with two keys, 'features' with the GenomicArrayOfSets populated
@@ -348,6 +352,9 @@ def make_feature_genomicarrayofsets(
                 attributes[feature_id] = [
                         f.attr[attr] if attr in f.attr else ''
                         for attr in additional_attributes]
+                if add_chromosome_info:
+                    attributes[feature_id] += [f.iv.chrom]
+                
             i += 1
             if i % 100000 == 0 and verbose:
                 if hasattr(feature_sequence, 'get_line_number_string'):
@@ -374,6 +381,9 @@ def make_feature_genomicarrayofsets(
             msg = "{:d} features processed.".format(i)
         sys.stderr.write(msg+"\n")
         sys.stderr.flush()
+
+    if add_chromosome_info:
+        additional_attributes.append('Chromosome')
 
     return {
         'features': features,

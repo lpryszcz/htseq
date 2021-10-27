@@ -324,6 +324,7 @@ def count_reads_in_features(
         feature_type,
         id_attribute,
         additional_attributes,
+        add_chromosome_info,
         quiet,
         minaqual,
         samouts,
@@ -375,6 +376,7 @@ def count_reads_in_features(
         additional_attributes=additional_attributes,
         stranded=stranded != 'no',
         verbose=not quiet,
+        add_chromosome_info=add_chromosome_info,
         )
     features = feature_scan['features']
     attributes = feature_scan['attributes']
@@ -525,6 +527,12 @@ def main():
             "of how the counts are added together is done based on option -i.")
 
     pa.add_argument(
+            "--add-chromosome-info", action='store_true',
+            help="Store information about the chromosome of each feature as " +
+            "an additional argument.",
+            )
+
+    pa.add_argument(
             "-m", "--mode", dest="mode",
             choices=("union", "intersection-strict", "intersection-nonempty"),
             default="union",
@@ -631,6 +639,7 @@ def main():
                 args.featuretype,
                 args.idattr,
                 args.additional_attr,
+                args.add_chromosome_info,
                 args.quiet,
                 args.minaqual,
                 args.samouts,
