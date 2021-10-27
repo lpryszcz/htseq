@@ -348,6 +348,36 @@ class HTSeqCountBarcodes(HTSeqCountBase):
             'expected_fn': 'example_data/yeast_RNASeq_excerpt_withbarcodes.tsv',
             })
 
+    def test_output_h5ad(self):
+        self._run({
+            'call': [
+                self.cmd,
+                '-c', 'test_output.h5ad',
+                '-m', 'intersection-nonempty',
+                '--nonunique', 'none',
+                '--secondary-alignments', 'score',
+                '--supplementary-alignments', 'score',
+                'example_data/yeast_RNASeq_excerpt_withbarcodes.sam',
+                'example_data/Saccharomyces_cerevisiae.SGD1.01.56.gtf.gz',
+                ],
+            'expected_fn': 'example_data/yeast_RNASeq_excerpt_withbarcodes.h5ad',
+            })
+
+    def test_output_loom(self):
+        self._run({
+            'call': [
+                self.cmd,
+                '-c', 'test_output.loom',
+                '-m', 'intersection-nonempty',
+                '--nonunique', 'none',
+                '--secondary-alignments', 'score',
+                '--supplementary-alignments', 'score',
+                'example_data/yeast_RNASeq_excerpt_withbarcodes.sam',
+                'example_data/Saccharomyces_cerevisiae.SGD1.01.56.gtf.gz',
+                ],
+            'expected_fn': 'example_data/yeast_RNASeq_excerpt_withbarcodes.loom',
+            })
+
 
 if __name__ == '__main__':
 

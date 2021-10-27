@@ -28,6 +28,11 @@ def _merge_counts(
         sparse=False,
         dtype=np.float32,
         ):
+    barcodes = 'cell_barcodes' in results
+
+    if barcodes:
+        cbs = results['cell_barcodes']
+        counts = results['counts']
 
     feature_attr = sorted(attributes.keys())
     other_features = [
@@ -40,7 +45,10 @@ def _merge_counts(
 
     fea_names = [fea for fea in feature_attr] + [fea[0] for fea in other_features]
     L = len(fea_names)
-    n = len(results)
+    if barcodes:
+        n = len(cbs)
+    else:
+        n = len(results)
     if not sparse:
         table = np.zeros(
             (n, L),
@@ -50,15 +58,22 @@ def _merge_counts(
         from scipy.sparse import lil_matrix
         table = lil_matrix((n, L), dtype=dtype)
 
-    fea_ids = [fea for fea in feature_attr] + [fea[1] for fea in other_features]
-    for j, r in enumerate(results):
-        for i, fn in enumerate(fea_ids):
-            if i < len(feature_attr):
-                countji = r['counts'][fn]
-            else:
-                countji = r[fn]
-            if countji > 0:
-                table[j, i] = countji
+    if not barcodes:
+        fea_ids = [fea for fea in feature_attr] + [fea[1] for fea in other_features]
+        for j, r in enumerate(results):
+            for i, fn in enumerate(fea_ids):
+                if i < len(feature_attr):
+                    countji = r['counts'][fn]
+                else:
+                    countji = r[fn]
+                if countji > 0:
+                    table[j, i] = countji
+    else:
+        for j, cb in enumerate(cbs):
+            for i, fn in enumerate(fea_names):
+                countji = counts[cb][fn]
+                if countji > 0:
+                    table[j, i] = countji
 
     if sparse:
         table = table.tocsr()
