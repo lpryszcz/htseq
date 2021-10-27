@@ -887,7 +887,8 @@ class BAM_Reader(object):
             import pysam
         except ImportError:
             sys.stderr.write(
-                "Please Install PySam to use the BAM_Reader Class (http://code.google.com/p/pysam/)")
+                "Could not import pysam. Please install pysam " +
+                "to use the BAM_Reader class")
             raise
 
     def _open_file(self):
