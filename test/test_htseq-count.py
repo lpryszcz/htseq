@@ -213,6 +213,17 @@ class HTSeqCount(HTSeqCountBase):
             'expected_fn': 'example_data/bamfile_no_qualities.tsv',
             })
 
+    def test_some_missing_sequences(self):
+        self._run({
+            'call': [
+                self.cmd,
+                '-c', 'test_output.tsv',
+                'example_data/yeast_RNASeq_excerpt_some_empty_seqs.sam',
+                'example_data/Saccharomyces_cerevisiae.SGD1.01.56.gtf.gz',
+                ],
+            'expected_fn': 'example_data/yeast_RNASeq_excerpt_some_empty_seqs.tsv',
+            })
+
     def test_intersection_nonempty(self):
         self._run({
             'call': [
