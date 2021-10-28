@@ -23,8 +23,11 @@ To run the ``htseq-qa`` script, you will also need:
 
 -  ``matplotlib``
 
-To run ``htseq-count`` with a ``h5ad`` output file, you'll need ``anndata``, and
-with a ``loom`` output file you'll need ``loompy``.
+To run ``htseq-count`` with custom output formats for the count table:
+
+- ``mtx`` file: you need ``scipy``
+- ``h5ad`` file: you need ``anndata``
+- ``loom`` file: you need ``loompy``
 
 Both **Linux** and **OSX** are supported and binaries are provided on Pypi. We
 would like to support **Windows** but currently lack the expertise to do so. If
