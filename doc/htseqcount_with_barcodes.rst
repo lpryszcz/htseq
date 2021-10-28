@@ -4,7 +4,7 @@
 
 
 *******************************************************************************************
-``htseq-count``: counting reads with cell barcodes and UMIs
+``htseq-count-barcodes``: counting reads with cell barcodes and UMIs
 *******************************************************************************************
 
 This script is similar to ``htseq-count``, but is designed to operate on a single SAM/BAM/CRAM file that contains reads from many cells, distinguished by a cell barcode in the read name and possibly a unique molecular identifier (UMI).
