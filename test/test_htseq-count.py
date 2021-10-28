@@ -402,6 +402,7 @@ class HTSeqCountBarcodes(HTSeqCountBase):
             'expected_fn': f'{data_folder}/yeast_RNASeq_excerpt_withbarcodes_chromosome_info.tsv',
             })
 
+    @unittest.skipIf(anndata is None, "test case depends on anndata")
     def test_output_h5ad(self):
         self._run({
             'call': [
@@ -417,6 +418,7 @@ class HTSeqCountBarcodes(HTSeqCountBase):
             'expected_fn': f'{data_folder}/yeast_RNASeq_excerpt_withbarcodes.h5ad',
             })
 
+    @unittest.skipIf(loompy is None, "test case depends on loompy")
     def test_output_loom(self):
         self._run({
             'call': [
