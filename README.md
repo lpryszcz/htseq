@@ -7,9 +7,9 @@
 **DOCS**: https://htseq.readthedocs.io
 
 A Python library to facilitate processing and analysis of data
-from high-throughput sequencing (HTS) experiments. A popular use of ``HTSeq``
-is ``htseq-count``, a tool to quantify gene expression in RNA-Seq and similar
-experiments.
+from high-throughput sequencing (HTS) experiments. A popular component of ``HTSeq``
+is ``htseq-count``, a script to quantify gene expression in bulk and single-cell RNA-Seq
+and similar experiments.
 
 ## Requirements
 
@@ -22,6 +22,9 @@ To use ``HTSeq`` you will need:
 To run the ``htseq-qa`` script, you will also need:
 
 -  ``matplotlib``
+
+To run ``htseq-count`` with a ``h5ad`` output file, you'll need ``anndata``, and
+with a ``loom`` output file you'll need ``loompy``.
 
 Both **Linux** and **OSX** are supported and binaries are provided on Pypi. We
 would like to support **Windows** but currently lack the expertise to do so. If
