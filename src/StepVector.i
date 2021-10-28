@@ -171,7 +171,7 @@ class StepVector(object):
     """
 
     @classmethod
-    def create(cls, length=sys.maxint, typecode='d', start_index=0):
+    def create(cls, length=sys.maxsize, typecode='d', start_index=0):
         """Construct a StepVector of the given length, with indices starting
         at the given start_index and counting up to (but not including)
         start_index + length.
@@ -322,11 +322,11 @@ class StepVector(object):
                 yield value
          
     def __repr__(self):
-        if self.start == -sys.maxint - 1:
+        if self.start == -sys.maxsize - 1:
             start_s = "-inf"
         else:
             start_s = str(self.start)
-        if self.stop == sys.maxint:
+        if self.stop == sys.maxsize:
             stop_s = "inf"
         else:
             stop_s = str(self.stop)
