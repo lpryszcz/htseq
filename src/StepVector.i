@@ -356,7 +356,7 @@ class StepVector(object):
         """
         if self.start_index() != other.start_index() or len(self) != len(other) or \
                 self.typecode() != other.typecode():
-            print "Mark A"
+            print("Mark A")
             return False
         selfsteps = self.get_steps()
         othrsteps = other.get_steps()
