@@ -1374,13 +1374,25 @@ cdef class SAM_Alignment(AlignmentWithSequenceReversal):
         else:
             iv = None
 
+        # read.query_sequence can be empty (e.g. nanopore runs), then pysam
+        # casts it as None or *. We recast it as an empty string to preserve
+        #types. It is then converted to ASCII
+        query_sequence = read.query_sequence
+        if (query_sequence is None) or (query_sequence == '*'):
+            query_sequence = ''
+        query_sequence = query_sequence.encode()
+
+        # read.qual can be empty (e.g. special filtering, artificial), then
+        # it comes through as None or as a * (see previous comment). In this
+        # case, we cast it as an empty ASCII _and_ we have to tell the
+        # class about the issue.
         if (read.qual is None) or (read.qual == "*"):
             seq = SequenceWithQualities(
-                read.query_sequence.encode(), read.query_name, b'',
+                query_sequence, read.query_name, b'',
                 'noquals')
         else:
             seq = SequenceWithQualities(
-                read.query_sequence.encode(), read.qname, read.qual.encode(),
+                query_sequence, read.qname, read.qual.encode(),
                 )
 
         a = SAM_Alignment(seq, iv)
