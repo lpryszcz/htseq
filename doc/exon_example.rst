@@ -124,4 +124,13 @@ Conclusion
 ----------
 Hopefully this case study helped you understand the design and mechanics of ``htseq-count``. If you want to learn more, you should take a look at the script itself, or start coding your own custom variant straight away!
 
+.. note::
+   Note that instead of counting on a gene level (using ``gene_id``), we can count reads on an exon level, i.e. each exon will be a separate line in the output. For that purpose, you can use a different call for :func:`make_feature_genomicarrayofsets`::
+
+     >>> feature_scan = HTSeq.make_feature_genomicarrayofsets(
+     ...     gtffile,
+     ...     id_attribute=['gene_id', 'exon_number'],
+     ...     feature_type='exon',
+     ... )
+
 .. note:: **Paired-end** BAM files can be a little more tricky to analyze. Notably, paired-end BAM files can be unsorted (the two reads of each pair appear on subsequent lines) or sorted by position. Sorting usually separates the two reads within each pair, and the gap can consist of million of other reads. When we count genes, each read *pair* counts for 1, but since the two reads are now disjoint, a buffering mechanism is used to "delay" counting until the second ("mate") read has been found. This can slow down the script, increase memory consumption and, in extreme cases, crash the analysis. As a general rule, always try to run ``htseq-count`` on unsorted (or "sorted-by-name") BAM files.
