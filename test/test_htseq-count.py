@@ -3,6 +3,7 @@ import subprocess as sp
 import unittest
 import numpy as np
 import pytest
+import conftest
 
 try:
     import anndata
@@ -15,7 +16,7 @@ except ImportError:
     loompy = None
 
 
-data_folder = 'example_data/'
+data_folder = conftest.get_data_folder()
 
 
 def load_result_file(filename):
@@ -79,9 +80,9 @@ class HTSeqCountBase(unittest.TestCase):
         call = t['call']
 
         # Replace with injected variable
-        call = [x.replace('example_data/', data_folder) for x in call]
+        call = [x.replace(f'{data_folder}/', data_folder) for x in call]
         if expected_fn is not None:
-            expected_fn = expected_fn.replace('example_data/', data_folder)
+            expected_fn = expected_fn.replace(f'{data_folder}/', data_folder)
 
         ## local testing
         #if call[0] == 'htseq-count':
@@ -142,10 +143,10 @@ class HTSeqCount(HTSeqCountBase):
         self._run({
             'call': [
                 self.cmd,
-                'example_data/bamfile_no_qualities.sam',
-                'example_data/bamfile_no_qualities.gtf',
+                f'{data_folder}/bamfile_no_qualities.sam',
+                f'{data_folder}/bamfile_no_qualities.gtf',
             ],
-            'expected_fn': 'example_data/bamfile_no_qualities.tsv',
+            'expected_fn': f'{data_folder}/bamfile_no_qualities.tsv',
             })
 
     def test_output_tsv(self):
@@ -153,10 +154,10 @@ class HTSeqCount(HTSeqCountBase):
             'call': [
                 self.cmd,
                 '-c', 'test_output.tsv',
-                'example_data/bamfile_no_qualities.sam',
-                'example_data/bamfile_no_qualities.gtf',
+                f'{data_folder}/bamfile_no_qualities.sam',
+                f'{data_folder}/bamfile_no_qualities.gtf',
                 ],
-        'expected_fn': 'example_data/bamfile_no_qualities.tsv',
+        'expected_fn': f'{data_folder}/bamfile_no_qualities.tsv',
         })
 
     def test_output_mtx(self):
@@ -164,10 +165,10 @@ class HTSeqCount(HTSeqCountBase):
             'call': [
                 self.cmd,
                 '-c', 'test_output.mtx',
-                'example_data/bamfile_no_qualities.sam',
-                'example_data/bamfile_no_qualities.gtf',
+                f'{data_folder}/bamfile_no_qualities.sam',
+                f'{data_folder}/bamfile_no_qualities.gtf',
                 ],
-        'expected_fn': 'example_data/bamfile_no_qualities.mtx',
+        'expected_fn': f'{data_folder}/bamfile_no_qualities.mtx',
         })
 
     @unittest.skipIf(anndata is None, "test case depends on anndata")
@@ -176,10 +177,10 @@ class HTSeqCount(HTSeqCountBase):
             'call': [
                 self.cmd,
                 '-c', 'test_output.h5ad',
-                'example_data/bamfile_no_qualities.sam',
-                'example_data/bamfile_no_qualities.gtf',
+                f'{data_folder}/bamfile_no_qualities.sam',
+                f'{data_folder}/bamfile_no_qualities.gtf',
                 ],
-        'expected_fn': 'example_data/bamfile_no_qualities.h5ad',
+        'expected_fn': f'{data_folder}/bamfile_no_qualities.h5ad',
         })
 
     @unittest.skipIf(loompy is None, "test case depends on loompy")
@@ -188,29 +189,29 @@ class HTSeqCount(HTSeqCountBase):
             'call': [
                 self.cmd,
                 '-c', 'test_output.loom',
-                'example_data/bamfile_no_qualities.sam',
-                'example_data/bamfile_no_qualities.gtf',
+                f'{data_folder}/bamfile_no_qualities.sam',
+                f'{data_folder}/bamfile_no_qualities.gtf',
                 ],
-        'expected_fn': 'example_data/bamfile_no_qualities.loom',
+        'expected_fn': f'{data_folder}/bamfile_no_qualities.loom',
         })
 
     # Testing multiple cores on travis makes a mess
     #{'call': [
     #    'htseq-count',
     #    '-n', '2',
-    #    'example_data/bamfile_no_qualities.sam',
-    #    'example_data/bamfile_no_qualities.gtf',
+    #    f'{data_folder}/bamfile_no_qualities.sam',
+    #    f'{data_folder}/bamfile_no_qualities.gtf',
     #    ],
-    # 'expected_fn': 'example_data/bamfile_no_qualities.tsv'},
+    # 'expected_fn': f'{data_folder}/bamfile_no_qualities.tsv'},
 
     def test_no_qualities(self):
         self._run({
             'call': [
                 self.cmd,
-                'example_data/bamfile_no_qualities.bam',
-                'example_data/bamfile_no_qualities.gtf',
+                f'{data_folder}/bamfile_no_qualities.bam',
+                f'{data_folder}/bamfile_no_qualities.gtf',
             ],
-            'expected_fn': 'example_data/bamfile_no_qualities.tsv',
+            'expected_fn': f'{data_folder}/bamfile_no_qualities.tsv',
             })
 
     def test_some_missing_sequences(self):
@@ -218,10 +219,10 @@ class HTSeqCount(HTSeqCountBase):
             'call': [
                 self.cmd,
                 '-c', 'test_output.tsv',
-                'example_data/yeast_RNASeq_excerpt_some_empty_seqs.sam',
-                'example_data/Saccharomyces_cerevisiae.SGD1.01.56.gtf.gz',
+                f'{data_folder}/yeast_RNASeq_excerpt_some_empty_seqs.sam',
+                f'{data_folder}/Saccharomyces_cerevisiae.SGD1.01.56.gtf.gz',
                 ],
-            'expected_fn': 'example_data/yeast_RNASeq_excerpt_some_empty_seqs.tsv',
+            'expected_fn': f'{data_folder}/yeast_RNASeq_excerpt_some_empty_seqs.tsv',
             })
 
     def test_intersection_nonempty(self):
@@ -232,10 +233,10 @@ class HTSeqCount(HTSeqCountBase):
                 '--nonunique', 'none',
                 '--secondary-alignments', 'score',
                 '--supplementary-alignments', 'score',
-                'example_data/yeast_RNASeq_excerpt_withNH.sam',
-                'example_data/Saccharomyces_cerevisiae.SGD1.01.56.gtf.gz',
+                f'{data_folder}/yeast_RNASeq_excerpt_withNH.sam',
+                f'{data_folder}/Saccharomyces_cerevisiae.SGD1.01.56.gtf.gz',
                 ],
-            'expected_fn': 'example_data/yeast_RNASeq_excerpt_withNH_counts.tsv',
+            'expected_fn': f'{data_folder}/yeast_RNASeq_excerpt_withNH_counts.tsv',
             })
 
     def test_feature_query(self):
@@ -247,10 +248,10 @@ class HTSeqCount(HTSeqCountBase):
                 '--secondary-alignments', 'score',
                 '--supplementary-alignments', 'score',
                 '--feature-query', '\'gene_id == "YPR036W-A"\'',
-                'example_data/yeast_RNASeq_excerpt_withNH.sam',
-                'example_data/Saccharomyces_cerevisiae.SGD1.01.56.gtf.gz',
+                f'{data_folder}/yeast_RNASeq_excerpt_withNH.sam',
+                f'{data_folder}/Saccharomyces_cerevisiae.SGD1.01.56.gtf.gz',
                 ],
-            'expected_fn': 'example_data/yeast_RNASeq_excerpt_withNH_counts_YPR036W-A.tsv',
+            'expected_fn': f'{data_folder}/yeast_RNASeq_excerpt_withNH_counts_YPR036W-A.tsv',
             })
 
     def test_additional_attributes(self):
@@ -263,10 +264,10 @@ class HTSeqCount(HTSeqCountBase):
                 '--supplementary-alignments', 'score',
                 '--additional-attr', 'gene_name',
                 '--additional-attr', 'exon_number',
-                'example_data/yeast_RNASeq_excerpt_withNH.sam',
-                'example_data/Saccharomyces_cerevisiae.SGD1.01.56.gtf.gz',
+                f'{data_folder}/yeast_RNASeq_excerpt_withNH.sam',
+                f'{data_folder}/Saccharomyces_cerevisiae.SGD1.01.56.gtf.gz',
                 ],
-            'expected_fn': 'example_data/yeast_RNASeq_excerpt_withNH_counts_additional_attributes.tsv',
+            'expected_fn': f'{data_folder}/yeast_RNASeq_excerpt_withNH_counts_additional_attributes.tsv',
             })
 
     def test_additional_attributes_chromosome_info(self):
@@ -281,10 +282,10 @@ class HTSeqCount(HTSeqCountBase):
                 '--additional-attr', 'gene_name',
                 '--additional-attr', 'exon_number',
                 '--add-chromosome-info',
-                'example_data/yeast_RNASeq_excerpt_withNH.sam',
-                'example_data/Saccharomyces_cerevisiae.SGD1.01.56.gtf.gz',
+                f'{data_folder}/yeast_RNASeq_excerpt_withNH.sam',
+                f'{data_folder}/Saccharomyces_cerevisiae.SGD1.01.56.gtf.gz',
                 ],
-            'expected_fn': 'example_data/yeast_RNASeq_excerpt_withNH_counts_additional_attributes_chromosome_info.tsv',
+            'expected_fn': f'{data_folder}/yeast_RNASeq_excerpt_withNH_counts_additional_attributes_chromosome_info.tsv',
             })
 
     def test_nonunique_fraction(self):
@@ -295,10 +296,10 @@ class HTSeqCount(HTSeqCountBase):
                 '--nonunique', 'fraction',
                 '--secondary-alignments', 'score',
                 '--supplementary-alignments', 'score',
-                'example_data/yeast_RNASeq_excerpt_withNH.sam',
-                'example_data/Saccharomyces_cerevisiae.SGD1.01.56.gtf.gz',
+                f'{data_folder}/yeast_RNASeq_excerpt_withNH.sam',
+                f'{data_folder}/Saccharomyces_cerevisiae.SGD1.01.56.gtf.gz',
                 ],
-            'expected_fn': 'example_data/yeast_RNASeq_excerpt_withNH_counts_nonunique_fraction.tsv',
+            'expected_fn': f'{data_folder}/yeast_RNASeq_excerpt_withNH_counts_nonunique_fraction.tsv',
             })
 
     def test_withNH(self):
@@ -309,10 +310,10 @@ class HTSeqCount(HTSeqCountBase):
                 '--nonunique', 'all',
                 '--secondary-alignments', 'score',
                 '--supplementary-alignments', 'score',
-                'example_data/yeast_RNASeq_excerpt_withNH.sam',
-                'example_data/Saccharomyces_cerevisiae.SGD1.01.56.gtf.gz',
+                f'{data_folder}/yeast_RNASeq_excerpt_withNH.sam',
+                f'{data_folder}/Saccharomyces_cerevisiae.SGD1.01.56.gtf.gz',
                 ],
-            'expected_fn': 'example_data/yeast_RNASeq_excerpt_withNH_counts_nonunique.tsv',
+            'expected_fn': f'{data_folder}/yeast_RNASeq_excerpt_withNH_counts_nonunique.tsv',
             })
 
     def test_twocolumns(self):
@@ -325,11 +326,11 @@ class HTSeqCount(HTSeqCountBase):
                 '--nonunique', 'none',
                 '--secondary-alignments', 'score',
                 '--supplementary-alignments', 'score',
-                'example_data/yeast_RNASeq_excerpt_withNH.sam',
-                'example_data/yeast_RNASeq_excerpt_withNH.sam',
-                'example_data/Saccharomyces_cerevisiae.SGD1.01.56.gtf.gz',
+                f'{data_folder}/yeast_RNASeq_excerpt_withNH.sam',
+                f'{data_folder}/yeast_RNASeq_excerpt_withNH.sam',
+                f'{data_folder}/Saccharomyces_cerevisiae.SGD1.01.56.gtf.gz',
                 ],
-            'expected_fn': 'example_data/yeast_RNASeq_excerpt_withNH_counts_twocolumns.tsv',
+            'expected_fn': f'{data_folder}/yeast_RNASeq_excerpt_withNH_counts_twocolumns.tsv',
             })
 
     def test_ignore_secondary(self):
@@ -340,10 +341,10 @@ class HTSeqCount(HTSeqCountBase):
                 '--nonunique', 'none',
                 '--secondary-alignments', 'ignore',
                 '--supplementary-alignments', 'score',
-                'example_data/yeast_RNASeq_excerpt_withNH.sam',
-                'example_data/Saccharomyces_cerevisiae.SGD1.01.56.gtf.gz',
+                f'{data_folder}/yeast_RNASeq_excerpt_withNH.sam',
+                f'{data_folder}/Saccharomyces_cerevisiae.SGD1.01.56.gtf.gz',
                 ],
-            'expected_fn': 'example_data/yeast_RNASeq_excerpt_withNH_counts_ignore_secondary.tsv',
+            'expected_fn': f'{data_folder}/yeast_RNASeq_excerpt_withNH_counts_ignore_secondary.tsv',
             })
 
 
@@ -364,10 +365,10 @@ class HTSeqCountBarcodes(HTSeqCountBase):
                 '--nonunique', 'none',
                 '--secondary-alignments', 'score',
                 '--supplementary-alignments', 'score',
-                'example_data/yeast_RNASeq_excerpt_withbarcodes.sam',
-                'example_data/Saccharomyces_cerevisiae.SGD1.01.56.gtf.gz',
+                f'{data_folder}/yeast_RNASeq_excerpt_withbarcodes.sam',
+                f'{data_folder}/Saccharomyces_cerevisiae.SGD1.01.56.gtf.gz',
                 ],
-            'expected_fn': 'example_data/yeast_RNASeq_excerpt_withbarcodes.tsv',
+            'expected_fn': f'{data_folder}/yeast_RNASeq_excerpt_withbarcodes.tsv',
             })
 
     def test_output_tsv(self):
@@ -379,10 +380,10 @@ class HTSeqCountBarcodes(HTSeqCountBase):
                 '--nonunique', 'none',
                 '--secondary-alignments', 'score',
                 '--supplementary-alignments', 'score',
-                'example_data/yeast_RNASeq_excerpt_withbarcodes.sam',
-                'example_data/Saccharomyces_cerevisiae.SGD1.01.56.gtf.gz',
+                f'{data_folder}/yeast_RNASeq_excerpt_withbarcodes.sam',
+                f'{data_folder}/Saccharomyces_cerevisiae.SGD1.01.56.gtf.gz',
                 ],
-            'expected_fn': 'example_data/yeast_RNASeq_excerpt_withbarcodes.tsv',
+            'expected_fn': f'{data_folder}/yeast_RNASeq_excerpt_withbarcodes.tsv',
             })
 
     def test_output_tsv_chromosome_info(self):
@@ -395,10 +396,10 @@ class HTSeqCountBarcodes(HTSeqCountBase):
                 '--nonunique', 'none',
                 '--secondary-alignments', 'score',
                 '--supplementary-alignments', 'score',
-                'example_data/yeast_RNASeq_excerpt_withbarcodes.sam',
-                'example_data/Saccharomyces_cerevisiae.SGD1.01.56.gtf.gz',
+                f'{data_folder}/yeast_RNASeq_excerpt_withbarcodes.sam',
+                f'{data_folder}/Saccharomyces_cerevisiae.SGD1.01.56.gtf.gz',
                 ],
-            'expected_fn': 'example_data/yeast_RNASeq_excerpt_withbarcodes_chromosome_info.tsv',
+            'expected_fn': f'{data_folder}/yeast_RNASeq_excerpt_withbarcodes_chromosome_info.tsv',
             })
 
     def test_output_h5ad(self):
@@ -410,10 +411,10 @@ class HTSeqCountBarcodes(HTSeqCountBase):
                 '--nonunique', 'none',
                 '--secondary-alignments', 'score',
                 '--supplementary-alignments', 'score',
-                'example_data/yeast_RNASeq_excerpt_withbarcodes.sam',
-                'example_data/Saccharomyces_cerevisiae.SGD1.01.56.gtf.gz',
+                f'{data_folder}/yeast_RNASeq_excerpt_withbarcodes.sam',
+                f'{data_folder}/Saccharomyces_cerevisiae.SGD1.01.56.gtf.gz',
                 ],
-            'expected_fn': 'example_data/yeast_RNASeq_excerpt_withbarcodes.h5ad',
+            'expected_fn': f'{data_folder}/yeast_RNASeq_excerpt_withbarcodes.h5ad',
             })
 
     def test_output_loom(self):
@@ -425,10 +426,10 @@ class HTSeqCountBarcodes(HTSeqCountBase):
                 '--nonunique', 'none',
                 '--secondary-alignments', 'score',
                 '--supplementary-alignments', 'score',
-                'example_data/yeast_RNASeq_excerpt_withbarcodes.sam',
-                'example_data/Saccharomyces_cerevisiae.SGD1.01.56.gtf.gz',
+                f'{data_folder}/yeast_RNASeq_excerpt_withbarcodes.sam',
+                f'{data_folder}/Saccharomyces_cerevisiae.SGD1.01.56.gtf.gz',
                 ],
-            'expected_fn': 'example_data/yeast_RNASeq_excerpt_withbarcodes.loom',
+            'expected_fn': f'{data_folder}/yeast_RNASeq_excerpt_withbarcodes.loom',
             })
 
 

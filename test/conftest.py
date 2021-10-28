@@ -2,8 +2,7 @@ import os
 import pytest
 
 
-@pytest.fixture(scope="module")
-def data_folder():
+def get_data_folder():
     cwd = os.getcwd().rstrip('/')
     if cwd.endswith('example_data'):
         return cwd+'/'
@@ -11,8 +10,7 @@ def data_folder():
         return cwd+'/example_data/'
 
 
-@pytest.fixture(scope="module")
-def docs_folder():
+def get_docs_folder():
     cwd = os.getcwd().rstrip('/')
     if cwd.endswith('doc'):
         return cwd+'/'
@@ -22,6 +20,15 @@ def docs_folder():
         return cwd+'/doc/'
 
 
+# Same as fixtures
+@pytest.fixture(scope="module")
+def data_folder():
+    return get_data_folder()
+
+
+@pytest.fixture(scope="module")
+def docs_folder():
+    return get_docs_folder()
 
 
 
