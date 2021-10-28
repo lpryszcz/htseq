@@ -6,6 +6,11 @@ import pytest
 import conftest
 
 try:
+    import scipy
+except ImportError:
+    scipy = None
+
+try:
     import anndata
 except ImportError:
     anndata = None
@@ -157,9 +162,10 @@ class HTSeqCount(HTSeqCountBase):
                 f'{data_folder}/bamfile_no_qualities.sam',
                 f'{data_folder}/bamfile_no_qualities.gtf',
                 ],
-        'expected_fn': f'{data_folder}/bamfile_no_qualities.tsv',
-        })
+            'expected_fn': f'{data_folder}/bamfile_no_qualities.tsv',
+            })
 
+    @unittest.skipIf(scipy is None, "test case depends on scipy")
     def test_output_mtx(self):
         self._run({
             'call': [
@@ -168,8 +174,8 @@ class HTSeqCount(HTSeqCountBase):
                 f'{data_folder}/bamfile_no_qualities.sam',
                 f'{data_folder}/bamfile_no_qualities.gtf',
                 ],
-        'expected_fn': f'{data_folder}/bamfile_no_qualities.mtx',
-        })
+            'expected_fn': f'{data_folder}/bamfile_no_qualities.mtx',
+            })
 
     @unittest.skipIf(anndata is None, "test case depends on anndata")
     def test_output_h5ad(self):
@@ -180,8 +186,8 @@ class HTSeqCount(HTSeqCountBase):
                 f'{data_folder}/bamfile_no_qualities.sam',
                 f'{data_folder}/bamfile_no_qualities.gtf',
                 ],
-        'expected_fn': f'{data_folder}/bamfile_no_qualities.h5ad',
-        })
+            'expected_fn': f'{data_folder}/bamfile_no_qualities.h5ad',
+            })
 
     @unittest.skipIf(loompy is None, "test case depends on loompy")
     def test_output_loom(self):
@@ -192,8 +198,8 @@ class HTSeqCount(HTSeqCountBase):
                 f'{data_folder}/bamfile_no_qualities.sam',
                 f'{data_folder}/bamfile_no_qualities.gtf',
                 ],
-        'expected_fn': f'{data_folder}/bamfile_no_qualities.loom',
-        })
+            'expected_fn': f'{data_folder}/bamfile_no_qualities.loom',
+            })
 
     # Testing multiple cores on travis makes a mess
     #{'call': [
