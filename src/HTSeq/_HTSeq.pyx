@@ -323,6 +323,29 @@ cdef class ChromVector(object):
 
     @classmethod
     def create(cls, GenomicInterval iv, str typecode, str storage, str memmap_dir=""):
+        """Create ChromVector from GenomicInterval
+
+        Args:
+            iv (GenomicInterval): A GenomicInterval describing the chromosome
+              vector.
+            typecode ('d', 'i', 'l', 'b', or 'O'): What kind of data will be
+              stored inside this chromosome vector. 'd' for double, 'i' for int,
+              'l' for long int, 'b' for boolean, 'O' for arbitrary objects
+              (e.g. sets).
+            storage ('step', 'ndarray', or 'memmap'): What kind of storage to
+              use. 'ndarray' is appropriate for short chromosomes and stores
+              each position in the genome into memory. 'memmap' stores all
+              positions, but maps the memory onto disk for larger chromosomes.
+              'step' is a sparse representation similar to CSR matrices whereby
+              only the boundaries between genomic stretches with differing
+              data content are stored - see HTSeq.StepVector.
+            memmap_dir (str): If using 'memmap' storage, what folder to store
+              the memory maps. These can get quite big.
+
+        Returns:
+            An instance of ChromVector with the requested options.
+
+        """
         ncv = cls()
         ncv.iv = iv
 
@@ -538,6 +561,35 @@ cdef class GenomicArray(object):
 
     def __init__(self, object chroms, bint stranded=True, str typecode='d',
                  str storage='step', str memmap_dir=""):
+        '''GenomicArray(chroms, stranded=True, typecode="d", storage="step", memmap_dir="")
+
+        Initialize GenomicArray
+
+        Args:
+            chroms (str, list, or dict): Chromosomes in the GenomicArray. If
+              'auto', guess as the array gets filled. If a list, make infinitely
+              long chromosomes with those names, their length will be guessed
+              as they get filled. If a dict, keys are chromosome names and 
+              values are their lengths in base pairs. The first two options are
+              only available for the 'step' storage (see below).
+            stranded (bool): whether the array stores strandedness information.
+            typecode ('d', 'i', 'l', 'b', 'O'): what kind of data the array
+              will contain. 'd' for double, 'i' for int, 'l' for long int, 'b'
+              for boolean, 'O' for arbitrary objects (e.g. sets).
+            storage ('step', 'ndarray', or 'memmap'): What kind of storage to
+              use. 'ndarray' is appropriate for short chromosomes and stores
+              each position in the genome into memory. 'memmap' stores all
+              positions, but maps the memory onto disk for larger chromosomes.
+              'step' is a sparse representation similar to CSR matrices whereby
+              only the boundaries between genomic stretches with differing
+              data content are stored - see HTSeq.StepVector.
+            memmap_dir (str): If using 'memmap' storage, what folder to store
+              the memory maps. These can get quite big.
+
+        Returns:
+            An instance of GenomicArray with the requested options.
+        '''
+
 
         self.auto_add_chroms = chroms == "auto"
         self.chrom_vectors = {}
@@ -636,6 +688,24 @@ cdef class GenomicArray(object):
         return (_GenomicArray_unpickle, (self.stranded, self.typecode, self.chrom_vectors))
 
     def write_bedgraph_file(self, file_or_filename, strand=".", track_options=""):
+        '''Write GenomicArray to BedGraph file
+
+        BedGraph files are used to visualize genomic "tracks", notably in
+        UCSC's genomic viewer. This function stores the GenomicArray into such
+        a file for further use.
+
+        Args:
+            file_or_filename (str, path, or open file handle): Where to store
+              the BedGraph data.
+            strand ("+", "-", or "."): which strand to store the array onto.
+            track_options (str): a string pre-formatted to describe the track
+              options as they appear on the first line of the BedGraph file,
+              after "track type=bedGraph".
+
+        The BedGraph file format is described here:
+        
+            http://genome.ucsc.edu/goldenPath/help/bedgraph.html
+        '''
         if (not self.stranded) and strand != ".":
             raise ValueError, "Strand specified in unstranded GenomicArray."
         if self.stranded and strand not in (strand_plus, strand_minus):
@@ -644,20 +714,33 @@ cdef class GenomicArray(object):
             f = file_or_filename
         else:
             f = open(file_or_filename, "w")
-        if track_options == "":
-            f.write("track type=bedGraph\n")
-        else:
-            f.write("track type=bedGraph %s\n" % track_options)
-        for chrom in self.chrom_vectors:
-            for iv, value in self.chrom_vectors[chrom][strand].steps():
-                if iv.start == -sys.maxsize - 1 or iv.end == sys.maxsize:
-                    continue
-                f.write("%s\t%d\t%d\t%f\n" %
-                        (iv.chrom, iv.start, iv.end, value))
-        if not hasattr(file_or_filename, "write"):
-            f.close()
+
+        try:
+            if track_options == "":
+                f.write("track type=bedGraph\n")
+            else:
+                f.write("track type=bedGraph %s\n" % track_options)
+            for chrom in self.chrom_vectors:
+                for iv, value in self.chrom_vectors[chrom][strand].steps():
+                    if iv.start == -sys.maxsize - 1 or iv.end == sys.maxsize:
+                        continue
+                    f.write("%s\t%d\t%d\t%f\n" %
+                            (iv.chrom, iv.start, iv.end, value))
+        finally:
+            # Close the file only if we were the ones to open it
+            if not hasattr(file_or_filename, "write"):
+                f.close()
 
     def steps(self):
+        '''Get the steps, independent of storage method
+
+        Each "step" is a GenomicInterval with fixed value of the array. For
+        instance, if we have 3 counts on chromosome '1' between 0 and 10
+        (exclded) and 6 counts between 10 and 20 (end of chromosome), we would
+        get two steps: (0, 10, 3) and (10, 20, 6). If the GenomicArray is
+        stranded, genomic intervals of the appropriate strandedness are
+        returned.
+        '''
         return _HTSeq_internal.GenomicArray_steps(self)
 
 

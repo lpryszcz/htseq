@@ -44,6 +44,24 @@ class TestGenomicArray(unittest.TestCase):
             memmap_dir='.',
         )
 
+    def test_steps(self):
+        for storage in ['step', 'ndarray']:
+            ga = HTSeq.GenomicArray({
+                '1': 5898,
+                '2': 4876,
+                },
+                storage=storage,
+            )
+            steps = ga.steps()
+            steps_exp = [
+                (HTSeq.GenomicInterval('1', 0, 5898, strand='+'), 0),
+                (HTSeq.GenomicInterval('1', 0, 5898, strand='-'), 0),
+                (HTSeq.GenomicInterval('2', 0, 4876, strand='+'), 0),
+                (HTSeq.GenomicInterval('2', 0, 4876, strand='-'), 0),
+            ]
+            for step, step_exp in zip(steps, steps_exp):
+                self.assertEqual(step, step_exp)
+
 
 
 if __name__ == '__main__':
