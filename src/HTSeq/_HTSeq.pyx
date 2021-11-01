@@ -307,6 +307,13 @@ cdef class GenomicPosition(GenomicInterval):
 
 
 cdef class ChromVector(object):
+    """Counting vector covering a chromosome.
+
+    This class supports three types of storage:
+      1. 'ndarray': Use a dense 1D numpy array
+      2. 'memmap': Use numpy memory maps on disk for large arrays
+      3. 'step': Use a StepVector
+    """
 
     cdef public object array
     cdef public GenomicInterval iv
@@ -318,19 +325,24 @@ cdef class ChromVector(object):
     def create(cls, GenomicInterval iv, str typecode, str storage, str memmap_dir=""):
         ncv = cls()
         ncv.iv = iv
+
         if storage == "ndarray":
             if typecode != 'O':
-                ncv.array = numpy.zeros(shape=(iv.length, ), dtype=typecode)
+                ncv.array = numpy.zeros(shape=(iv.length,), dtype=typecode)
             else:
-                ncv.array = numpy.empty(shape=(iv.length, ), dtype=typecode)
+                ncv.array = numpy.empty(shape=(iv.length,), dtype=typecode)
                 ncv.array[:] = None
+
         elif storage == "memmap":
             ncv.array = numpy.memmap(shape=(iv.length, ), dtype=typecode,
                                      filename=os.path.join(memmap_dir, iv.chrom + iv.strand + ".nmm"), mode='w+')
+
         elif storage == "step":
             ncv.array = StepVector.StepVector.create(typecode=typecode)
+
         else:
             raise ValueError, "Illegal storage mode."
+
         ncv._storage = storage
         # TODO: Test whether offset works properly
         ncv.offset = iv.start
@@ -350,6 +362,18 @@ cdef class ChromVector(object):
         return v
 
     def __getitem__(self, index):
+        """Index or slice the chromosome.
+
+        The index can be a few things:
+        - an integer: get the value of the vector at that chromosome coordinate
+        - a 1-step slice e.g "4:7": get a view of the chromosome region
+          between those coordinates. The array data are not copied.
+        - a GenomicInterval: similar to slices, with the additional choice of
+          strandedness. If this argument is stranded but the chromosome itself
+          is not stranded, a nonstranded view of the chromosome region is
+          returned.
+
+        """
         cdef slice index_slice
         cdef long int index_int
         cdef long int start, stop
@@ -363,19 +387,22 @@ cdef class ChromVector(object):
         
         elif isinstance(index, slice):
             index_slice = index
-            if index_slice.start is not None:
+            if index_slice.start is None:
+                start = self.iv.start
+            else:
                 start = index_slice.start
                 if start < self.iv.start:
                     raise IndexError, "start too small"
+
+            if index_slice.stop is None:
+                stop = self.iv.end
             else:
-                start = self.iv.start
-            if index_slice.stop is not None:
                 stop = index_slice.stop
                 if stop > self.iv.end:
                     raise IndexError, "stop too large"
-            else:
-                stop = self.iv.end
+
             iv = GenomicInterval(self.iv.chrom, start, stop, self.iv.strand)
+
             if not self.iv.contains(iv):
                 raise IndexError
             return ChromVector._create_view(self, iv)
@@ -383,10 +410,14 @@ cdef class ChromVector(object):
         elif isinstance(index, GenomicInterval):
             if not self.iv.contains(index):
                 raise IndexError
+
             if self.iv.strand is strand_nostrand and \
                     index.strand is not strand_nostrand:
                 iv = index.copy()   # Is this correct now?
                 iv.strand = strand_nostrand
+            else:
+                iv = index
+
             return ChromVector._create_view(self, iv)
 
         else:
@@ -443,6 +474,7 @@ cdef class ChromVector(object):
                 y = x.copy()
                 y.add(value)
                 return y
+
             self.apply(addval)
         return self
 
@@ -480,6 +512,22 @@ def _ChromVector_unpickle(array, iv, offset, is_vector_of_sets, _storage):
 
 
 cdef class GenomicArray(object):
+    """Coverage vector including multiple chromosomes.
+
+    This object is basically a collection of ChromVector, with the same options
+    for storage:
+      1. 'ndarray': Use a dense 1D numpy array
+      2. 'memmap': Use numpy memory maps on disk for large arrays
+      3. 'step': Use a StepVector
+
+    The class also supports autodiscovery of chromosomes if the 'step' storage
+    method is used. In that case, chromosomes of at least sufficient size will
+    be created whenever the data pushed into the GenomicArray refers to them.
+    For instance, if you are computing plain read coverage along chromosomes,
+    each read will inform the GenomicArray as of its chromosome and position:
+    the GenomicArray will then create an appropriate ChromVector object of at
+    least that size.
+    """
 
     cdef public dict chrom_vectors
     cdef readonly bint stranded
@@ -490,22 +538,27 @@ cdef class GenomicArray(object):
 
     def __init__(self, object chroms, bint stranded=True, str typecode='d',
                  str storage='step', str memmap_dir=""):
+
+        self.auto_add_chroms = chroms == "auto"
         self.chrom_vectors = {}
         self.stranded = stranded
         self.typecode = typecode
-        self.auto_add_chroms = chroms == "auto"
+
         if self.auto_add_chroms:
             chroms = []
             if storage != 'step':
-                raise TypeError, "Automatic adding of chromosomes can " + \
-                    " only be used with storage type 'StepVector'."
+                raise TypeError("Automatic adding of chromosomes can " + \
+                    " only be used with storage type 'StepVector'.")
+
         elif isinstance(chroms, list):
             if storage != 'step':
-                raise TypeError, "Indefinite-length chromosomes can " + \
-                    " only be used with storage type 'StepVector'."
+                raise TypeError("Indefinite-length chromosomes can " + \
+                    " only be used with storage type 'StepVector'.")
             chroms = dict([(c, sys.maxsize) for c in chroms])
+
         elif not isinstance(chroms, dict):
-            raise TypeError, "'chroms' must be a list or a dict or 'auto'."
+            raise TypeError("'chroms' must be a list or a dict or 'auto'.")
+
         self.storage = storage
         self.memmap_dir = memmap_dir
 
