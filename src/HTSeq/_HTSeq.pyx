@@ -26,31 +26,28 @@ cdef str strand_plus = intern("+")
 cdef str strand_minus = intern("-")
 cdef str strand_nostrand = intern(".")
 
+
 cdef class GenomicInterval:
+    """A range of consecutive positions on a reference genome.
 
-    """A GenomicInterval specifies an interval (i.e., a range of 
-    consecutive positions) on a reference genome.
+        Properties:
 
-    A GenomicInterval object has the following slots, some of which 
-    are calculated from the other:
-
-       chrom: The name of a sequence (i.e., chromosome, contig, or 
-          the like). 
-       start: The start of the interval. Even on the reverse strand,
+        chrom: The name of a sequence (i.e., chromosome, contig, etc.). 
+        start: The start of the interval. Even on the reverse strand,
           this is always the smaller of the two values 'start' and 'end'.
           Note that all positions should be given as 0-based value!
-       end: The end of the interval. Following Python convention for 
+        end: The end of the interval. Following Python convention for 
           ranges, this in one more than the coordinate of the last base
           that is considered part of the sequence.
-       strand: The strand, as a single character, '+' or '-'. '.' indicates
+        strand: The strand, as a single character, '+' or '-'. '.' indicates
           that the strand is irrelavant. (Alternatively, pass a Strand object.)
-       length: The length of the interval, i.e., end - start
-       start_d: The "directional start" position. This is the position of the
-         first base of the interval, taking the strand into account. Hence, 
-         this is the same as 'start' except when strand == '-', in which 
-         case it is end-1.
-       end_d: The "directional end": Usually, the same as 'end', but for 
-         strand=='-1', it is start-1.
+        length: The length of the interval, i.e., end - start
+        start_d: The "directional start" position. This is the position of the
+          first base of the interval, taking the strand into account. Hence, 
+          this is the same as 'start' except when strand == '-', in which 
+          case it is end-1.
+        end_d: The "directional end": Usually, the same as 'end', but for 
+          strand=='-1', it is start-1.
     """
 
     def __init__(GenomicInterval self, str chrom, long start, long end,
@@ -259,13 +256,10 @@ def GenomicInterval_from_directional(str chrom, long int start_d, long int lengt
 
 
 cdef class GenomicPosition(GenomicInterval):
+    """Position of a nucleotide or base pair on a reference genome.
 
-    """A GenomicPosition specifies the position of a nucleotide or
-    base pair on a reference genome.
-
-    It has the following slots:
-       chrom: The name of a sequence (i.e., chromosome, contig, or 
-          the like). 
+    Properties:
+       chrom: The name of a sequence (i.e., chromosome, contig, etc.). 
        pos: The position on the sequence specified by seqname.
           The position should always be given as 0-based value!
        strand: The strand, as a single character, '+' or '-'. '.' indicates
@@ -273,17 +267,14 @@ cdef class GenomicPosition(GenomicInterval):
 
     The GenomicPosition class is derived from GenomicInterval. Hence,
     a GenomicPosition is always a GenomicInterval of length 1. Do not tinker
-    with the exposed GenomeInterval slots.
+    with the exposed GenomeInterval properties.
     """
 
     def __init__(self, str chrom, long int pos, str strand='.'):
         GenomicInterval.__init__(self, chrom, pos, pos + 1, strand)
 
     property pos:
-
-        """As GenomicPosition is a subclass of GenomicInterval, 'pos' is actually
-        just an alias for 'start_d'.
-        """
+        """Alias for 'start_d'."""
 
         def __get__(self):
             return self.start_d
@@ -363,11 +354,13 @@ cdef class ChromVector(object):
         cdef long int index_int
         cdef long int start, stop
         cdef GenomicInterval iv
+
         if isinstance(index, int):
             index_int = index
             if index_int < self.iv.start or index_int >= self.iv.end:
                 raise IndexError
             return self.array[index_int - self.offset]
+        
         elif isinstance(index, slice):
             index_slice = index
             if index_slice.start is not None:
@@ -386,6 +379,7 @@ cdef class ChromVector(object):
             if not self.iv.contains(iv):
                 raise IndexError
             return ChromVector._create_view(self, iv)
+        
         elif isinstance(index, GenomicInterval):
             if not self.iv.contains(index):
                 raise IndexError
@@ -394,6 +388,7 @@ cdef class ChromVector(object):
                 iv = index.copy()   # Is this correct now?
                 iv.strand = strand_nostrand
             return ChromVector._create_view(self, iv)
+
         else:
             raise TypeError, "Illegal index type"
 
@@ -482,6 +477,7 @@ def _ChromVector_unpickle(array, iv, offset, is_vector_of_sets, _storage):
     cv.is_vector_of_sets = is_vector_of_sets
     cv._storage = _storage
     return cv
+
 
 cdef class GenomicArray(object):
 
@@ -626,7 +622,9 @@ def _GenomicArray_unpickle(stranded, typecode, chrom_vectors):
 def _make_translation_table_for_complementation():
     return bytes.maketrans(b'ACGTacgt', b'TGCAtgca')
 
+
 cdef bytes _translation_table_for_complementation = _make_translation_table_for_complementation()
+
 
 cpdef bytes reverse_complement(bytes seq):
     """Returns the reverse complement of DNA sequence 'seq'. Does not yet
@@ -634,11 +632,12 @@ cpdef bytes reverse_complement(bytes seq):
 
     return seq[::-1].translate(_translation_table_for_complementation)
 
+
 base_to_column = {'A': 0, 'C': 1, 'G': 2, 'T': 3, 'N': 4}
 
+
 cdef class Sequence(object):
-    """A Sequence, typically of DNA, with a name.
-    """
+    """A Sequence, typically of DNA, with a name."""
 
     def __init__(self, bytes seq, str name="unnamed"):
         self.seq = seq
@@ -1003,106 +1002,9 @@ cdef class SequenceWithQualities(Sequence):
 
 
 ###########################
-# Alignment
+# CIGAR codes (SAM format)
 ###########################
-
-cdef class Alignment(object):
-
-    """Alignment base type:
-
-    An alignment object can be defined in different ways but will always
-    provide these attributes:
-      read:      a SequenceWithQualities object with the read
-      aligned:   whether the read is aligned
-      iv:        a GenomicInterval object with the alignment position 
-    """
-
-    def __init__(self, read, iv):
-        self._read = read
-        self.iv = iv
-
-    @property
-    def read(self):
-        return self._read
-
-    def __repr__(self):
-        cdef str s
-        if self.paired_end:
-            s = "Paired-end read"
-        else:
-            s = "Read"
-        if self.aligned:
-            return "<%s object: %s '%s' aligned to %s>" % (
-                self.__class__.__name__, s, self.read.name, str(self.iv))
-        else:
-            return "<%s object: %s '%s', not aligned>" % (
-                self.__class__.__name__, s, self.read.name)
-
-    @property
-    def paired_end(self):
-        return False
-
-    @property
-    def aligned(self):
-        """Returns True unless self.iv is None. The latter indicates that
-        this record decribes a read for which no alignment was found.
-        """
-        return self.iv is not None
-
-cdef class AlignmentWithSequenceReversal(Alignment):
-
-    """Many aligners report the read's sequence in reverse-complemented form
-    when it was mapped to the reverse strand. For such alignments, a 
-    daughter class of this one should be used.
-
-    Then, the read is stored as aligned in the 'read_as_aligned' field,
-    and get reverse-complemented back to the sequenced form when the 'read'
-    attribute is sequenced.
-    """
-
-    def __init__(self, SequenceWithQualities read_as_aligned, GenomicInterval iv):
-        self.read_as_aligned = read_as_aligned
-        self._read_as_sequenced = None
-        self.iv = iv
-
-    property read:
-        def __get__(self):
-            if self._read_as_sequenced is None:
-                if (not self.aligned) or self.iv.strand != "-":
-                    self._read_as_sequenced = self.read_as_aligned
-                else:
-                    self._read_as_sequenced = self.read_as_aligned.get_reverse_complement()
-                    self._read_as_sequenced.name = self.read_as_aligned.name
-            return self._read_as_sequenced
-        # def __set__( self, read ):
-        #   self.read_as_aligned = read
-        #   self._read_as_sequenced = None
-
-
-cdef class BowtieAlignment(AlignmentWithSequenceReversal):
-
-    """When reading in a Bowtie file, objects of the class BowtieAlignment
-    are returned. In addition to the 'read' and 'iv' fields (see Alignment
-    class), the fields 'reserved' and 'substitutions' are provided. These 
-    contain the content of the respective columns of the Bowtie output 
-
-    [A parser for the substitutions field will be added soon.]
-    """
-
-    cdef public str reserved
-    cdef public str substitutions
-
-    def __init__(self, bowtie_line):
-        cdef str readId, strand, chrom, position, read, qual
-        cdef int positionint
-        (readId, strand, chrom, position, read, qual,
-         self.reserved, self.substitutions) = bowtie_line.split('\t')
-        positionint = int(position)
-        AlignmentWithSequenceReversal.__init__(self,
-                                               SequenceWithQualities(
-                                                   read, readId, qual),
-                                               GenomicInterval(chrom, positionint, positionint + len(read), strand))
-
+_re_cigar_codes = re.compile('([MIDNSHP=X])')
 
 cigar_operation_names = {
     'M': 'matched',
@@ -1114,6 +1016,12 @@ cigar_operation_names = {
     'P': 'padded',
     '=': 'sequence-matched',
     'X': 'sequence-mismatched'}
+
+
+cigar_operation_codes = ['M', 'I', 'D', 'N', 'S', 'H', 'P', '=', 'X']
+cigar_operation_code_dict = dict(
+    [(x, i) for i, x in enumerate(cigar_operation_codes)])
+
 
 cdef class CigarOperation(object):
 
@@ -1157,7 +1065,6 @@ cdef class CigarOperation(object):
             return False
         return True
 
-_re_cigar_codes = re.compile('([MIDNSHP=X])')
 
 cpdef list parse_cigar(str cigar_string, int ref_left=0, str chrom="", str strand="."):
     cdef list split_cigar, cl
@@ -1175,6 +1082,7 @@ cpdef list parse_cigar(str cigar_string, int ref_left=0, str chrom="", str stran
         code = split_cigar[2 * i + 1]
         cl.append((code, size))
     return build_cigar_list(cl, ref_left, chrom, strand)
+
 
 cpdef list build_cigar_list(list cigar_pairs, int ref_left=0, str chrom="", str strand="."):
     cdef list split_cigar, res
@@ -1215,6 +1123,106 @@ cpdef list build_cigar_list(list cigar_pairs, int ref_left=0, str chrom="", str 
             raise ValueError, "Unknown CIGAR code '%s' encountered." % code
     return res
 
+
+###########################
+# Alignment
+###########################
+cdef class Alignment(object):
+    """An aligned read (typically from a BAM file).
+
+    An alignment object can be defined in different ways but will always
+    provide these attributes:
+      read:      a SequenceWithQualities object with the read
+      aligned:   whether the read is aligned
+      iv:        a GenomicInterval object with the alignment position 
+    """
+
+    def __init__(self, read, iv):
+        self._read = read
+        self.iv = iv
+
+    @property
+    def read(self):
+        return self._read
+
+    def __repr__(self):
+        cdef str s
+        if self.paired_end:
+            s = "Paired-end read"
+        else:
+            s = "Read"
+        if self.aligned:
+            return "<%s object: %s '%s' aligned to %s>" % (
+                self.__class__.__name__, s, self.read.name, str(self.iv))
+        else:
+            return "<%s object: %s '%s', not aligned>" % (
+                self.__class__.__name__, s, self.read.name)
+
+    @property
+    def paired_end(self):
+        return False
+
+    @property
+    def aligned(self):
+        """Returns True unless self.iv is None. The latter indicates that
+        this record decribes a read for which no alignment was found.
+        """
+        return self.iv is not None
+
+
+cdef class AlignmentWithSequenceReversal(Alignment):
+    """Many aligners report the read's sequence in reverse-complemented form
+    when it was mapped to the reverse strand. For such alignments, a 
+    daughter class of this one should be used.
+
+    Then, the read is stored as aligned in the 'read_as_aligned' field,
+    and get reverse-complemented back to the sequenced form when the 'read'
+    attribute is sequenced.
+    """
+
+    def __init__(self, SequenceWithQualities read_as_aligned, GenomicInterval iv):
+        self.read_as_aligned = read_as_aligned
+        self._read_as_sequenced = None
+        self.iv = iv
+
+    property read:
+        def __get__(self):
+            if self._read_as_sequenced is None:
+                if (not self.aligned) or self.iv.strand != "-":
+                    self._read_as_sequenced = self.read_as_aligned
+                else:
+                    self._read_as_sequenced = self.read_as_aligned.get_reverse_complement()
+                    self._read_as_sequenced.name = self.read_as_aligned.name
+            return self._read_as_sequenced
+        # def __set__( self, read ):
+        #   self.read_as_aligned = read
+        #   self._read_as_sequenced = None
+
+
+cdef class BowtieAlignment(AlignmentWithSequenceReversal):
+    """When reading in a Bowtie file, objects of the class BowtieAlignment
+    are returned. In addition to the 'read' and 'iv' fields (see Alignment
+    class), the fields 'reserved' and 'substitutions' are provided. These 
+    contain the content of the respective columns of the Bowtie output 
+
+    [A parser for the substitutions field will be added soon.]
+    """
+
+    cdef public str reserved
+    cdef public str substitutions
+
+    def __init__(self, bowtie_line):
+        cdef str readId, strand, chrom, position, read, qual
+        cdef int positionint
+        (readId, strand, chrom, position, read, qual,
+         self.reserved, self.substitutions) = bowtie_line.split('\t')
+        positionint = int(position)
+        AlignmentWithSequenceReversal.__init__(self,
+                                               SequenceWithQualities(
+                                                   read, readId, qual),
+                                               GenomicInterval(chrom, positionint, positionint + len(read), strand))
+
+
 cdef _parse_SAM_optional_field_value(str field):
     if len(field) < 5 or field[2] != ':' or field[4] != ':':
         raise ValueError, "Malformatted SAM optional field '%'" % field
@@ -1237,13 +1245,7 @@ cdef _parse_SAM_optional_field_value(str field):
         raise ValueError, "SAM optional field with illegal type letter '%s'" % field[2]
 
 
-cigar_operation_codes = ['M', 'I', 'D', 'N', 'S', 'H', 'P', '=', 'X']
-cigar_operation_code_dict = dict(
-    [(x, i) for i, x in enumerate(cigar_operation_codes)])
-
-
 cdef class SAM_Alignment(AlignmentWithSequenceReversal):
-
     """When reading in a SAM file, objects of the class SAM_Alignment
     are returned. In addition to the 'read', 'iv' and 'aligned' fields (see 
     Alignment class), the following fields are provided:
@@ -1595,7 +1597,6 @@ cdef class SAM_Alignment(AlignmentWithSequenceReversal):
 ###########################
 # Helpers
 ###########################
-
 cpdef list quotesafe_split(bytes s, bytes split=b';', bytes quote=b'"'):
     cdef list l = []
     cdef int i = 0
