@@ -320,6 +320,8 @@ cdef class ChromVector(object):
     cdef public int offset
     cdef public bint is_vector_of_sets
     cdef public str _storage
+    cdef public str typecode
+    cdef public str memmap_dir
 
     @classmethod
     def create(cls, GenomicInterval iv, str typecode, str storage, str memmap_dir=""):
@@ -357,19 +359,29 @@ cdef class ChromVector(object):
                 ncv.array[:] = None
 
         elif storage == "memmap":
-            ncv.array = numpy.memmap(shape=(iv.length, ), dtype=typecode,
-                                     filename=os.path.join(memmap_dir, iv.chrom + iv.strand + ".nmm"), mode='w+')
+            ncv.array = numpy.memmap(
+                shape=(iv.length,),
+                dtype=typecode,
+                filename=os.path.join(
+                    memmap_dir,
+                    iv.chrom + iv.strand + str(iv.start) + '_' \
+                        + str(iv.length) + ".nmm"),
+                mode='w+')
 
         elif storage == "step":
-            ncv.array = StepVector.StepVector.create(typecode=typecode)
+            ncv.array = StepVector.StepVector.create(
+                typecode=typecode,
+            )
 
         else:
-            raise ValueError, "Illegal storage mode."
+            raise ValueError("Illegal storage mode.")
 
         ncv._storage = storage
+        ncv.typecode = typecode
         # TODO: Test whether offset works properly
         ncv.offset = iv.start
         ncv.is_vector_of_sets = False
+        ncv.memmap_dir = memmap_dir
         return ncv
 
     @classmethod
@@ -383,6 +395,44 @@ cdef class ChromVector(object):
         v.is_vector_of_sets = vec.is_vector_of_sets
         v._storage = vec._storage
         return v
+
+    def extend_to_include(self, iv):
+        if iv.strand != self.iv.strand:
+            raise ValueError(
+                'The new interval must match the current strandedness',
+            )
+
+        # Step 1: extend the interval
+        length = self.iv.length
+        startdiff = max(self.iv.start - iv.start, 0)
+        self.iv.extend_to_include(iv)
+        self.offset = self.iv.start
+
+        # Step 2: extend the array if needed, and shift-copy the old values 
+        if self._storage == 'ndarray':
+            if self.typecode != 'O':
+                array = numpy.zeros(shape=(self.iv.length,), dtype=self.typecode)
+            else:
+                array = numpy.empty(shape=(self.iv.length,), dtype=self.typecode)
+                array[:] = None
+            array[startdiff: startdiff + length] = self.array[:]
+        elif self._storage == 'memmap':
+            array = numpy.memmap(
+                shape=(self.iv.length,), dtype=self.typecode,
+                filename=os.path.join(
+                    self.memmap_dir,
+                    self.iv.chrom + self.iv.strand + str(self.iv.start) + '_' \
+                        + str(self.iv.length) + ".nmm"),
+                mode='w+',
+            )
+            array[startdiff: startdiff + length] = self.array[:]
+        else:
+            # The StepVector is created in ChromVector.create without explicit
+            # boundaries, so it's already bound by 0, +inf. So we do not need
+            # to extend it here, but rather just set the slice to the right
+            # value
+            array = self.array
+        self.array = array
 
     def __getitem__(self, index):
         """Index or slice the chromosome.
@@ -444,49 +494,54 @@ cdef class ChromVector(object):
             return ChromVector._create_view(self, iv)
 
         else:
-            raise TypeError, "Illegal index type"
+            raise TypeError("Illegal index type")
 
     def __setitem__(self, index, value):
         cdef slice index_slice
         cdef long int start, stop
+
         if isinstance(value, ChromVector):
             if self.array is value.array and value.iv.start == index.start and \
                     value.iv.end == index.stop and (index.step is None or index.step == 1):
                 return
             else:
-                raise NotImplementedError, "Required assignment signature not yet implemented."
+                raise NotImplementedError(
+                    "Required assignment signature not yet implemented.")
+
         if isinstance(index, int):
             self.array[index - self.iv.start] = value
+
         elif isinstance(index, slice):
             index_slice = index
             if index_slice.start is not None:
                 start = index_slice.start
                 if start < self.iv.start:
-                    raise IndexError, "start too small"
+                    raise IndexError("start too small")
             else:
                 start = self.iv.start
             if index_slice.stop is not None:
                 stop = index_slice.stop
                 if stop > self.iv.end:
-                    raise IndexError, "stop too large"
+                    raise IndexError("stop too large")
             else:
                 stop = self.iv.end
             if start > stop:
-                raise IndexError, "Start of interval is after its end."
+                raise IndexError("Start of interval is after its end.")
             if start == stop:
-                raise IndexError, "Cannot assign to zero-length interval."
+                raise IndexError("Cannot assign to zero-length interval.")
             self.array[start - self.offset: stop -
                        self.iv.start: index.step] = value
+
         elif isinstance(index, GenomicInterval):
             if index.chrom != self.iv.chrom:
-                raise KeyError, "Chromosome name mismatch."
+                raise KeyError("Chromosome name mismatch.")
             if self.iv.strand is not strand_nostrand and \
                     self.iv.strand is not self.index.strand:
-                raise KeyError, "Strand mismatch."
+                raise KeyError("Strand mismatch.")
             self.array[index.iv.start - self.iv.start,
                        index.iv.end - self.iv.start] = value
         else:
-            raise TypeError, "Illegal index type"
+            raise TypeError("Illegal index type")
 
     def __iadd__(self, value):
         if not self.is_vector_of_sets:
@@ -558,9 +613,10 @@ cdef class GenomicArray(object):
     cdef public bint auto_add_chroms
     cdef readonly str storage
     cdef readonly str memmap_dir
+    cdef public str header
 
     def __init__(self, object chroms, bint stranded=True, str typecode='d',
-                 str storage='step', str memmap_dir=""):
+                 str storage='step', str memmap_dir="", str header=""):
         '''GenomicArray(chroms, stranded=True, typecode="d", storage="step", memmap_dir="")
 
         Initialize GenomicArray
@@ -585,6 +641,9 @@ cdef class GenomicArray(object):
               data content are stored - see HTSeq.StepVector.
             memmap_dir (str): If using 'memmap' storage, what folder to store
               the memory maps. These can get quite big.
+            header (str): A header with metadata (e.g. when parsing a BedGraph
+              file, having the header helps writing it out with all browser
+              options retained).
 
         Returns:
             An instance of GenomicArray with the requested options.
@@ -595,6 +654,7 @@ cdef class GenomicArray(object):
         self.chrom_vectors = {}
         self.stranded = stranded
         self.typecode = typecode
+        self.header = header
 
         if self.auto_add_chroms:
             chroms = []
@@ -620,7 +680,8 @@ cdef class GenomicArray(object):
     def __getitem__(self, index):
         if isinstance(index, GenomicInterval):
             if self.stranded and index.strand not in (strand_plus, strand_minus):
-                raise KeyError, "Non-stranded index used for stranded GenomicArray."
+                raise KeyError(
+                    "Non-stranded index used for stranded GenomicArray.")
             if self.auto_add_chroms and index.chrom not in self.chrom_vectors:
                 self.add_chrom(index.chrom)
             if isinstance(index, GenomicPosition):
@@ -638,20 +699,41 @@ cdef class GenomicArray(object):
 
     def __setitem__(self, index, value):
         cdef GenomicInterval index2
+
         if isinstance(value, ChromVector):
             if not isinstance(index, GenomicInterval):
-                raise NotImplementedError, "Required assignment signature not yet implemented."
+                raise NotImplementedError(
+                    "Required assignment signature not yet implemented.")
             index2 = index.copy()
             if not self.stranded:
                 index2.strand = strand_nostrand
             if self.chrom_vectors[index2.chrom][index2.strand].array is value.array and index2 == value.iv:
                 return
-            raise NotImplementedError, "Required assignment signature not yet implemented."
+            raise NotImplementedError(
+                    "Required assignment signature not yet implemented.")
         if isinstance(index, GenomicInterval):
             if self.stranded and index.strand not in (strand_plus, strand_minus):
-                raise KeyError, "Non-stranded index used for stranded GenomicArray."
-            if self.auto_add_chroms and index.chrom not in self.chrom_vectors:
-                self.add_chrom(index.chrom)
+                raise KeyError(
+                    "Non-stranded index used for stranded GenomicArray.")
+            if self.auto_add_chroms:
+                # Add a new chromosome
+                if index.chrom not in self.chrom_vectors:
+                    self.add_chrom(
+                            index.chrom,
+                            length=index.end - index.start,
+                            start_index=index.start,
+                    )
+                # Extend a known chromosome
+                else:
+                    if self.stranded:
+                        self.chrom_vectors[index.chrom][index.strand].extend_to_include(
+                            index,
+                        )
+                    else:
+                        self.chrom_vectors[index.chrom][strand_nostrand].extend_to_include(
+                            index,
+                        )
+
             if self.stranded:
                 self.chrom_vectors[index.chrom][index.strand][
                     index.start: index.end] = value
@@ -659,7 +741,7 @@ cdef class GenomicArray(object):
                 self.chrom_vectors[index.chrom][strand_nostrand][
                     index.start: index.end] = value
         else:
-            raise TypeError, "Illegal index type."
+            raise TypeError("Illegal index type.")
 
     def add_chrom(self, chrom, length=sys.maxsize, start_index=0):
         cdef GenomicInterval iv
@@ -670,12 +752,12 @@ cdef class GenomicArray(object):
         if self.stranded:
             self.chrom_vectors[chrom] = {}
             iv.strand = "+"
-            self.chrom_vectors[ chrom ][ strand_plus ] = \
+            self.chrom_vectors[chrom][strand_plus] = \
                 ChromVector.create(iv, self.typecode,
                                    self.storage, self.memmap_dir)
             iv = iv.copy()
             iv.strand = "-"
-            self.chrom_vectors[ chrom ][ strand_minus ] = \
+            self.chrom_vectors[chrom][strand_minus] = \
                 ChromVector.create(iv, self.typecode,
                                    self.storage, self.memmap_dir)
         else:
@@ -687,7 +769,13 @@ cdef class GenomicArray(object):
     def __reduce__(self):
         return (_GenomicArray_unpickle, (self.stranded, self.typecode, self.chrom_vectors))
 
-    def write_bedgraph_file(self, file_or_filename, strand=".", track_options=""):
+    def write_bedgraph_file(
+            self,
+            file_or_filename,
+            strand=".",
+            track_options="",
+            separator='\t',
+            ):
         '''Write GenomicArray to BedGraph file
 
         BedGraph files are used to visualize genomic "tracks", notably in
@@ -697,15 +785,18 @@ cdef class GenomicArray(object):
         Args:
             file_or_filename (str, path, or open file handle): Where to store
               the BedGraph data.
-            strand ("+", "-", or "."): which strand to store the array onto.
-            track_options (str): a string pre-formatted to describe the track
+            strand ("+", "-", or "."): Which strand to store the array onto.
+            track_options (str): A string pre-formatted to describe the track
               options as they appear on the first line of the BedGraph file,
               after "track type=bedGraph".
+            separator (str): the pattern that separates the columns.
 
         The BedGraph file format is described here:
         
             http://genome.ucsc.edu/goldenPath/help/bedgraph.html
         '''
+        sep = separator
+
         if (not self.stranded) and strand != ".":
             raise ValueError, "Strand specified in unstranded GenomicArray."
         if self.stranded and strand not in (strand_plus, strand_minus):
@@ -716,6 +807,10 @@ cdef class GenomicArray(object):
             f = open(file_or_filename, "w")
 
         try:
+            if self.header:
+                f.write(self.header)
+                if not self.header.endswith('\n'):
+                    f.write('\n')
             if track_options == "":
                 f.write("track type=bedGraph\n")
             else:
@@ -724,12 +819,79 @@ cdef class GenomicArray(object):
                 for iv, value in self.chrom_vectors[chrom][strand].steps():
                     if iv.start == -sys.maxsize - 1 or iv.end == sys.maxsize:
                         continue
-                    f.write("%s\t%d\t%d\t%f\n" %
-                            (iv.chrom, iv.start, iv.end, value))
+                    f.write(
+                        sep.join(
+                            (iv.chrom, str(iv.start), str(iv.end), str(value)),
+                            )+'\n',
+                        )
         finally:
             # Close the file only if we were the ones to open it
             if not hasattr(file_or_filename, "write"):
                 f.close()
+
+    @classmethod
+    def from_bedgraph_file(cls, file_or_filename, strand=".", typecode="d"):
+        '''Create GenomicArray from BedGraph file
+
+        See GenomicArray.write_bedgraph_file for details on the file format.
+
+        Args:
+            file_or_filename (str, path, or open file handle): Where to load
+              the BedGraph data from.
+            strand ("+", "-", or "."): strandedness of the returned array.
+            typecode ("d", "i", or "l"): Type of data in the file.
+              "d" means floating point (double), "i" is integer, "l" is long
+              integer.
+
+        Returns:
+            A GenomicArray instance with the data.
+        '''
+        if hasattr(file_or_filename, "read"):
+            f = file_or_filename
+        else:
+            f = open(file_or_filename, "r")
+
+        try:
+            # Find beginning of actual contents
+            header = []
+            for line in f:
+                if line.startswith('track type=bedGraph'):
+                    break
+                header.append(line)
+            else:
+                raise IOError(
+                    "header line with 'track type=bedGraph' not found."
+                )
+
+            # Create the instance with autochromosomes
+            array = cls(
+                "auto",
+                stranded=strand != ".",
+                typecode=typecode,
+                storage='step',
+                header=''.join(header),
+            )
+
+            # Load contents
+            for line in f:
+                chrom, start, end, value = line.rstrip('\n\r').split()
+                start, end = int(start), int(end)
+                if typecode in ('i', 'l'):
+                    value = int(value)
+                elif typecode == 'd':
+                    value = float(value)
+                else:
+                    raise ValueError(f"Typecode not supported: {typecode}")
+
+                iv = GenomicInterval(chrom, start, end, strand=strand)
+                array[iv] = value
+
+        finally:
+            # Close the file only if we were the ones to open it
+            if not hasattr(file_or_filename, "read"):
+                f.close()
+
+        return array
 
     def steps(self):
         '''Get the steps, independent of storage method
