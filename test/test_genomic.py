@@ -122,13 +122,24 @@ class TestGenomicArray(unittest.TestCase):
 
     @unittest.skipIf(pyBigWig is None, "test case depends on pyBigWig")
     def test_bigwig(self):
-        ga = HTSeq.GenomicArray.from_bedgraph_file(
-            data_folder+'example_bedgraph.bedgraph',
-            strand='.',
+        ga = HTSeq.GenomicArray.from_bigwig_file(
+            data_folder+'example_bigwig.bw',
         )
         ga.write_bigwig_file(
             'test_output.bw',
         )
+
+        import pyBigWig
+        with pyBigWig.open(data_folder+'example_bigwig.bw') as bw1, \
+                pyBigWig.open('test_output.bw') as bw2:
+            self.assertEqual(bw1.chroms(), bw2.chroms())
+            for chrom in bw1.chroms():
+                self.assertEqual(
+                    bw1.intervals(chrom),
+                    bw2.intervals(chrom),
+                )
+
+
 
 
 if __name__ == '__main__':

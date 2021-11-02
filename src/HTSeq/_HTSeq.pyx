@@ -971,6 +971,58 @@ cdef class GenomicArray(object):
             # Flush buffer
             write_with_buffer(bw, entries, bufsize=1)
 
+    @classmethod
+    def from_bigwig_file(cls, filename, strand=".", typecode="d"):
+        '''Create GenomicArray from BigWig file
+
+        See GenomicArray.write_bigwig for details on the file format.
+
+        Args:
+            filename (str or path): Where to load the data from.
+            strand ("+", "-", or "."): strandedness of the returned array.
+            typecode ("d", "i", or "l"): Type of data in the file.
+              "d" means floating point (double), "i" is integer, "l" is long
+              integer.
+
+        Returns:
+            A GenomicArray instance with the data.
+        '''
+        try:
+            import pyBigWig
+        except ImportError:
+            raise ImportError(
+                'pyBigWig is required to write a GenomicArray to a bigWig file',
+            )
+
+        with pyBigWig.open(filename) as bw:
+            chrom_dict = dict(bw.chroms())
+
+            # Create the instance with specified chromosomes
+            array = cls(
+                chrom_dict,
+                stranded=strand != ".",
+                typecode=typecode,
+                storage='step',
+            )
+
+            for chrom in chrom_dict:
+                intervals = bw.intervals(chrom)
+                for i, (start, end, value) in enumerate(intervals):
+                    # Set the chromosome offset with the first value, since
+                    # they are ordered. The StepVector will be offset compared
+                    # to that.
+                    if i == 0:
+                        array.chrom_vectors[chrom][strand].offset = start
+                        array.chrom_vectors[chrom][strand].iv.start = start
+
+                    # Bypass GenomicArray.__setitem__ for efficiency
+                    # This can be done because, unlike for BedGraph files,
+                    # we know the length of chromosomes a priori from the
+                    # header.
+                    array.chrom_vectors[chrom][strand][start: end] = value
+
+        return array
+
     def steps(self):
         '''Get the steps, independent of storage method
 
