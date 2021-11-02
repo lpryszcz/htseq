@@ -62,8 +62,8 @@ else
 
   if [ ! -d $VENV_DIR ]; then
       $PYTHON -m venv $VENV_DIR
-      $VENV_DIR/bin/pip install -U pip wheel numpy
   fi
+  $VENV_DIR/bin/pip install -U pip wheel numpy pybigwig
 fi
 
 if [ x$SKIP_INSTALL = x0 ]; then

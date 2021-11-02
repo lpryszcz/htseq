@@ -893,6 +893,84 @@ cdef class GenomicArray(object):
 
         return array
 
+    def write_bigwig_file(
+            self,
+            filename,
+            strand='.',
+            ):
+        '''Write GenomicArray to BigWig file
+
+        BigWig files are used to visualize genomic "tracks", notably in
+        UCSC's genomic viewer. They are, in a sense, the binary compressed
+        equivalent of BedGraph files. This function stores the GenomicArray
+        into such a file for further use.
+
+        Args:
+            filename (str or path): Where to store the data.
+
+        The BigWig file format is described here:
+        
+            http://genome.ucsc.edu/goldenPath/help/bigWig.html
+
+        NOTE: This function requires the package pyBigWig at:
+
+            https://github.com/deeptools/pyBigWig
+
+        Install it via pip, conda, or see instructions at that page.
+        '''
+        try:
+            import pyBigWig
+        except ImportError:
+            raise ImportError(
+                'pyBigWig is required to write a GenomicArray to a bigWig file',
+            )
+
+        if (not self.stranded) and strand != ".":
+            raise ValueError, "Strand specified in unstranded GenomicArray."
+        if self.stranded and strand not in (strand_plus, strand_minus):
+            raise ValueError, "Strand must be specified for stranded GenomicArray."
+
+        with pyBigWig.open(filename, "w") as bw:
+            # Write header with chromosome info
+            header = []
+            for chrom in self.chrom_vectors:
+                cv = self.chrom_vectors[chrom][strand]
+                end = cv.iv.end
+                header.append((chrom, end))
+            bw.addHeader(header)
+
+            # Write data (use a buffer for efficiency)
+            entries = {'chrom': [], 'start': [], 'ends': [], 'values': []}
+            bufsize = 1000
+
+            def write_with_buffer(bw, entries, bufsize, newentry=None):
+                if newentry is not None:
+                    for key in entries:
+                        entries[key].append(newentry[key])
+                if len(entries) >= bufsize:
+                    bw.addEntries(
+                        entries['chrom'], entries['start'],
+                        ends=entries['ends'], values=entries['values'],
+                    )
+                    for key in entries:
+                        entries[key].clear()
+
+            for chrom in self.chrom_vectors:
+                cv = self.chrom_vectors[chrom][strand]
+                for iv, value in cv.steps():
+                    if iv.start == -sys.maxsize - 1 or iv.end == sys.maxsize:
+                        continue
+
+                    entry = {
+                        'chrom': chrom,
+                        'start': iv.start,
+                        'ends': iv.end,
+                        'values': value,
+                    }
+                    write_with_buffer(bw, entries, bufsize, newentry=entry)
+            # Flush buffer
+            write_with_buffer(bw, entries, bufsize=1)
+
     def steps(self):
         '''Get the steps, independent of storage method
 

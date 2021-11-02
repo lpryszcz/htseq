@@ -13,6 +13,11 @@ build_dir = "build/lib.%s-%s" % (distutils.util.get_platform(), sys.version[0:3]
 sys.path.insert(0, os.path.join(os.getcwd(), build_dir))
 import HTSeq
 
+try:
+    import pyBigWig
+except ImportError:
+    pyBigWig = None
+
 
 data_folder = conftest.get_data_folder()
 
@@ -114,6 +119,16 @@ class TestGenomicArray(unittest.TestCase):
                     compare_bedgraph_line(line1, line2)
                 if 'track type' in line1:
                     header_found = True
+
+    @unittest.skipIf(pyBigWig is None, "test case depends on pyBigWig")
+    def test_bigwig(self):
+        ga = HTSeq.GenomicArray.from_bedgraph_file(
+            data_folder+'example_bedgraph.bedgraph',
+            strand='.',
+        )
+        ga.write_bigwig_file(
+            'test_output.bw',
+        )
 
 
 if __name__ == '__main__':
