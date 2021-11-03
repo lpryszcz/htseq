@@ -907,6 +907,7 @@ cdef class GenomicArray(object):
 
         Args:
             filename (str or path): Where to store the data.
+            strand (".", "+", or "-"): Which strand to write to file.
 
         The BigWig file format is described here:
         
