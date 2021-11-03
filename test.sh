@@ -13,7 +13,7 @@ VENV_DIR=.venv
 VERBOSE=0
 SKIP_INSTALL=0
 
-while getopts ":coavst:k:" OPTION; do
+while getopts ":cadovst:k:" OPTION; do
     echo "$OPTION"
     case $OPTION in
         c)
@@ -21,6 +21,9 @@ while getopts ":coavst:k:" OPTION; do
           ;;
 	a)
 	  CONDA=1
+	  ;;
+	d)
+          PYTEST_ARGS='--doctest-glob="*.rst" doc/*.rst doc/tutorials/tss.rst'
 	  ;;
         o)
           PYTEST_ARGS=test/test_htseq-count.py
