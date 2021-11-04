@@ -19,6 +19,10 @@ To use ``HTSeq`` you need:
 -  ``numpy``
 -  ``pysam``
 
+To manipulate BigWig files, you also need:
+
+- ``pyBigWig``
+
 To run the ``htseq-qa`` script, you also need:
 
 -  ``matplotlib``
