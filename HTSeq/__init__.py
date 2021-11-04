@@ -890,6 +890,7 @@ class BAM_Reader(object):
                 "Could not import pysam. Please install pysam " +
                 "to use the BAM_Reader class")
             raise
+        self._open_file()
 
     def _open_file(self):
         self.sf = pysam.AlignmentFile(
@@ -901,31 +902,18 @@ class BAM_Reader(object):
         self.sf.close()
 
     def __enter__(self):
-        self._open_file()
         return self
 
     def __exit__(self, type, value, traceback):
         self._close_file()
 
     def __iter__(self):
-        if self.sf is None:
-            self._open_file()
-            call_exit = True
-        else:
-            call_exit = False
-        try:
-            self.record_no = 0
-            for pa in self.sf:
-                yield SAM_Alignment.from_pysam_AlignedSegment(pa, self.sf)
-                self.record_no += 1
-        finally:
-            if call_exit:
-                self._close_file()
-                self.sf = None
+        self.record_no = 0
+        for pa in self.sf:
+            yield SAM_Alignment.from_pysam_AlignedSegment(pa, self.sf)
+            self.record_no += 1
 
     def fetch(self, reference=None, start=None, end=None, region=None):
-        if self.sf is None:
-            self._open_file()
         self.record_no = 0
         try:
             for pa in self.sf.fetch(reference, start, end, region):
@@ -961,13 +949,9 @@ class BAM_Reader(object):
             yield SAM_Alignment.from_pysam_AlignedRead(pa, self.sf)
 
     def get_header_dict(self):
-        if self.sf is None:
-            self._open_file()
         return self.sf.header
 
     def get_template(self):
-        if self.sf is None:
-            self._open_file()
         return self.sf
 
 
@@ -1016,6 +1000,12 @@ class BAM_Writer(object):
 
     def close(self):
         self.sf.close()
+
+    def __enter__(self):
+        return self
+
+    def __exit__(self, type, value, traceback):
+        self.close()
 
 
 class BED_Reader(FileOrSequence):
