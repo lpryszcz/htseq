@@ -11,6 +11,8 @@ This page contains a few tutorials to help you familiarize yourself with ``HTSeq
 - :ref:`tss`: TSS example for the ``HTSeq`` API
 - :ref:`high_c_example`: Chromatin conformation example for the ``HTSeq`` API
 - :ref:`exon_example`: Explanation of the inner workings of ``htseq-count``
+- :ref:`tutorial_fastx`: Simple tutorial on hadling fasta and fastq files with ``HTSeq``.
+- :ref:`tutorial_bam`: Simple tutorial on handling SAM/BAM/CRAM files.
 
 
 .. toctree::
