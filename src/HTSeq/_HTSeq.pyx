@@ -14,7 +14,7 @@ import warnings
 import numpy
 cimport numpy
 
-from HTSeq import StepVector
+from HTSeq import StepVector, StretchVector
 from HTSeq import _HTSeq_internal
 
 
@@ -372,6 +372,10 @@ cdef class ChromVector(object):
             ncv.array = StepVector.StepVector.create(
                 typecode=typecode,
             )
+        elif storage == "stretch":
+            nvc.array = StretchVector(
+                    typecode=typecode,
+            )
 
         else:
             raise ValueError("Illegal storage mode.")
@@ -465,14 +469,14 @@ cdef class ChromVector(object):
             else:
                 start = index_slice.start
                 if start < self.iv.start:
-                    raise IndexError, "start too small"
+                    raise IndexError("start too small")
 
             if index_slice.stop is None:
                 stop = self.iv.end
             else:
                 stop = index_slice.stop
                 if stop > self.iv.end:
-                    raise IndexError, "stop too large"
+                    raise IndexError("stop too large")
 
             iv = GenomicInterval(self.iv.chrom, start, stop, self.iv.strand)
 
