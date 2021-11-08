@@ -1,5 +1,6 @@
 from collections import namedtuple
 import numpy as np
+import warnings
 
 
 Interval = namedtuple('Interval', ['start', 'end'])
@@ -327,6 +328,10 @@ class StretchVector:
               be skipped.
             offset (int): Start of the initial interval.
         """
+        if array.dtype == np.float64:
+            warnings.warn("np.float64 array converted to np.float32")
+            array = array.astype(np.float32)
+
         for typecode, dtype in cls._typecode_dict.items():
             if dtype == array.dtype:
                 sv = cls(typecode=typecode)
@@ -365,7 +370,7 @@ class StretchVector:
         # Now we have at least one flip left, and we start with a number/object
         # If we have an odd number of flips, we can forget the last block
         if len(flips) % 2:
-            end = flips[-1]
+            end = flips[-1] + 1
             array = array[:end]
             flips = flips[:-1]
 
@@ -383,13 +388,13 @@ class StretchVector:
         )
         # Intermediate stretches
         for i in range((len(flips) // 2) - 1):
-            new_iv = Interval(offset + flips[i * 2], offset + flips[i * 2 + 1])
-            new_stretch = array[flips[i * 2], flips[i * 2 + 1]]
+            new_iv = Interval(offset + flips[i * 2 + 1] + 1, offset + flips[i * 2 + 2] + 1)
+            new_stretch = array[flips[i * 2 + 1] + 1: flips[i * 2 + 2] + 1]
             sv.ivs.append(new_iv)
             sv.stretches.append(new_stretch)
         # Final stretch
-        new_iv = Interval(offset + flips[-1], offset + len(array))
-        new_stretch = array[flips[-1]:]
+        new_iv = Interval(offset + flips[-1] + 1, offset + len(array))
+        new_stretch = array[flips[-1] + 1:]
         sv.ivs.append(new_iv)
         sv.stretches.append(new_stretch)
 
