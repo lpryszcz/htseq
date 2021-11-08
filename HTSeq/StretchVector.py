@@ -7,6 +7,33 @@ Interval = namedtuple('Interval', ['start', 'end'])
 
 
 class StretchVector:
+    """Sparse representation for 'island' of dense data on a long line.
+
+    This class is the most basic object representing 'windows of data' in a sea
+    of unknowns of a linear structure, e.g. a chromosome. The basic design is to
+    store a list of (start, end) intervals, each of them associated with a
+    "stretch", i.e. a dense numpy array.
+
+    In its simplest form, a StretchVector can be thought of as an array with
+    an arbitratily large offset. This can be useful e.g. to plot coverage or
+    signal enrichments while keeping real genomic coordinates.
+
+    The class does more heavy lifting, however, when several separate arrays
+    are used, e.g. to represent "peaks" of signals (ATAC-Seq, ChIP-Seq, etc.).
+    In that situation, the bookkeeping involved in manipulating all offsets
+    correctly can become burdensome quickly, so StretchVector takes care of it.
+    In addition, extension of data to flanks is easy, so if you want to expand
+    an existing data window by 1kb on each side, that can be done directly:
+
+    >>> sv = HTSeq.StretchVector(typecode="d")
+    >>> sv[6789: 8900] = 56.8
+    >>> sv[6000: 7000] = 20 # <-- left extension
+    >>> sv[8000: 9000] = 10 # <-- right extension
+
+    You can use StretchVector as a storage option for higher level objects such
+    as ChromVector and GenomicArray. Those classes support strandedness, unlike
+    StretchVector itself.
+    """
     _typecode_dict = {
         "d": np.float32,
         "i": np.int32,
@@ -15,6 +42,17 @@ class StretchVector:
     }
 
     def __init__(self, typecode):
+        """Create an empty StretchVector of a given type
+
+        Args:
+            typecode ("d", "i", "l", or "O"): The dtype of the stored data. Can
+              be "d" (double, i.e. np.float32), "i" (np.int32), "l" (np.int64),
+              or "O" (generic object). Note that np.float64 data will be recast
+              to np.float32, which might lead to a loss of machine precision.
+
+        Returns:
+            A StretchVector instance of the chosen type.
+        """
         self.typecode = typecode
         self.ivs = []
         self.stretches = []
@@ -139,7 +177,7 @@ class StretchVector:
             new_stretch[:l1] = self.stretches[idx_start][:l1]
             new_stretch[l1:] = values
 
-            new_ivs = self.ivs[:idx_start] + [iv]
+            new_ivs = self.ivs[:idx_start] + [new_iv]
             new_stretches = self.stretches[:idx_start] = [new_stretch]
 
             for i, iv in enumerate(self.ivs[idx_start:], idx_start):
@@ -247,6 +285,19 @@ class StretchVector:
         return len(self.ivs) - 1
 
     def __getitem__(self, index):
+        """Get a view of a portion of the StretchVector
+
+
+        Args:
+            index (int, slice, or GenomicInterval): Coordinate or interval to
+              extract. For slices, the stretches from this intervals are
+              *views* of the original array, so changes in them will be
+              reflected in the parent StretchVector as well.
+        Returns:
+            A number of index is an int, containing the value at that site.
+            A StretchVector with adapted stretches if index is anything else.
+
+        """
         from HTSeq import GenomicInterval
 
         if isinstance(index, int):
@@ -271,14 +322,29 @@ class StretchVector:
         elif isinstance(index, GenomicInterval):
             return self.__getitem__(slice(index.start, index.end))
 
-    def __setitem__(self, index, value):
+    def __setitem__(self, index, values):
+        """Set/reset values within or outside the stretch
+
+        Args:
+            index (int, slice, or GenomicInterval): Coordinate or interval to
+              set. These can be within current stretches, between them, outside,
+              or partially overlapping.
+            values (numpy.ndarray or convertible sequence): Values to set or
+              reset at those locations. This will be recast as a numpy array
+              of the appropriate dtype within this function.
+
+        Returns: None
+        """
         from HTSeq import GenomicInterval
+
+        # Leave dtype out for now for speed, it will be taken care of later on
+        values = np.asarray(values)
 
         if isinstance(index, int):
             idx_iv = self._in_stretch(index)
             if idx_iv == -1:
                 idx_iv = self._add_stretch(index, index + 1)
-            self.stretches[idx_iv][index - self.ivs[idx_iv].start] = value
+            self.stretches[idx_iv][index - self.ivs[idx_iv].start] = values
             return
 
         elif isinstance(index, slice):
@@ -292,14 +358,14 @@ class StretchVector:
                     raise IndexError('No stretches, cannot find end')
                 index.stop = self.ivs[-1].end
 
-            self._set_interval(index.start, index.stop, value)
+            self._set_interval(index.start, index.stop, values)
 
         elif isinstance(index, GenomicInterval):
-            return self.__setitem__(slice(index.start, index.end), value)
+            return self.__setitem__(slice(index.start, index.end), values)
 
 
     def todense(self):
-        """Dense numpy array of the whole stretch"""
+        """Dense numpy array of the whole stretch, using NaNs for missing data"""
         if len(self.ivs) == 0:
             return np.empty(0, self._typecode_dict[self.typecode])
 
@@ -399,3 +465,9 @@ class StretchVector:
         sv.stretches.append(new_stretch)
 
         return sv
+
+    def __iter__(self):
+        """Iterate over intervals and stretches ("islands")."""
+        return zip(self.ivs, self.stretches)
+
+    
