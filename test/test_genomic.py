@@ -22,6 +22,30 @@ except ImportError:
 data_folder = conftest.get_data_folder()
 
 
+class TestGenomicInterval(unittest.TestCase):
+    def test_init(self):
+        iv = HTSeq.GenomicInterval(
+            'chr1', 100, 200, ".",
+        )
+
+
+class TestChromVector(unittest.TestCase):
+    def test_init_step(self):
+        # Autoallocation
+        cv = HTSeq.ChromVector.create(
+            HTSeq.GenomicInterval('chr1', 100, 200, "."),
+            typecode='d',
+            storage='step',
+        )
+
+    def test_init_stretch(self):
+        # Autoallocation
+        cv = HTSeq.ChromVector.create(
+            HTSeq.GenomicInterval('chr1', 100, 200, "."),
+            typecode='d',
+            storage='stretch',
+        )
+
 class TestGenomicArray(unittest.TestCase):
     def test_init(self):
         # Autoallocation
