@@ -58,8 +58,13 @@ if [ x$CLEAN = x1 ]; then
 fi
 
 if [ x$CONDA = x1 ]; then
-  source /opt/anaconda/bin/activate
-  conda activate scanpy
+  if [ -d /opt/anaconda ]; then
+    source /opt/anaconda/bin/activate
+    conda activate scanpy
+  else
+    source /Users/givanna/miniconda3/bin/activate
+    conda activate htseq
+  fi
   PYTHON=python
   PIP=pip
   PYTEST=pytest

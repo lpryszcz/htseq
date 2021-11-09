@@ -481,4 +481,3 @@ if __name__ == '__main__':
     suite = HTSeqCountBarcodes()
     suite.test_version()
     suite.test_barcodes()
-
