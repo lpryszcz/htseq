@@ -197,10 +197,14 @@ def _parse_sanitize_cmdline_arguments():
         + "the number of reads mapping to it. See "
         + "http://htseq.readthedocs.io/en/master/count.html for details.",
         epilog="Written by Simon Anders (sanders@fs.tum.de), "
-        + "European Molecular Biology Laboratory (EMBL) and Givanna Putri "
-        + "(g.putri@unsw.edu.au) and and Fabio Zanini "
+        + "European Molecular Biology Laboratory (EMBL), Givanna Putri "
+        + "(g.putri@unsw.edu.au) and Fabio Zanini "
         + "(fabio.zanini@unsw.edu.au), UNSW Sydney. (c) 2010-2021. "
         + "Released under the terms of the GNU General Public License v3. "
+        + "Please cite the following paper if you use this script: \n"
+        + "    G. Putri et al. Analysing high-throughput sequencing data in "
+        + "Python with HTSeq 2.0. Bioinformatics (2022). "
+        + "https://doi.org/10.1093/bioinformatics/btac166.\n"
         + "Part of the 'HTSeq' framework, version %s." % HTSeq.__version__,
     )
 

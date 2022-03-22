@@ -6,6 +6,8 @@
 
 **DOCS**: https://htseq.readthedocs.io
 
+**CITATION** (please cite this new paper!): Putri et al. Analysing high-throughput sequencing data in Python with HTSeq 2.0. Bioinformatics, btac166, [https://doi.org/10.1093/bioinformatics/btac166](https://doi.org/10.1093/bioinformatics/btac166) (2022).
+
 A Python library to facilitate programmatic analysis of data
 from high-throughput sequencing (HTS) experiments. A popular component of ``HTSeq``
 is ``htseq-count``, a script to quantify gene expression in bulk and single-cell RNA-Seq

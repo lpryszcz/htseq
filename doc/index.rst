@@ -28,15 +28,15 @@ Citation
 If you use HTSeq in your research, **please cite this paper:**
 
   | G Putri, S Anders, PT Pyl, JE Pimanda, F Zanini
-  | **Analysing high-throughput sequencing data with HTSeq 2.0**
-  | `arXiv:2112.00939`_ (2021)
+  | **Analysing high-throughput sequencing data in Python with HTSeq 2.0**
+  | `https://doi.org/10.1093/bioinformatics/btac166`_ (2021)
 
-.. _`arXiv:2112.00939`: https://arxiv.org/abs/2112.00939
+.. _`https://doi.org/10.1093/bioinformatics/btac166`: https://doi.org/10.1093/bioinformatics/btac166
 
-.. note:: bioRxiv rejected this preprint saying it's not proper research. Thankfully,
-   the arXiv is a little more supportive of open source and open science.
+.. note:: bioRxiv previously rejected this preprint saying it's not proper research.
+   Thankfully, the arXiv was a little more supportive of open source and open science.
 
-The original package is described in:
+HTSeq 1.0 was described in:
 
   | Simon Anders, Paul Theodor Pyl, Wolfgang Huber
   | *HTSeq --- A Python framework to work with high-throughput sequencing data*

@@ -3529,6 +3529,43 @@ fail:
 }
 
 
+SWIGINTERN PyObject *_wrap__StepVector_float_remove_step(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+  PyObject *resultobj = 0;
+  step_vector_for_python< double > *arg1 = (step_vector_for_python< double > *) 0 ;
+  long arg2 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  long val2 ;
+  int ecode2 = 0 ;
+  PyObject *swig_obj[2] ;
+  
+  if (!SWIG_Python_UnpackTuple(args, "_StepVector_float_remove_step", 2, 2, swig_obj)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_step_vector_for_pythonT_double_t, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "_StepVector_float_remove_step" "', argument " "1"" of type '" "step_vector_for_python< double > *""'"); 
+  }
+  arg1 = reinterpret_cast< step_vector_for_python< double > * >(argp1);
+  ecode2 = SWIG_AsVal_long(swig_obj[1], &val2);
+  if (!SWIG_IsOK(ecode2)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "_StepVector_float_remove_step" "', argument " "2"" of type '" "long""'");
+  } 
+  arg2 = static_cast< long >(val2);
+  {
+    try {
+      (arg1)->remove_step(arg2);                                                                  
+    } catch (std::out_of_range &e) {
+      SWIG_exception(SWIG_IndexError, e.what());                               
+    } catch (type_error_non_arith &e) {
+      SWIG_exception(SWIG_TypeError, "Illegal arithmetic operation" );         
+    } 
+  }
+  resultobj = SWIG_Py_Void();
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
 SWIGINTERN PyObject *_wrap__StepVector_float_add_value(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
   PyObject *resultobj = 0;
   step_vector_for_python< double > *arg1 = (step_vector_for_python< double > *) 0 ;
@@ -4071,6 +4108,43 @@ SWIGINTERN PyObject *_wrap__StepVector_int_set_value(PyObject *SWIGUNUSEDPARM(se
   {
     try {
       (arg1)->set_value(arg2,arg3,arg4);                                                                  
+    } catch (std::out_of_range &e) {
+      SWIG_exception(SWIG_IndexError, e.what());                               
+    } catch (type_error_non_arith &e) {
+      SWIG_exception(SWIG_TypeError, "Illegal arithmetic operation" );         
+    } 
+  }
+  resultobj = SWIG_Py_Void();
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap__StepVector_int_remove_step(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+  PyObject *resultobj = 0;
+  step_vector_for_python< int > *arg1 = (step_vector_for_python< int > *) 0 ;
+  long arg2 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  long val2 ;
+  int ecode2 = 0 ;
+  PyObject *swig_obj[2] ;
+  
+  if (!SWIG_Python_UnpackTuple(args, "_StepVector_int_remove_step", 2, 2, swig_obj)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_step_vector_for_pythonT_int_t, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "_StepVector_int_remove_step" "', argument " "1"" of type '" "step_vector_for_python< int > *""'"); 
+  }
+  arg1 = reinterpret_cast< step_vector_for_python< int > * >(argp1);
+  ecode2 = SWIG_AsVal_long(swig_obj[1], &val2);
+  if (!SWIG_IsOK(ecode2)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "_StepVector_int_remove_step" "', argument " "2"" of type '" "long""'");
+  } 
+  arg2 = static_cast< long >(val2);
+  {
+    try {
+      (arg1)->remove_step(arg2);                                                                  
     } catch (std::out_of_range &e) {
       SWIG_exception(SWIG_IndexError, e.what());                               
     } catch (type_error_non_arith &e) {
@@ -4639,6 +4713,43 @@ fail:
 }
 
 
+SWIGINTERN PyObject *_wrap__StepVector_long_remove_step(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+  PyObject *resultobj = 0;
+  step_vector_for_python< long > *arg1 = (step_vector_for_python< long > *) 0 ;
+  long arg2 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  long val2 ;
+  int ecode2 = 0 ;
+  PyObject *swig_obj[2] ;
+  
+  if (!SWIG_Python_UnpackTuple(args, "_StepVector_long_remove_step", 2, 2, swig_obj)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_step_vector_for_pythonT_long_t, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "_StepVector_long_remove_step" "', argument " "1"" of type '" "step_vector_for_python< long > *""'"); 
+  }
+  arg1 = reinterpret_cast< step_vector_for_python< long > * >(argp1);
+  ecode2 = SWIG_AsVal_long(swig_obj[1], &val2);
+  if (!SWIG_IsOK(ecode2)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "_StepVector_long_remove_step" "', argument " "2"" of type '" "long""'");
+  } 
+  arg2 = static_cast< long >(val2);
+  {
+    try {
+      (arg1)->remove_step(arg2);                                                                  
+    } catch (std::out_of_range &e) {
+      SWIG_exception(SWIG_IndexError, e.what());                               
+    } catch (type_error_non_arith &e) {
+      SWIG_exception(SWIG_TypeError, "Illegal arithmetic operation" );         
+    } 
+  }
+  resultobj = SWIG_Py_Void();
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
 SWIGINTERN PyObject *_wrap__StepVector_long_add_value(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
   PyObject *resultobj = 0;
   step_vector_for_python< long > *arg1 = (step_vector_for_python< long > *) 0 ;
@@ -5181,6 +5292,43 @@ SWIGINTERN PyObject *_wrap__StepVector_bool_set_value(PyObject *SWIGUNUSEDPARM(s
   {
     try {
       (arg1)->set_value(arg2,arg3,arg4);                                                                  
+    } catch (std::out_of_range &e) {
+      SWIG_exception(SWIG_IndexError, e.what());                               
+    } catch (type_error_non_arith &e) {
+      SWIG_exception(SWIG_TypeError, "Illegal arithmetic operation" );         
+    } 
+  }
+  resultobj = SWIG_Py_Void();
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap__StepVector_bool_remove_step(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+  PyObject *resultobj = 0;
+  step_vector_for_python< bool > *arg1 = (step_vector_for_python< bool > *) 0 ;
+  long arg2 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  long val2 ;
+  int ecode2 = 0 ;
+  PyObject *swig_obj[2] ;
+  
+  if (!SWIG_Python_UnpackTuple(args, "_StepVector_bool_remove_step", 2, 2, swig_obj)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_step_vector_for_pythonT_bool_t, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "_StepVector_bool_remove_step" "', argument " "1"" of type '" "step_vector_for_python< bool > *""'"); 
+  }
+  arg1 = reinterpret_cast< step_vector_for_python< bool > * >(argp1);
+  ecode2 = SWIG_AsVal_long(swig_obj[1], &val2);
+  if (!SWIG_IsOK(ecode2)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "_StepVector_bool_remove_step" "', argument " "2"" of type '" "long""'");
+  } 
+  arg2 = static_cast< long >(val2);
+  {
+    try {
+      (arg1)->remove_step(arg2);                                                                  
     } catch (std::out_of_range &e) {
       SWIG_exception(SWIG_IndexError, e.what());                               
     } catch (type_error_non_arith &e) {
@@ -5740,6 +5888,43 @@ fail:
 }
 
 
+SWIGINTERN PyObject *_wrap__StepVector_obj_remove_step(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+  PyObject *resultobj = 0;
+  step_vector_for_python< AutoPyObjPtr > *arg1 = (step_vector_for_python< AutoPyObjPtr > *) 0 ;
+  long arg2 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  long val2 ;
+  int ecode2 = 0 ;
+  PyObject *swig_obj[2] ;
+  
+  if (!SWIG_Python_UnpackTuple(args, "_StepVector_obj_remove_step", 2, 2, swig_obj)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_step_vector_for_pythonT_AutoPyObjPtr_t, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "_StepVector_obj_remove_step" "', argument " "1"" of type '" "step_vector_for_python< AutoPyObjPtr > *""'"); 
+  }
+  arg1 = reinterpret_cast< step_vector_for_python< AutoPyObjPtr > * >(argp1);
+  ecode2 = SWIG_AsVal_long(swig_obj[1], &val2);
+  if (!SWIG_IsOK(ecode2)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "_StepVector_obj_remove_step" "', argument " "2"" of type '" "long""'");
+  } 
+  arg2 = static_cast< long >(val2);
+  {
+    try {
+      (arg1)->remove_step(arg2);                                                                  
+    } catch (std::out_of_range &e) {
+      SWIG_exception(SWIG_IndexError, e.what());                               
+    } catch (type_error_non_arith &e) {
+      SWIG_exception(SWIG_TypeError, "Illegal arithmetic operation" );         
+    } 
+  }
+  resultobj = SWIG_Py_Void();
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
 SWIGINTERN PyObject *_wrap__StepVector_obj_add_value(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
   PyObject *resultobj = 0;
   step_vector_for_python< AutoPyObjPtr > *arg1 = (step_vector_for_python< AutoPyObjPtr > *) 0 ;
@@ -5916,6 +6101,7 @@ static PyMethodDef SwigMethods[] = {
 	 { "_StepVector_Iterator_float_swiginit", _StepVector_Iterator_float_swiginit, METH_VARARGS, NULL},
 	 { "new__StepVector_float", _wrap_new__StepVector_float, METH_NOARGS, NULL},
 	 { "_StepVector_float_set_value", _wrap__StepVector_float_set_value, METH_VARARGS, NULL},
+	 { "_StepVector_float_remove_step", _wrap__StepVector_float_remove_step, METH_VARARGS, NULL},
 	 { "_StepVector_float_add_value", _wrap__StepVector_float_add_value, METH_VARARGS, NULL},
 	 { "_StepVector_float_get_all_values_pystyle", _wrap__StepVector_float_get_all_values_pystyle, METH_O, NULL},
 	 { "_StepVector_float_get_values_pystyle", _wrap__StepVector_float_get_values_pystyle, METH_VARARGS, NULL},
@@ -5939,6 +6125,7 @@ static PyMethodDef SwigMethods[] = {
 	 { "_StepVector_Iterator_int_swiginit", _StepVector_Iterator_int_swiginit, METH_VARARGS, NULL},
 	 { "new__StepVector_int", _wrap_new__StepVector_int, METH_NOARGS, NULL},
 	 { "_StepVector_int_set_value", _wrap__StepVector_int_set_value, METH_VARARGS, NULL},
+	 { "_StepVector_int_remove_step", _wrap__StepVector_int_remove_step, METH_VARARGS, NULL},
 	 { "_StepVector_int_add_value", _wrap__StepVector_int_add_value, METH_VARARGS, NULL},
 	 { "_StepVector_int_get_all_values_pystyle", _wrap__StepVector_int_get_all_values_pystyle, METH_O, NULL},
 	 { "_StepVector_int_get_values_pystyle", _wrap__StepVector_int_get_values_pystyle, METH_VARARGS, NULL},
@@ -5962,6 +6149,7 @@ static PyMethodDef SwigMethods[] = {
 	 { "_StepVector_Iterator_long_swiginit", _StepVector_Iterator_long_swiginit, METH_VARARGS, NULL},
 	 { "new__StepVector_long", _wrap_new__StepVector_long, METH_NOARGS, NULL},
 	 { "_StepVector_long_set_value", _wrap__StepVector_long_set_value, METH_VARARGS, NULL},
+	 { "_StepVector_long_remove_step", _wrap__StepVector_long_remove_step, METH_VARARGS, NULL},
 	 { "_StepVector_long_add_value", _wrap__StepVector_long_add_value, METH_VARARGS, NULL},
 	 { "_StepVector_long_get_all_values_pystyle", _wrap__StepVector_long_get_all_values_pystyle, METH_O, NULL},
 	 { "_StepVector_long_get_values_pystyle", _wrap__StepVector_long_get_values_pystyle, METH_VARARGS, NULL},
@@ -5985,6 +6173,7 @@ static PyMethodDef SwigMethods[] = {
 	 { "_StepVector_Iterator_bool_swiginit", _StepVector_Iterator_bool_swiginit, METH_VARARGS, NULL},
 	 { "new__StepVector_bool", _wrap_new__StepVector_bool, METH_NOARGS, NULL},
 	 { "_StepVector_bool_set_value", _wrap__StepVector_bool_set_value, METH_VARARGS, NULL},
+	 { "_StepVector_bool_remove_step", _wrap__StepVector_bool_remove_step, METH_VARARGS, NULL},
 	 { "_StepVector_bool_add_value", _wrap__StepVector_bool_add_value, METH_VARARGS, NULL},
 	 { "_StepVector_bool_get_all_values_pystyle", _wrap__StepVector_bool_get_all_values_pystyle, METH_O, NULL},
 	 { "_StepVector_bool_get_values_pystyle", _wrap__StepVector_bool_get_values_pystyle, METH_VARARGS, NULL},
@@ -6008,6 +6197,7 @@ static PyMethodDef SwigMethods[] = {
 	 { "_StepVector_Iterator_obj_swiginit", _StepVector_Iterator_obj_swiginit, METH_VARARGS, NULL},
 	 { "new__StepVector_obj", _wrap_new__StepVector_obj, METH_NOARGS, NULL},
 	 { "_StepVector_obj_set_value", _wrap__StepVector_obj_set_value, METH_VARARGS, NULL},
+	 { "_StepVector_obj_remove_step", _wrap__StepVector_obj_remove_step, METH_VARARGS, NULL},
 	 { "_StepVector_obj_add_value", _wrap__StepVector_obj_add_value, METH_VARARGS, NULL},
 	 { "_StepVector_obj_get_all_values_pystyle", _wrap__StepVector_obj_get_all_values_pystyle, METH_O, NULL},
 	 { "_StepVector_obj_get_values_pystyle", _wrap__StepVector_obj_get_values_pystyle, METH_VARARGS, NULL},

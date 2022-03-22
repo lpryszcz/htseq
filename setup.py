@@ -1,8 +1,8 @@
 #!/usr/bin/env python
-from __future__ import print_function
-import sys
 import os
-from distutils.log import INFO as logINFO
+import sys
+from setuptools import setup, Command, Extension
+from setuptools.command.build_py import build_py
 
 
 this_directory = os.path.abspath(os.path.dirname(__file__))
@@ -54,46 +54,28 @@ with open(os.path.join(this_directory, 'README.md')) as f:
     long_description = f.read()
 
 # Check OS-specific quirks
-try:
-    from setuptools import setup, Extension
-    from setuptools.command.build_py import build_py
-    from setuptools import Command
-    # Setuptools but not distutils support build/runtime/optional dependencies
-    # NOTE: setuptools < 18.0 has issues with Cython as a dependency
-    # NOTE: old setuptools < 18.0 has issues with extras
-    kwargs = dict(
-        setup_requires=[
-              'Cython',
-              'numpy',
-              'pysam',
+# NOTE: setuptools < 18.0 has issues with Cython as a dependency
+# NOTE: old setuptools < 18.0 has issues with extras
+kwargs = dict(
+    setup_requires=[
+          'Cython',
+          'numpy',
+          'pysam',
+    ],
+    install_requires=[
+        'numpy',
+        'pysam',
+    ],
+    extras_require={
+        'htseq-qa': ['matplotlib>=1.4'],
+        'test': [
+            'scipy>=1.5.0',
+            'pytest>=6.2.5',
+            'pandas>=1.1.0',
+            'matplotlib>=1.4',
         ],
-        install_requires=[
-            'numpy',
-            'pysam',
-        ],
-        extras_require={
-            'htseq-qa': ['matplotlib>=1.4'],
-            'test': [
-                'scipy>=1.5.0',
-                'pytest>=6.2.5',
-                'pandas>=1.1.0',
-                'matplotlib>=1.4',
-            ],
-        },
-      )
-except ImportError:
-    sys.stderr.write("Could not import 'setuptools'," +
-                     " falling back to 'distutils'.\n")
-    from distutils.core import setup, Extension
-    from distutils.command.build_py import build_py
-    from distutils.cmd import Command
-    kwargs = dict(
-        requires=[
-              'Cython',
-              'numpy',
-              'pysam',
-            ]
-    )
+    },
+  )
 
 try:
     import numpy
@@ -174,7 +156,7 @@ class Preprocess_command(Command):
         from subprocess import SubprocessError
 
         def c(x): return check_call(x, shell=True)
-        def p(x): return self.announce(x, level=logINFO)
+        def p(x): return self.announce(x, level=2)
 
         # CYTHON
         p('cythonizing')

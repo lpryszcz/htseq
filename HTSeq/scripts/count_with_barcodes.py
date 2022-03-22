@@ -538,6 +538,10 @@ def main():
         "European Molecular Biology Laboratory (EMBL) and Fabio Zanini " +
         "(fabio.zanini@unsw.edu.au), UNSW Sydney. (c) 2010-2020. " +
         "Released under the terms of the GNU General Public License v3. " +
+        "Please cite the following paper if you use this script: \n" +
+        "    G. Putri et al. Analysing high-throughput sequencing data in " +
+        "Python with HTSeq 2.0. Bioinformatics (2022). " +
+        "https://doi.org/10.1093/bioinformatics/btac166.\n" +
         "Part of the 'HTSeq' framework, version %s." % HTSeq.__version__,
     )
 

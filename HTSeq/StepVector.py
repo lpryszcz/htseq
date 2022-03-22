@@ -101,6 +101,9 @@ class _StepVector_float(object):
     def set_value(self, _from: "long", to: "long", value: "double") -> "void":
         return _StepVector._StepVector_float_set_value(self, _from, to, value)
 
+    def remove_step(self, i: "long") -> "void":
+        return _StepVector._StepVector_float_remove_step(self, i)
+
     def add_value(self, _from: "long", to: "long", value: "double") -> "void":
         return _StepVector._StepVector_float_add_value(self, _from, to, value)
 
@@ -160,6 +163,9 @@ class _StepVector_int(object):
     def set_value(self, _from: "long", to: "long", value: "int") -> "void":
         return _StepVector._StepVector_int_set_value(self, _from, to, value)
 
+    def remove_step(self, i: "long") -> "void":
+        return _StepVector._StepVector_int_remove_step(self, i)
+
     def add_value(self, _from: "long", to: "long", value: "int") -> "void":
         return _StepVector._StepVector_int_add_value(self, _from, to, value)
 
@@ -217,6 +223,9 @@ class _StepVector_long(object):
 
     def set_value(self, _from: "long", to: "long", value: "long") -> "void":
         return _StepVector._StepVector_long_set_value(self, _from, to, value)
+
+    def remove_step(self, i: "long") -> "void":
+        return _StepVector._StepVector_long_remove_step(self, i)
 
     def add_value(self, _from: "long", to: "long", value: "long") -> "void":
         return _StepVector._StepVector_long_add_value(self, _from, to, value)
@@ -276,6 +285,9 @@ class _StepVector_bool(object):
     def set_value(self, _from: "long", to: "long", value: "bool") -> "void":
         return _StepVector._StepVector_bool_set_value(self, _from, to, value)
 
+    def remove_step(self, i: "long") -> "void":
+        return _StepVector._StepVector_bool_remove_step(self, i)
+
     def add_value(self, _from: "long", to: "long", value: "bool") -> "void":
         return _StepVector._StepVector_bool_add_value(self, _from, to, value)
 
@@ -333,6 +345,9 @@ class _StepVector_obj(object):
 
     def set_value(self, _from: "long", to: "long", value: "AutoPyObjPtr") -> "void":
         return _StepVector._StepVector_obj_set_value(self, _from, to, value)
+
+    def remove_step(self, i: "long") -> "void":
+        return _StepVector._StepVector_obj_remove_step(self, i)
 
     def add_value(self, _from: "long", to: "long", value: "AutoPyObjPtr") -> "void":
         return _StepVector._StepVector_obj_add_value(self, _from, to, value)
@@ -523,6 +538,14 @@ class StepVector(object):
             return res
         else:
             return next(self._swigobj.get_values_pystyle(index)).second
+
+    def remove_step(self, start):
+        """Remve a step with this starting coordinate, in place.
+
+        Args:
+            start: Starting coordinate of the step.
+        """
+        self._swigobj.remove_step(start)
 
     def __iter__(self):
         """When asked to provide an iterator, a StepVector will yield all its

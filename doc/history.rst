@@ -8,10 +8,19 @@ Next version (current master)
 =============================
 TBA
 
-Major release. All users are encouraged to upgrade (when released!).
+Version 2.0.0
+=============
+2022-03-22
+
+Major release. All users are encouraged to upgrade.
+
+Publication:
+
+- New paper describing HTSeq 2.0 in [Bioinformatics](https://doi.org/10.1093/bioinformatics/btac166). **Please cite the new paper** to help us maintain HTSeq!
 
 API features:
 
+- Support for StretchVector, a data structure for "island-of-data" sparsity
 - Added BigWig_Reader
 - Added I/O functions for ``GenomicArray`` to/from bedGraph and BigWig files
 - ``make_feature_genomicarrayofsets`` now supports multiple primary attributes
@@ -25,6 +34,7 @@ Scripts:
 - Added exon-level counting to ``htseq-count``
 - Added output formats to ``htseq-count``: loom, h5ad, mtx files
 - The above all apply to ``htseq-count-barcodes`` as well.
+- Added ``--with-header`` option to ``htseq-count``.
 
 Documentation:
 
@@ -45,6 +55,7 @@ Bug fixes:
 - Fixed a bug about ``ChromVector`` steps.
 - Fixed a bug about file opening (thanks @mruffalo)
 - Fixed a bug about ambiguous reads (thanks @Mashin6)
+- Fixed a typo in the docs (thanks @Tejindersingh1)
 - Improved style of code and documentation
 
 Version 0.13.5

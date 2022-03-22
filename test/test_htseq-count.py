@@ -401,6 +401,7 @@ class HTSeqCount(HTSeqCountBase):
             'expected_fn': f'{data_folder}/yeast_RNASeq_excerpt_withNH_counts_additional_attributes_chromosome_info.tsv',
             })
 
+    @unittest.skipIf(anndata is None, "test case depends on anndata")
     def test_additional_attributes_h5ad(self):
         # Get gene name as additional attr but output as h5ad file.
         self._run({
