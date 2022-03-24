@@ -93,30 +93,30 @@ numpy_include_dir = os.path.join(
         )
 
 
-def get_include_dirs(cpp=False):
-    '''OSX 10.14 and later split the /usr/include contents everywhere'''
-    include_dirs = []
-    if sys.platform != 'darwin':
-        return include_dirs
-
-    paths = {
-        'C': [
-            '/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk/usr/include/',
-        ],
-        'C++': [
-            '/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include/c++/v1/',
-        ],
-    }
-
-    for path in paths['C']:
-        if os.path.isdir(path):
-            include_dirs.append(path)
-    if cpp:
-        for path in paths['C++']:
-            if os.path.isdir(path):
-                include_dirs.append(path)
-
-    return include_dirs
+#def get_include_dirs(cpp=False):
+#    '''OSX 10.14 and later split the /usr/include contents everywhere'''
+#    include_dirs = []
+#    if sys.platform != 'darwin':
+#        return include_dirs
+#
+#    paths = {
+#        'C': [
+#            '/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk/usr/include/',
+#        ],
+#        'C++': [
+#            '/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include/c++/v1/',
+#        ],
+#    }
+#
+#    for path in paths['C']:
+#        if os.path.isdir(path):
+#            include_dirs.append(path)
+#    if cpp:
+#        for path in paths['C++']:
+#            if os.path.isdir(path):
+#                include_dirs.append(path)
+#
+#    return include_dirs
 
 
 def get_library_dirs_cpp():
@@ -220,12 +220,12 @@ setup(name='HTSeq',
          Extension(
              'HTSeq._HTSeq',
              ['src/_HTSeq.c'],
-             include_dirs=[numpy_include_dir]+get_include_dirs(),
+             include_dirs=[numpy_include_dir],#+get_include_dirs(),
              extra_compile_args=['-w']),
          Extension(
              'HTSeq._StepVector',
              ['src/StepVector_wrap.cxx'],
-             include_dirs=get_include_dirs(cpp=True),
+             #include_dirs=get_include_dirs(cpp=True),
              library_dirs=get_library_dirs_cpp(),
              extra_compile_args=['-w'] + get_extra_args_cpp(),
              extra_link_args=get_extra_args_cpp(),
