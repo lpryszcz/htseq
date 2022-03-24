@@ -177,11 +177,15 @@ class Preprocess_command(Command):
         pyswigged = 'src/StepVector.py'
         try:
             c(swig+' -Wall -c++ -python -py3 src/StepVector.i')
+            p('Files transpiled')
         except SubprocessError:
             if (os.path.isfile('src/StepVector_wrap.cxx') and
                     os.path.isfile('src/StepVector.py')):
                 p('SWIG not found, but transpiled files found')
             else:
+                p('swig not found and traspiled files not found.\n' +
+                  'Install SWIG via your package manager (linux) or ' +
+                  'via "brew install swig" (OSX - via homebrew)')
                 raise
         p('moving swigged .py module')
         copy(pyswigged, 'HTSeq/StepVector.py')

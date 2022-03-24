@@ -96,6 +96,6 @@ To test `htseq-count` alone, run it with the `-o` option.
 A virtual environment is created in the `.venv` folder and `HTSeq` is installed inside it, including all modules and scripts.
 
 ## Authors
-- 2021-: Givanna Putri
-- 2016-: Fabio Zanini @ https://fabilab.org
-- 2010-2015: Simon Anders, Wolfgang Huber
+- 2021-: Givanna Putri ([ghar1821](https://github.com/ghar1821))
+- 2016-: Fabio Zanini ([iosonofabio](https://github.com/iosonofabio))@ https://fabilab.org
+- 2010-2015: Simon Anders ([simon-anders](https://github.com/simon-anders)), Wolfgang Huber

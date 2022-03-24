@@ -8,13 +8,14 @@ exclude todo.txt
 include src/HTSeq/*
 include src/*.c
 
-# SWIG
+# SWIG (source)
 include src/step_vector.h
 include src/*.i
+# SWIG (transpiled)
 include src/StepVector.py
 include src/StepVector_wrap.cxx
 
-# Pure
+# Pure Python
 include HTSeq/*.py
 
 # Script
