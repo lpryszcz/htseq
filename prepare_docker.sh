@@ -19,11 +19,12 @@ echo "Install zlib dev libraries for HTSlib when needed"
 # manylinux2010 is CentOS 6, manylinux2014 is CentOS 7
 yum -y install zlib-devel bzip2-devel xz-devel wget
 
-#echo "Install SWIG (CentOS 6 has an old one!)"
+echo "Install SWIG (CentOS 6 has an old one!)"
 #wget http://springdale.princeton.edu/data/springdale/6/x86_64/os/Computational/swig3012-3.0.12-3.sdl6.x86_64.rpm
 #rpm -Uvh swig3012-3.0.12-3.sdl6.x86_64.rpm
-#yum -y install swig3012
-yum -y install swig
+wget http://springdale.princeton.edu/data/springdale/7/x86_64/os/Computational/swig3012-3.0.12-3.sdl7.x86_64.rpm
+rpm -Uvh swig3012-3.0.12-3.sdl7.x86_64.rpm
+yum -y install swig3012
 
 echo "Remove old Python versions"
 rm -rf /opt/python/cp27*
