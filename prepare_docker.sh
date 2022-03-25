@@ -25,9 +25,9 @@ rpm -Uvh swig3012-3.0.12-3.sdl6.x86_64.rpm
 yum -y install swig3012
 
 echo "Remove old Python versions"
-# Python 2.6-3.5 is deprecated
 rm -rf /opt/python/cp27*
 rm -rf /opt/python/cpython-2.7*
 rm -rf /opt/python/cp33*
 rm -rf /opt/python/cp34*
 rm -rf /opt/python/cp35*
+rm -rf /opt/python/cp36*

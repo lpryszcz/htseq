@@ -9,7 +9,7 @@ elif [ $OS_NAME == 'macos-latest' ]; then
   echo "OSX version: $osx_version"
   osx_ver1=$(echo $osx_version | cut -d. -f1)
   osx_ver2=$(echo $osx_version | cut -d. -f2)
-  if [ $osx_ver1 -lt 10 ] || [ $osx_ver2 -lt 14 ]; then
+  if [ $osx_ver1 -lt 11 ] || [ $osx_ver2 -lt 6 ]; then
     echo "OSX version not for deployment: $osx_version"
   else
     echo "OSX version for deployment: $osx_version"
