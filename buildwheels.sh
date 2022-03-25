@@ -6,12 +6,12 @@
 # It is best to run this in a fresh clone of the repository!
 #
 # Run this within the repository root:
-#   docker run --rm -v $(pwd):/io quay.io/pypa/manylinux2010_x86_64 /io/buildwheels.sh
+#   docker run --rm -v $(pwd):/io quay.io/pypa/manylinuxXX_x86_64 /io/buildwheels.sh
 #
 # The wheels will be put into the wheelhouse/ subdirectory.
 #
 # For interactive tests:
-#   docker run -it -v $(pwd):/io quay.io/pypa/manylinux2010_x86_64 /bin/bash
+#   docker run -it -v $(pwd):/io quay.io/pypa/manylinuxXX_x86_64 /bin/bash
 
 set -xeuo pipefail
 
@@ -22,8 +22,7 @@ for PYBIN in ${PYBINS}; do
     echo "PYBIN = ${PYBIN}"
 
     echo "Install requirements..."
-    # NOTE: Pillow 0.8.4 stopped shipping manylinux_2010
-    ${PYBIN}/pip install setuptools wheel Cython 'Pillow<8.4.0' matplotlib pandas
+    ${PYBIN}/pip install setuptools wheel Cython Pillow matplotlib pandas
     ${PYBIN}/pip install -r /io/requirements.txt
 
     echo "Build wheels..."
