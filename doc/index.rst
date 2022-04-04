@@ -29,7 +29,7 @@ If you use HTSeq in your research, **please cite this paper:**
 
   | G Putri, S Anders, PT Pyl, JE Pimanda, F Zanini
   | **Analysing high-throughput sequencing data in Python with HTSeq 2.0**
-  | `https://doi.org/10.1093/bioinformatics/btac166`_ (2021)
+  | `https://doi.org/10.1093/bioinformatics/btac166`_ (2022)
 
 .. _`https://doi.org/10.1093/bioinformatics/btac166`: https://doi.org/10.1093/bioinformatics/btac166
 
