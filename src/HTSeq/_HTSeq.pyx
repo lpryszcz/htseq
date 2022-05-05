@@ -790,6 +790,13 @@ cdef class GenomicArray(object):
     def __reduce__(self):
         return (_GenomicArray_unpickle, (self.stranded, self.typecode, self.chrom_vectors))
 
+    def __contains__(self, iv):
+        '''Check if the GenomicArray contains a certain interval
+
+        TODO: this is not implemented yet and will throw NotImplementedError.
+        '''
+        raise NotImplementedError
+
     def write_bedgraph_file(
             self,
             file_or_filename,
