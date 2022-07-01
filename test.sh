@@ -83,7 +83,7 @@ else
 fi
 
 if [ x$SKIP_INSTALL = x0 ]; then
-  $PIP install --use-feature=in-tree-build .[htseq-qa,test]
+  $PIP install .[htseq-qa,test]
 elif [ x$VERBOSE = x1 ]; then
   echo "Skipping install"
 fi
