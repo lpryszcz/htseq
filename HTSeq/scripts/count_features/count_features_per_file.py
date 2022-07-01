@@ -341,7 +341,12 @@ def _assess_pe_read(
     -------
 
     """
-    if (read_sequence[0] is None) or not (read_sequence[0].aligned):
+    # NOTE: Sometimes read1 is None or not aligned but read2 is fine, in that
+    # case we should not exclude the entire pair but rather use the interval
+    # of the second read
+    read1_miss = (read_sequence[0] is None) or (not read_sequence[0].aligned)
+    read2_miss = (read_sequence[1] is None) or (not read_sequence[1].aligned)
+    if read1_miss and read2_miss:
         read_stats.add_not_aligned_read(read_sequence=read_sequence)
         return True
 
