@@ -21,6 +21,7 @@ def update_version():
             output = output.decode().strip('\n')
         if output.startswith('release_'):
             version = output.split('_')[1]
+        print('VERSION updated: '+version)
     except:
         pass
 
