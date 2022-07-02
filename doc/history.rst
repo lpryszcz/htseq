@@ -4,9 +4,27 @@
 Version history
 ***************
 
-Next version (current master)
-=============================
-TBA
+Version 2.0.2
+=============
+2022-07-03
+
+Bugfix release. All users are encouraged to upgrade.
+
+Scripts:
+
+- ``htseq-count`` had silently adopted a new logic to handle a corner case where read 1 was missing but read 2 was present. This has now been reverted
+  to ensure exact compatibility with ``HTSeq<=0.13.5``.
+
+
+Version 2.0.1
+=============
+2022-03-25
+
+Maintenance version. Users are not required to upgrade.
+
+CI:
+
+- Updated docker CI requirements.
 
 Version 2.0.0
 =============
