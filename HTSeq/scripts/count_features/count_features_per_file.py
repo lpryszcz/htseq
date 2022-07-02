@@ -124,8 +124,7 @@ def count_reads_single_file(
             read_stats.print_progress()
             read_stats.add_num_reads_processed()
 
-            # todo can move this into a function, but not necessary.
-            #  this basically try to get the interval/read sequence.
+            #  get the interval/read sequence.
             if not read_io_obj.pe_mode:
                 skip_read = _assess_non_pe_read(
                     read_sequence=r,
@@ -141,10 +140,11 @@ def count_reads_single_file(
                 iv_seq = _get_iv_seq_non_pe_read(com, r, stranded)
             else:
 
-                # todo these assessor used to be at the bottom, after creating
-                # the iv_seq and checking whether the first element of the
-                # paired end is aligned. Kind of nuts really as it wastes time?
-                # need more testing though
+                # NOTE: the logic here is a little arbitrary and might benefit
+                # from an optional arg. If the reads are paired-end but one of
+                # the two is missing, ATM we rely on the other one for info,
+                # however the data is technically inconsistent and we might
+                # want to let the user choose.
                 skip_read = _assess_pe_read(
                     minaqual,
                     multimapped_mode,
