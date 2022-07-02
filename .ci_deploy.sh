@@ -9,6 +9,7 @@ if [ $OS_NAME == 'macos-latest' ]; then
   TAG1=$(echo $TAG | cut -f1 -d_)
   TAG2=$(echo $TAG | cut -f2 -d_)
   TAG3=$(echo $TAG | cut -f3 -d_)
+  echo "GITHUB_REF: ${GITHUB_REF}, TAG: ${TAG}, TAG1: ${TAG1}, TAG2: ${TAG2}, TAG3: ${TAG3}"
   if [ -z $TAG2 ]; then
     echo 'No TAG2, exit'
     exit 0;
