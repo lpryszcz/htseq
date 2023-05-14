@@ -35,6 +35,9 @@ for whl in wheelhouse/*.whl; do
       echo "Repairing wheel: $whl"
       auditwheel repair -L . $whl -w /io/wheelhouse/
     else
+      echo 
+      echo "Make destination folder: /io/wheelhouse/"
+      mkdir -p /io/wheelhouse/
       echo "Copying wheel: $whl"
       cp $whl /io/wheelhouse/
     fi
