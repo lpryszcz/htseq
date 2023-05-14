@@ -4,6 +4,14 @@
 Version history
 ***************
 
+Version 2.0.3
+=============
+2023-05-XX
+
+Bugfix release. All users are encouraged to upgrade.
+
+- `GenomicInterval_from_directional` had a typo (issue #62). Thanks @justinaruda for spotting it.
+
 Version 2.0.2
 =============
 2022-07-03

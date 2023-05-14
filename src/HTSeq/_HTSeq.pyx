@@ -250,7 +250,7 @@ cdef class GenomicInterval:
 
 def GenomicInterval_from_directional(str chrom, long int start_d, long int length, str strand="."):
     strand = intern(strand)
-    if strand.se is not strand_minus:
+    if strand != strand_minus:
         return GenomicInterval(chrom, start_d, start_d + length, strand)
     else:
         return GenomicInterval(chrom, start_d - length + 1, start_d + 1, strand)
