@@ -1,5 +1,5 @@
-![CI](https://github.com/htseq/htseq/actions/workflows/CI/badge.svg)
-[![Documentation Status](https://readthedocs.org/projects/htseq/badge/?version=master)](https://htseq.readthedocs.io)
+![CI](https://github.com/htseq/htseq/actions/workflows/ci.yml/badge.svg?branch=main)
+[![Documentation Status](https://readthedocs.org/projects/htseq/badge/?version=main)](https://htseq.readthedocs.io)
 
 # HTSeq
 **DEVS**: https://github.com/htseq/htseq
