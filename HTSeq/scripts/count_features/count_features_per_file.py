@@ -101,6 +101,21 @@ def count_reads_single_file(
             order=order,
             max_buffer_size=max_buffer_size,
         )
+
+        # If the BAM header is available, check that at least one of the
+        # chromosomes is also found in the GTF/GFF file, otherwise the user
+        # is probably doing something wrong (e.g. "chr1" vs "1").
+        bam_chroms = read_io_obj.get_chromosome_names_header()
+        if bam_chroms is not None:
+            bam_chroms = set(bam_chroms)
+            feature_chroms = set(features.chrom_vectors.keys())
+            if not (bam_chroms & feature_chroms):
+                sys.stderr.write(
+                    f"The alignment file has no chromosomes in common with the GFF/GTF "
+                    "file. This will result in zero feature counts. Please check if the "
+                    "references match, e.g. if you are using 'chr1' or '1' as "
+                    "chromosome names.\n")
+
     except:
         sys.stderr.write("Error occurred when reading beginning of SAM/BAM file.\n")
         raise

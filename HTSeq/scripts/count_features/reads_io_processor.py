@@ -72,6 +72,18 @@ class ReadsIO(object):
         else:
             self.read_seq_file = HTSeq.BAM_Reader(sam_filename)
 
+    def get_chromosome_names_header(self):
+        """ Reads BAM header and returns a list of contigs, or None if no SQ in header """
+        contigs = None
+        sq = self.read_seq_file.get_header_dict().get("SQ")
+        if sq is not None:
+            contigs = []
+            for sq_record in sq:
+                sn = sq_record.get("SN")
+                if sn:
+                    contigs.append(sn)
+        return contigs
+
     def _set_read_seq(
         self,
         supplementary_alignment_mode,
