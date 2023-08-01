@@ -4,9 +4,18 @@
 Version history
 ***************
 
+Version 2.0.4
+=============
+2023-08-XX
+
+All users are encouraged to upgrade.
+
+- `htseq-count` now checks if any chromosome names match between the BAM and GFF/GTF file. If not, it shows a warning to stderr.
+- Python 3.11 is covered on CI build and deploy (linux only - OSX is not supported by `pysam` yet).
+
 Version 2.0.3
 =============
-2023-05-XX
+2023-05-16
 
 Bugfix release. All users are encouraged to upgrade.
 
