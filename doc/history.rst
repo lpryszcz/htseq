@@ -4,9 +4,16 @@
 Version history
 ***************
 
+Version 2.0.5
+=============
+2023-12-13
+
+Fixes installation on some platforms, only upgrade if necessary if you already have 2.0.4 (though it does not hurt).
+
+- Bugfix for poetry and other package managers courtesy of @cameronraysmith.
+
 Version 2.0.4
 =============
-2023-08-XX
 
 All users are encouraged to upgrade.
 
