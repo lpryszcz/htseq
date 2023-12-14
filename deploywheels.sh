@@ -60,24 +60,28 @@ echo "HTSEQ_VERSION: ${HTSEQ_VERSION}"
 echo "HTSEQ_WHEEL_FILE: ${HTSEQ_WHEEL_FILE}"
 
 ERRS=0
+
 for PYBIN in ${PYBINS}; do
+  ${PYBIN}/pip install twine
   PYVER=$(basename $(dirname ${PYBIN}))
   echo "PYVER=$PYVER"
   echo "TWINE_REPOSITORY=$TWINE_REPOSITORY"
-  echo "TWINE_USERNAME=$TWINE_USERNAME"
-  echo "TWINE_PASSWORD=$TWINE_PASSWORD"
-  ${PYBIN}/pip install twine
+  #echo "TWINE_USERNAME=$TWINE_USERNAME"
+  #echo "TWINE_PASSWORD=$TWINE_PASSWORD"
+
+  if [ x$SOURCE_VERSION == x$PYTHON_VERSION ]; then
+    echo "Deploy source code"
+    ${PYBIN}/twine upload --repository-url "${TWINE_REPOSITORY}" -u "${TWINE_USERNAME}" -p "${TWINE_PASSWORD}" /io/wheelhouse/HTSeq-${HTSEQ_VERSION}.tar.gz
+    if [ $? != 0 ]; then
+      ERRS=1
+    fi
+  fi
+
+  echo "Deploy binary wheel"
   ${PYBIN}/twine upload --repository-url "${TWINE_REPOSITORY}" -u "${TWINE_USERNAME}" -p "${TWINE_PASSWORD}" ${HTSEQ_WHEEL_FILE}
   if [ $? != 0 ]; then
     ERRS=1
   fi
 done
 
-echo "Deploy source code only from one version"
-if [ x$SOURCE_VERSION == x$PYTHON_VERSION ]; then
-  ${PYBIN}/twine upload --repository-url "${TWINE_REPOSITORY}" -u "${TWINE_USERNAME}" -p "${TWINE_PASSWORD}" /io/wheelhouse/HTSeq-${HTSEQ_VERSION}.tar.gz
-  if [ $? != 0 ]; then
-    ERRS=1
-  fi
-fi
 exit $ERRS
