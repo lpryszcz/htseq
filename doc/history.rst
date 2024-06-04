@@ -4,9 +4,9 @@
 Version history
 ***************
 
-Version 2.0.6
+Version 2.0.7
 =============
-2024-06-03
+2024-06-04
 
 Expands building system to Python 3.12. Users with 2.0.5 need not necessarily upgrade.
 
