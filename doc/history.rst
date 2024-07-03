@@ -4,6 +4,12 @@
 Version history
 ***************
 
+Version 2.0.8
+=============
+2024-07-03
+
+Fixes building issues on OSX related to numpy importing. Users on non-linux OSes are encouraged to upgrade. Thanks to @seechange0710 for the PR.
+
 Version 2.0.7
 =============
 2024-06-04
