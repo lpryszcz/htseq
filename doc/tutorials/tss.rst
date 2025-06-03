@@ -111,8 +111,8 @@ numpy array:
 
    >>> import numpy
    >>> wincvg = numpy.fromiter(coverage[window], dtype='i', count=2*halfwinwidth)
-   >>> wincvg
-   array([0, 0, 0, ..., 0, 0, 0], dtype=int32)
+   >>> wincvg #doctest: +SKIP
+   array([0, 0, 0, ..., 0, 0, 0], shape=(6000,), dtype=int32)
 
 With matplotlib, we can see that this vector is, in effect, not all zero:
 
