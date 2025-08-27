@@ -79,6 +79,7 @@ def count_reads_in_features(args):
         args.secondary_alignments,
         args.stranded,
         args.supplementary_alignments,
+        args.condensed,
     )
     if args.nprocesses > 1:
         with multiprocessing.Pool(args.nprocesses) as pool:
@@ -124,6 +125,7 @@ def _prepare_args_for_counting(
     secondary_alignment_mode,
     stranded,
     supplementary_alignment_mode,
+    condensed,
 ):
     args = []
     for isam, (sam_filename, samout_filename) in enumerate(zip(sam_filenames, samouts)):
@@ -147,6 +149,7 @@ def _prepare_args_for_counting(
                 minaqual,
                 samout_format,
                 samout_filename,
+                condensed,
             )
         )
     return args, attributes
@@ -486,6 +489,12 @@ def _parse_sanitize_cmdline_arguments():
              + "Default to False."
     )
 
+    pa.add_argument(
+        "--condensed",
+        action="store_true",
+        dest="condensed",
+        help="Count condensed reads from ShortStack output"
+    )
     args = pa.parse_args()
 
     # Never use more CPUs than files
