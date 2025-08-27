@@ -137,8 +137,12 @@ def count_reads_single_file(
 
     try:
         for r in read_io_obj.read_seq:
+            # cound condensed reads from ShortStack: ..._trimmed_Cd6348822_15
+            ## https://github.com/htseq/htseq/issues/107
+            cc = int(r.read.name.split("_")[-1]) if condensed else 1
+            
             read_stats.print_progress()
-            read_stats.add_num_reads_processed()
+            read_stats.add_num_reads_processed(cc)
 
             #  get the interval/read sequence.
             if not read_io_obj.pe_mode:
@@ -175,21 +179,13 @@ def count_reads_single_file(
                 iv_seq = _get_iv_seq_pe_read(com, r, stranded)
 
             # this bit updates the counts obtained from aligning reads to feature sets.
-            '''
-            # ...._trimmed_Cd6348822_15
-            parts = r.read.name.split("_")
-            if parts[-3]=="trimmed" and parts[-2].startswith("Cd"):
-                cc = int(parts[-1].isdigit())
-            '''
-            # cound condensed reads from ShortStack
-            cc = int(r.read.name.split("_")[-1]) if condensed else 1
             try:
                 fs = _align_reads_to_feature_set(features, iv_seq, overlap_mode)
 
                 _update_feature_set_counts(fs, multimapped_mode, r, read_stats, cc)
 
             except UnknownChrom:
-                read_stats.add_empty_read(read_sequence=r)
+                read_stats.add_empty_read(read_sequence=r, value=cc)
 
     except:
         sys.stderr.write(

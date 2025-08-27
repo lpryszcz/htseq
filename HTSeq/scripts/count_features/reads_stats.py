@@ -24,27 +24,27 @@ class ReadsStatistics(object):
         self.num_reads_processed = 0
         self.counts = {key: 0 for key in feature_attr}
 
-    def add_num_reads_processed(self):
-        self.num_reads_processed += 1
+    def add_num_reads_processed(self, value=1):
+        self.num_reads_processed += value
 
-    def add_empty_read(self, read_sequence):
-        self.empty += 1
+    def add_empty_read(self, read_sequence, value=1):
+        self.empty += value
         self.read_io_obj.write_to_samout(read_sequence, "__no_feature")
 
-    def add_ambiguous_read(self, read_sequence, assignment):
-        self.ambiguous += 1
+    def add_ambiguous_read(self, read_sequence, assignment, value=1):
+        self.ambiguous += value
         self.read_io_obj.write_to_samout(read_sequence, assignment)
 
-    def add_low_quality_read(self, read_sequence):
-        self.lowqual += 1
+    def add_low_quality_read(self, read_sequence, value=1):
+        self.lowqual += value
         self.read_io_obj.write_to_samout(read_sequence, "__too_low_aQual")
 
-    def add_not_unique_read(self, read_sequence):
-        self.nonunique += 1
+    def add_not_unique_read(self, read_sequence, value=1):
+        self.nonunique += value
         self.read_io_obj.write_to_samout(read_sequence, "__alignment_not_unique")
 
-    def add_not_aligned_read(self, read_sequence):
-        self.notaligned += 1
+    def add_not_aligned_read(self, read_sequence, value=1):
+        self.notaligned += value
         self.read_io_obj.write_to_samout(read_sequence, "__not_aligned")
 
     def add_to_count(self, feature, value=1):
